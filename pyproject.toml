@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "autonomous-sdlc-team"
+version = "0.1.0"
+description = "Reusable autonomous full-stack SDLC team framework"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+dependencies = [
+  "PyYAML>=6.0.0"
+]
+
+[project.optional-dependencies]
+dev = [
+  "mkdocs>=1.6.0",
+  "pytest>=8.2.0",
+  "ruff>=0.5.0"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.setuptools.packages.find]
+include = ["team_framework*", "tools*"]
+exclude = ["contracts*", "docs*", "state*", "tests*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

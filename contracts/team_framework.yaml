@@ -1,0 +1,151 @@
+version: 1
+name: autonomous-sdlc-team-framework
+summary: >
+  Reusable autonomous full-stack SDLC team framework. The framework contains
+  role prompts, memory/state rules, improvement loops, report evidence, drift
+  checks, reliability scoring, and release gates. It intentionally excludes a
+  built-in product runtime.
+
+role_files:
+  - .codex/agents/sdlc_orchestrator.toml
+  - .codex/agents/delivery_planner.toml
+  - .codex/agents/product_context_analyst.toml
+  - .codex/agents/interface_contract_architect.toml
+  - .codex/agents/dev_builder.toml
+  - .codex/agents/dev_test_writer.toml
+  - .codex/agents/quality_explorer.toml
+  - .codex/agents/adversarial_reviewer.toml
+  - .codex/agents/evidence_judge.toml
+  - .codex/agents/implementation_hardener.toml
+  - .codex/agents/security_reviewer.toml
+  - .codex/agents/docs_drift_guard.toml
+  - .codex/agents/requirements_auditor.toml
+  - .codex/agents/self_healer.toml
+  - .codex/agents/maintenance_heartbeat.toml
+  - .codex/agents/pr_reviewer.toml
+  - .codex/agents/release_gate.toml
+
+required_artifacts:
+  - AGENTS.md
+  - START_HERE_WITH_CODEX.md
+  - README.md
+  - .gitignore
+  - Makefile
+  - contracts/expected_behavior.md
+  - contracts/team_framework.yaml
+  - contracts/agentic_framework_map.yaml
+  - specs/prompt_spec_template.md
+  - memory/PROJECT_MEMORY.template.md
+  - state/sdlc_state.template.json
+  - tools/run_tests_with_report.py
+  - tools/check_implementation_drift.py
+  - tools/validate_harness_quality.py
+  - tools/generate_combined_report_html.py
+  - tools/run_improvement_queue.py
+  - tools/score_team_reliability.py
+  - tools/run_release_gate.py
+  - docs/agent_plumbing.md
+  - docs/agentic_sdlc.md
+  - docs/how_this_was_built.md
+  - docs/spec_driven_workflow.md
+  - docs/improvement_mode.md
+  - docs/maintenance.md
+  - docs/memory.md
+  - docs/security_review.md
+  - docs/pr_review.md
+  - state/reports/improvement-queue_report.json
+
+required_document_markers:
+  - path: AGENTS.md
+    markers:
+      - autonomous full-stack SDLC team
+      - no default product runtime
+      - Durable Memory
+      - Improvement And Hardening Loop
+      - /goal
+      - provider-native
+      - prompt spec
+      - release gate
+  - path: README.md
+    markers:
+      - autonomous full-stack SDLC team
+      - adoption
+      - no default product runtime
+      - /goal
+      - provider-native
+      - Prompt Specs
+  - path: START_HERE_WITH_CODEX.md
+    markers:
+      - autonomous full-stack SDLC team
+      - memory/PROJECT_MEMORY.md
+      - specs/prompt_spec_template.md
+      - make maintenance-daily
+  - path: docs/agent_plumbing.md
+    markers:
+      - Specialist Behavior
+      - Report Plumbing
+      - Improvement Queue
+      - Memory And State
+      - Prompt Specs
+      - no built-in product runtime
+  - path: docs/how_this_was_built.md
+    markers:
+      - How This Was Built
+      - Provider-neutral behavior
+      - Public-source hygiene
+      - workspace-specific
+  - path: docs/spec_driven_workflow.md
+    markers:
+      - Spec-Driven Workflow
+      - /goal
+      - delivery_planner
+      - sdlc_orchestrator
+      - specs/YYYY-MM-DD_short_slug.md
+  - path: docs/maintenance.md
+    markers:
+      - framework drift
+      - improvement queue
+      - team reliability
+      - release gate
+  - path: docs/improvement_mode.md
+    markers:
+      - improvement queue
+      - strict score
+      - ranked next items
+  - path: specs/prompt_spec_template.md
+    markers:
+      - Prompt Spec Template
+      - Requirements Checklist
+      - Implementation Chunks
+      - Completion Audit
+
+required_reports:
+  test_report:
+    path: state/reports/test_report.json
+    require_status: PASS
+    require_source_for_each_test: true
+  combined_report:
+    path: state/reports/combined_report.html
+    markers:
+      - Autonomous SDLC Team Report
+      - Regression Test Evidence
+      - Improvement Queue
+      - Team Reliability
+      - Framework Drift
+      - source-code
+
+definition_of_done:
+  - role_prompts_generic
+  - memory_current
+  - framework_map_passes
+  - framework_drift_passes
+  - harness_quality_passes
+  - improvement_queue_passes
+  - tests_pass
+  - prompt_specs_required
+  - combined_report_source_backed
+  - team_reliability_tracked
+  - hardening_evidence_current
+  - requirements_audit_passes
+  - security_review_clear
+  - release_gate_pass

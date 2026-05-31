@@ -1,0 +1,311 @@
+# Project Agent Instructions
+
+This repo is an autonomous full-stack SDLC team framework. It packages the
+workflow agents, durable memory, improvement loop, evidence reports, reliability
+scoring, and release gates that another team can apply to its own codebase.
+
+It intentionally has no default product runtime. Do not add one unless the user
+explicitly supplies or requests a target project.
+
+## Mandatory Start-Of-Turn Protocol
+
+At the start of every new user prompt that requests code, docs, tests, review,
+maintenance, or project work, Codex must:
+
+1. Re-read `AGENTS.md`.
+2. Read local `memory/PROJECT_MEMORY.md` if it exists.
+3. Identify the active SDLC phase.
+4. Consult `contracts/agentic_framework_map.yaml` when the task is substantial.
+5. Identify which specialist agents, checks, or reports apply.
+6. For broad, ambiguous, risky, or outcome-oriented prompts, run `/goal` first.
+   If the active provider/runtime exposes a native `/goal` or planning feature,
+   use it to clarify the work, then continue through AI Brain's spec, memory,
+   evidence, audit, and release-gate requirements. If native `/goal` is
+   unavailable, disabled, or incompatible, perform the same clarification inside
+   AI Brain. Provider-native `/goal` feeds the SDLC loop; it does not replace it.
+7. For project-work prompts that change code, docs, tests, contracts, memory,
+   state, reports, automation, or team workflow, create or update a durable
+   prompt spec under `specs/` before implementation starts.
+8. For substantial or ambiguous work, create a bite-sized implementation plan
+   in that spec before editing.
+9. Capture the user's explicit requirements as a checklist that can be audited.
+10. Follow the Agentic SDLC Loop unless the user explicitly asks for a narrow
+   answer only.
+11. Continue until the requested slice reaches its definition of done or a real
+   blocker is documented.
+
+For tiny direct questions, Codex may answer directly. Any implementation or
+project-change request must use this protocol.
+
+## Before Any Project Action
+
+- Confirm the action fits the SDLC loop or clearly explain why it is a narrow
+  exception.
+- If code or docs change, update or verify relevant tests and reports.
+- If team workflow, role behavior, or adoption guidance changes, update docs.
+- If project work changes artifacts, create or update the prompt spec first and
+  implement from its checklist and chunks.
+- If durable project state, commands, decisions, limitations, or lifecycle
+  status change, update local `memory/PROJECT_MEMORY.md`.
+- If a gate fails, run self-healing before declaring completion.
+- If specialist review is useful and available, delegate bounded work to the
+  appropriate role.
+
+## Subagent Delegation Protocol
+
+The framework is designed for the main `sdlc_orchestrator` to fan out work to
+specialist subagents when the environment supports it and the task benefits from
+parallel or role-specific review. Delegation is optional for tiny direct edits,
+but substantial work should explicitly consider whether a specialist can advance
+the slice.
+
+When using subagents:
+
+- Delegate bounded, self-contained work with a clear owner, inputs, expected
+  artifacts, and verification command.
+- Prefer parallel subagents for independent work such as planning, contracts,
+  test writing, quality exploration, adversarial review, security review, docs
+  drift, requirements audit, and release review.
+- Keep write scopes disjoint when multiple implementation subagents work in
+  parallel.
+- Treat subagent output as evidence or recommendations, not final truth.
+- Do not let subagents mark the project complete. Only the orchestrator can
+  close the loop after deterministic gates and release evidence pass.
+- If a subagent finds a blocker, route the smallest repair to the owning role
+  and require regression evidence before release.
+
+## Planning Checkpoint
+
+For any non-trivial project change, Codex must run a planning checkpoint before
+implementation. Use the available planning tool or write a concise checklist in
+the thread.
+
+The durable planning artifact is a local prompt spec in `specs/`. For every
+project-work prompt that changes artifacts, create or update a spec file before
+editing implementation files. Use `specs/prompt_spec_template.md` as the
+default structure and name new local specs with
+`specs/YYYY-MM-DD_short_slug.md`. This public repo tracks only the template;
+dated local specs are ignored by git by default.
+
+The checkpoint must:
+
+- record the `/goal` mode: provider-native input or AI Brain clarification
+- record the clarified `/goal` outcome when the prompt is broad or ambiguous
+- restate the goal in implementation terms
+- link to the prompt spec path
+- break work into small, independently verifiable chunks
+- identify which agent role owns each chunk
+- identify likely contracts, tests, docs, memory, state, and reports that must
+  change
+- name final verification commands or artifacts
+
+Do not let planning block tiny direct answers that do not change project
+artifacts. For project-work prompts, do not start implementation until the spec
+is clear enough to audit.
+
+## Before Final Response
+
+Before reporting completion for project work, Codex must update or verify:
+
+- implementation or docs
+- tests and lint
+- framework drift and harness quality reports
+- hardening evidence for substantial changes
+- requirements-audit evidence that maps the user's prompt and prompt spec to
+  artifacts
+- security/PR/release evidence when release status is claimed
+- local `state/sdlc_state.json` when lifecycle state changed
+- local `memory/PROJECT_MEMORY.md` when durable project memory changed
+
+Before final response, re-read the current user prompt and compare it against
+source changes and reports. Repair or document anything missing.
+
+## Improvement And Hardening Loop
+
+For implementation work, run `implementation_hardener` as a bounded improvement
+loop after the first working pass and before final release evidence.
+
+Rules:
+
+- Run at most 3 hardening passes.
+- Each pass identifies concrete thin spots, brittle assumptions, missing edge
+  cases, weak docs, unclear role prompts, or missing regression evidence.
+- If a pass finds meaningful improvement work, implement it, add/update tests or
+  reports, then run relevant checks again.
+- Stop early when the hardener determines the slice is up to par.
+- After 3 passes, document remaining ideas as future work or explicit scope
+  boundaries.
+
+Standalone improvement mode:
+
+1. Read `AGENTS.md` and local `memory/PROJECT_MEMORY.md` if it exists.
+2. Create a short improvement plan.
+3. Run up to 3 hardening passes.
+4. Prefer concrete improvements with tests/docs over broad rewrites.
+5. Run release evidence before completion.
+
+## Durable Memory
+
+Use local `memory/PROJECT_MEMORY.md` as the project memory file.
+
+The repo tracks `memory/PROJECT_MEMORY.template.md` as the safe public example.
+The real `memory/PROJECT_MEMORY.md` and `state/sdlc_state.json` files are
+workspace-local and ignored by git. Do not commit local memory or lifecycle
+state files.
+
+Memory rules:
+
+- Read it after `AGENTS.md` at the start of project-work prompts when it
+  exists.
+- Keep memory concise, factual, and durable.
+- Do not store secrets, credentials, private personal data, or large logs.
+- Store generated evidence under `state/reports/`; summarize only durable
+  conclusions in memory.
+- If memory conflicts with source artifacts or current reports, treat source as
+  truth and update memory.
+
+## Mission
+
+Provide a reusable autonomous SDLC team methodology that can be applied to other
+teams and codebases. The framework coordinates specialist agents, deterministic
+checks, durable memory, improvement loops, and auditable release evidence.
+
+## Core Workflows
+
+- Recover context from instructions and durable memory.
+- Use `/goal` to clarify broad work: prefer provider-native goal or planning
+  input when available, otherwise clarify inside AI Brain, then always continue
+  through AI Brain's SDLC loop.
+- In either `/goal` mode, clarify outcome, success criteria, non-goals,
+  constraints, assumptions, and evidence before writing a prompt spec.
+- Convert a prompt into a durable spec with explicit requirements and a
+  bite-sized plan.
+- Define contracts for product surfaces, handoffs, or team workflow changes.
+- Build or update the requested slice.
+- Add regression and source-backed evidence.
+- Run quality exploration and adversarial review where applicable.
+- Harden thin implementations.
+- Review security, docs, and release risk.
+- Audit requirements back to artifacts.
+- Self-heal failed gates.
+- Track team reliability over time.
+- Produce release-gate evidence.
+
+## Agentic SDLC Loop
+
+Use this loop for substantial changes:
+
+```text
+requirements intake -> /goal -> prompt spec -> planning checkpoint -> interface contract -> build
+-> dev tests -> quality exploration -> adversarial review
+-> implementation hardening -> evidence judge -> security review
+-> docs drift check -> requirements audit -> self-healing repair
+-> regression -> PR review -> release gate -> scheduled maintenance
+```
+
+The loop can iterate until the slice is complete or a blocker is documented.
+
+## Combined Agent-Skills Overlay
+
+This repo incorporates the lifecycle taxonomy from
+`https://github.com/addyosmani/agent-skills` through
+`contracts/agentic_framework_map.yaml` and `docs/agent_skills_integration.md`.
+
+Use the overlay as the general engineering discipline layer:
+
+- DEFINE: idea refinement, spec-driven development, and context recovery.
+- PLAN: task breakdown and interface design.
+- BUILD: incremental implementation, TDD, and source-driven development.
+- VERIFY: tests, debugging/error recovery, quality exploration, and evidence
+  judging.
+- REVIEW: code quality, simplification, security, performance, docs drift, and
+  requirements audit.
+- SHIP: CI-style automation, launch readiness, release gate, and rollback/risk
+  evidence.
+- MAINTAIN: deprecation/migration, memory upkeep, and scheduled self-healing.
+
+For substantial project changes, `make framework-check`, `make framework-drift`,
+`make harness-check`, and the release gate must continue to pass.
+
+## Second-Order Quality Gates
+
+The harness must catch gaps that would otherwise show up as follow-up prompts:
+
+- Role prompts must stay aligned with `contracts/team_framework.yaml`.
+- Test suites must include layered framework coverage for role contracts,
+  prompt specs, memory/state, report rendering, reliability scoring, harness
+  quality, and framework-map validation.
+- Evidence judge must evaluate whether reports are broad, current,
+  source-backed, and auditable.
+- Maintenance must track a team reliability score over time. Caught regressions
+  are credited; escaped-regression feedback or missing/thin evidence lowers the
+  score and triggers repair.
+- The orchestrator must monitor framework drift across role prompts, contracts,
+  docs, memory, tests, and reports.
+- The combined report must prove tests are real with source-backed evidence.
+- Local developer experience must stay one-command runnable through
+  `./scripts/build_and_launch.sh`, including build/check evidence and the MkDocs
+  knowledge base.
+- `make harness-check` verifies the above using
+  `contracts/harness_quality_gates.yaml` and
+  `state/reports/harness-quality_report.json`.
+
+## Definition of Done
+
+- Runtime framework behavior matches `contracts/expected_behavior.md`.
+- Role prompts match `contracts/team_framework.yaml`.
+- Project-work prompts create or update a durable prompt spec before
+  implementation starts.
+- Framework drift, harness quality, tests, lint, and release gate pass.
+- Combined reports include source-backed test evidence.
+- Substantial changes pass implementation hardening.
+- Requirements audit maps the current prompt to artifacts or documented scope
+  boundaries.
+- Security review has no unresolved blocker.
+- Documentation is updated with workflow changes.
+- The one-command launcher and knowledge base remain functional.
+- local `state/sdlc_state.json` reflects current status when present.
+- local `memory/PROJECT_MEMORY.md` captures durable changes when present.
+
+## Engineering Rules
+
+- Keep the framework product-agnostic.
+- Do not add a default product runtime to this repo.
+- Prefer deterministic checks over conversational claims.
+- Keep role prompts concrete, bounded, and auditable.
+- Keep prompt specs small, concrete, and tied to verification commands.
+- Add regression tests for every repair.
+- Keep generated reports under `state/reports/`.
+
+## Expected Agent Roles
+
+- `sdlc_orchestrator`: owns scope, provider-native `/goal` input or AI Brain
+  clarification, prompt spec enforcement, task state, framework drift checks,
+  completeness, and final gate.
+- `delivery_planner`: turns clarified goals into durable specs with small,
+  sequenced, verifiable tasks.
+- `product_context_analyst`: owns `/goal` clarification across user, product,
+  team, success criteria, non-goals, constraints, and adoption assumptions.
+- `interface_contract_architect`: maintains product-surface, data-shape,
+  command, report, and handoff contracts.
+- `dev_builder`: implements scoped changes.
+- `dev_test_writer`: writes focused tests and regression evidence.
+- `quality_explorer`: explores behavior and evidence for the current project
+  surface.
+- `adversarial_reviewer`: attacks assumptions, missing checks, and unsafe
+  release claims.
+- `evidence_judge`: judges evidence breadth, freshness, source backing, and
+  auditability.
+- `implementation_hardener`: improves thin implementations, docs, prompts, and
+  reports before final review.
+- `security_reviewer`: checks data, dependencies, prompt safety, automation, and
+  tool permissions.
+- `docs_drift_guard`: keeps README, docs, contracts, role prompts, memory, and
+  reports synchronized.
+- `requirements_auditor`: maps every prompt spec requirement to artifacts and
+  evidence.
+- `self_healer`: turns failures into repair tasks and verifies regression fixes.
+- `maintenance_heartbeat`: scheduled check runner, reliability score tracker,
+  and status reporter.
+- `pr_reviewer`: final diff review.
+- `release_gate`: final pass/fail decision.

@@ -1,0 +1,46 @@
+{
+  "project": "autonomous-sdlc-team",
+  "status": "template",
+  "current_phase": "not-started",
+  "open_tasks": [],
+  "maintenance": {
+    "last_daily_run_at": null,
+    "last_daily_run_status": null,
+    "last_daily_run_phase": null,
+    "last_daily_run_command": "PATH=\".venv/bin:$PATH\" make maintenance-daily"
+  },
+  "last_reports": {
+    "test_run": "state/reports/test_report.json",
+    "agent_skills_framework": "state/reports/agent-skills-framework_report.json",
+    "framework_drift": "state/reports/implementation-drift_report.json",
+    "harness_quality": "state/reports/harness-quality_report.json",
+    "improvement_queue": "state/reports/improvement-queue_report.json",
+    "team_reliability": "state/reports/team-reliability_report.json",
+    "team_reliability_history": "state/reports/team-reliability_history.jsonl",
+    "release_gate": "state/reports/release-gate_report.json",
+    "combined_html": "state/reports/combined_report.html",
+    "requirements_audit": "state/reports/requirements_audit_report.json",
+    "security_review": "docs/security_review.md",
+    "pr_review": "docs/pr_review.md",
+    "project_memory": "memory/PROJECT_MEMORY.md"
+  },
+  "definition_of_done": {
+    "role_prompts_generic": false,
+    "memory_current": false,
+    "framework_map_passes": false,
+    "framework_drift_passes": false,
+    "harness_quality_passes": false,
+    "improvement_queue_passes": false,
+    "tests_pass": false,
+    "goal_command_documented": false,
+    "provider_native_goal_adapter_documented": false,
+    "prompt_specs_required": false,
+    "combined_report_source_backed": false,
+    "team_reliability_tracked": false,
+    "hardening_evidence_current": false,
+    "requirements_audit_passes": false,
+    "security_review_clear": false,
+    "docs_current": false,
+    "release_gate_pass": false
+  }
+}

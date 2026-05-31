@@ -1,0 +1,249 @@
+version: 2
+summary: >
+  Second-order gates for the reusable autonomous SDLC team framework. These
+  checks keep role prompts, memory, docs, reports, and release evidence aligned
+  without relying on any built-in product runtime.
+minimum_test_count: 12
+required_test_sections:
+  - Agent Skills Framework Tests
+  - Harness Quality Tests
+  - Memory And State Tests
+  - Report Rendering Tests
+  - Team Framework Tests
+  - Team Reliability Tests
+required_test_node_fragments:
+  - tests/test_agentic_framework_map.py::test_combined_agentic_framework_map_is_complete
+  - tests/test_harness_quality_contract.py::test_harness_quality_contract_references_existing_artifacts_and_markers
+  - tests/test_combined_report_html.py::test_render_report_combines_team_framework_reports
+  - tests/test_team_framework.py::test_team_framework_contract_lists_existing_role_files
+  - tests/test_team_framework.py::test_prompt_spec_template_and_current_spec_are_actionable
+  - tests/test_team_framework.py::test_goal_command_is_a_define_phase_before_local_specs
+  - tests/test_team_framework.py::test_provider_native_goal_adapter_feeds_required_sdlc_loop
+  - tests/test_improvement_queue.py::test_improvement_queue_detects_and_prioritizes_blockers
+  - tests/test_team_framework.py::test_framework_drift_validator_passes_for_current_contract
+  - tests/test_memory_state.py::test_memory_and_state_templates_describe_generic_team_framework
+  - tests/test_memory_state.py::test_release_gate_accepts_state_template_without_local_state
+  - tests/test_memory_state.py::test_tracked_source_does_not_publish_workspace_identifiers
+  - tests/test_team_reliability.py::test_team_reliability_scores_healthy_evidence_without_penalty
+  - tests/test_team_reliability.py::test_team_reliability_credits_regressions_caught_by_tests
+required_artifacts:
+  - AGENTS.md
+  - START_HERE_WITH_CODEX.md
+  - README.md
+  - .gitignore
+  - Makefile
+  - contracts/expected_behavior.md
+  - contracts/team_framework.yaml
+  - contracts/agentic_framework_map.yaml
+  - specs/prompt_spec_template.md
+  - memory/PROJECT_MEMORY.template.md
+  - state/sdlc_state.template.json
+  - docs/how_this_was_built.md
+  - state/reports/improvement-queue_report.json
+  - tools/run_tests_with_report.py
+  - tools/check_implementation_drift.py
+  - tools/validate_harness_quality.py
+  - tools/generate_combined_report_html.py
+  - tools/run_improvement_queue.py
+  - tools/score_team_reliability.py
+  - tools/run_release_gate.py
+  - tests/test_agentic_framework_map.py
+  - tests/test_combined_report_html.py
+  - tests/test_harness_quality_contract.py
+  - tests/test_memory_state.py
+  - tests/test_improvement_queue.py
+  - tests/test_team_framework.py
+  - tests/test_team_reliability.py
+required_reports:
+  test_report:
+    path: state/reports/test_report.json
+    require_status: PASS
+    require_source_for_each_test: true
+  combined_report:
+    path: state/reports/combined_report.html
+    markers:
+      - Autonomous SDLC Team Report
+      - Regression Test Evidence
+      - Team Reliability
+      - Framework Drift
+      - Improvement Queue
+      - source-code
+      - tests/test_team_framework.py::test_team_framework_contract_lists_existing_role_files
+required_artifact_markers:
+  - path: .gitignore
+    markers:
+      - specs/*.md
+      - "!specs/prompt_spec_template.md"
+      - memory/PROJECT_MEMORY.md
+      - state/sdlc_state.json
+      - memory/*.local.md
+      - state/*.local.json
+  - path: memory/PROJECT_MEMORY.template.md
+    markers:
+      - Project Memory Template
+      - no default product runtime
+      - provider-native
+      - Local memory and state files are ignored by git
+  - path: state/sdlc_state.template.json
+    markers:
+      - autonomous-sdlc-team
+      - template
+      - team_reliability
+      - release_gate_pass
+  - path: docs/how_this_was_built.md
+    markers:
+      - How This Was Built
+      - Provider-neutral behavior
+      - Public-source hygiene
+      - workspace-specific
+  - path: AGENTS.md
+    markers:
+      - autonomous full-stack SDLC team
+      - no default product runtime
+      - Durable Memory
+      - Improvement And Hardening Loop
+      - /goal
+      - provider-native
+      - prompt spec
+      - release gate
+  - path: .codex/agents/sdlc_orchestrator.toml
+    markers:
+      - autonomous full-stack SDLC team
+      - bounded task
+      - /goal
+      - provider-native
+      - prompt spec
+      - release evidence
+  - path: .codex/agents/product_context_analyst.toml
+    markers:
+      - /goal
+      - success criteria
+      - non-goals
+      - constraints
+  - path: .codex/agents/requirements_auditor.toml
+    markers:
+      - requirements traceability
+      - prompt spec
+      - source-backed report
+      - adoption boundary
+  - path: .codex/agents/implementation_hardener.toml
+    markers:
+      - improvement passes
+      - improvement queue
+      - source-backed report evidence
+      - no default product runtime
+  - path: .codex/agents/dev_test_writer.toml
+    markers:
+      - regression evidence
+      - source-backed
+      - framework tests
+  - path: .codex/agents/interface_contract_architect.toml
+    markers:
+      - interface contract
+      - product surface
+      - adoption
+  - path: .codex/agents/delivery_planner.toml
+    markers:
+      - prompt spec
+      - specs/prompt_spec_template.md
+      - /goal
+      - provider-native
+      - small work chunks
+  - path: .codex/agents/interface_contract_architect.toml
+    markers:
+      - provider-native
+      - AI Brain clarification
+      - release gates
+  - path: .codex/agents/docs_drift_guard.toml
+    markers:
+      - combined report
+      - memory
+      - adoption docs
+  - path: .codex/agents/release_gate.toml
+    markers:
+      - harness quality report
+      - improvement queue
+      - team reliability report
+      - source-backed test evidence
+  - path: .codex/agents/evidence_judge.toml
+    markers:
+      - evidence quality
+      - source-backed
+      - improvement queue
+      - auditable
+  - path: .codex/agents/maintenance_heartbeat.toml
+    markers:
+      - framework drift
+      - harness quality
+      - improvement queue
+      - team reliability
+      - source-backed combined report
+  - path: Makefile
+    markers:
+      - framework-drift
+      - improvement-queue
+      - team-reliability
+      - release-gate
+  - path: tools/run_improvement_queue.py
+    markers:
+      - improvement-queue
+      - strict score
+      - ranked next-item execution queue
+      - copied_code
+  - path: tools/run_release_gate.py
+    markers:
+      - improvement_queue
+      - tools/run_improvement_queue.py
+  - path: tools/score_team_reliability.py
+    markers:
+      - caught_regression
+      - escaped_regression
+      - team_reliability_score
+  - path: tools/check_implementation_drift.py
+    markers:
+      - role_prompts
+      - framework-drift
+      - regression_evidence
+  - path: docs/maintenance.md
+    markers:
+      - framework drift
+      - improvement queue
+      - team reliability
+      - caught regression
+      - escaped regression
+  - path: docs/agent_plumbing.md
+    markers:
+      - Specialist Behavior
+      - Prompt Specs
+      - Report Plumbing
+      - Improvement Queue
+      - Memory And State
+      - no built-in product runtime
+  - path: docs/improvement_mode.md
+    markers:
+      - improvement queue
+      - strict score
+      - ranked next items
+  - path: docs/spec_driven_workflow.md
+    markers:
+      - Spec-Driven Workflow
+      - /goal
+      - delivery_planner
+      - sdlc_orchestrator
+      - specs/YYYY-MM-DD_short_slug.md
+  - path: specs/prompt_spec_template.md
+    markers:
+      - Prompt Spec Template
+      - Requirements Checklist
+      - Implementation Chunks
+      - Completion Audit
+  - path: scripts/build_and_launch.sh
+    markers:
+      - make maintenance-daily
+      - mkdocs serve
+      - Knowledge
+  - path: docs/index.md
+    markers:
+      - autonomous full-stack SDLC team
+      - adoption
+      - improvement queue

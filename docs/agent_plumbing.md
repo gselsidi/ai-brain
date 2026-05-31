@@ -1,0 +1,119 @@
+# Agent Roles And Plumbing
+
+This page explains how the autonomous SDLC team behaves as a system. Agents are
+role prompts and operating rules; the plumbing is deterministic code, Make
+targets, reports, contracts, memory, and state.
+
+There is no built-in product runtime. Adopting teams bring their own codebase
+and product checks.
+
+## Mental Model
+
+```text
+user prompt
+  -> AGENTS.md start-of-turn protocol
+  -> local memory/PROJECT_MEMORY.md context recovery when present
+  -> /goal provider-native input or AI Brain clarification
+  -> specs/YYYY-MM-DD_short_slug.md prompt spec
+  -> sdlc_orchestrator checklist and plan
+  -> specialist roles
+  -> deterministic commands and reports
+  -> hardening, audit, release gate
+  -> local state/sdlc_state.json and durable memory update
+```
+
+## Memory And State
+
+- `memory/PROJECT_MEMORY.template.md`: tracked safe template for local memory.
+- `memory/PROJECT_MEMORY.md`: ignored local durable facts, commands, scope
+  boundaries, and latest evidence.
+- `specs/prompt_spec_template.md`: default structure for prompt specs.
+- `specs/YYYY-MM-DD_short_slug.md`: durable prompt spec for a project-work
+  request.
+- `state/sdlc_state.template.json`: tracked safe template for lifecycle state.
+- `state/sdlc_state.json`: ignored local lifecycle status and latest report
+  paths.
+- `state/reports/*.json`: machine-readable evidence.
+- `state/reports/combined_report.html`: human-readable evidence dashboard.
+- `site/`: generated MkDocs static-site output built from `docs/` and
+  `mkdocs.yml`; it is safe to regenerate and is not a product runtime.
+
+## Specialist Behavior
+
+| Agent | What It Does |
+| --- | --- |
+| `sdlc_orchestrator` | Owns the whole request, checklist, state, and final readiness. |
+| `delivery_planner` | Breaks work into small, independently verifiable chunks. |
+| `product_context_analyst` | Owns `/goal`: outcome, success criteria, non-goals, constraints, assumptions, and risks. |
+| `interface_contract_architect` | Maintains product-surface, handoff, command, and report contracts. |
+| `dev_builder` | Implements scoped source changes. |
+| `dev_test_writer` | Adds regression and source-backed tests. |
+| `quality_explorer` | Explores behavior and evidence for the current project surface. |
+| `adversarial_reviewer` | Attacks weak assumptions, missing checks, and unsafe release claims. |
+| `evidence_judge` | Judges whether reports are broad, current, source-backed, and auditable. |
+| `implementation_hardener` | Improves thin first passes, prompts, docs, tests, and reports. |
+| `security_reviewer` | Reviews data, dependencies, prompt safety, automation, and permissions. |
+| `docs_drift_guard` | Keeps docs, contracts, memory, reports, and role prompts aligned. |
+| `requirements_auditor` | Maps every user requirement to artifacts and evidence. |
+| `self_healer` | Turns failed gates into repair work and regression evidence. |
+| `maintenance_heartbeat` | Runs scheduled checks and reliability scoring. |
+| `pr_reviewer` | Reviews the final change for bugs, missing tests, and release risk. |
+| `release_gate` | Makes the final PASS/FAIL decision from evidence. |
+
+## Prompt Specs
+
+For broad or ambiguous work, `/goal` comes first. If the active provider has a
+native `/goal` or planning feature, the orchestrator can use it to clarify the
+work. That native step feeds AI Brain's durable spec, memory, evidence, audit,
+and release-gate requirements; it does not replace them. If native `/goal` is
+unavailable, disabled, or incompatible, the orchestrator performs the same
+clarification step inside AI Brain.
+
+The goal record includes the mode, desired outcome, success criteria, non-goals,
+constraints, assumptions, and open questions so the spec does not smuggle in
+guesses.
+
+For every project-work prompt that changes artifacts, the `delivery_planner`
+creates or updates a spec under `specs/` before implementation starts. The spec
+captures the prompt, goal, requirements checklist, small chunks, owners,
+affected artifacts, and verification commands.
+
+The `sdlc_orchestrator` implements from that spec and the
+`requirements_auditor` maps final evidence back to it. If scope changes during
+implementation, update the spec or document the boundary before continuing.
+
+## Report Plumbing
+
+| Gate | Command | Report |
+| --- | --- | --- |
+| Regression tests | `make test` | `state/reports/test_report.json` |
+| Framework map | `make framework-check` | `state/reports/agent-skills-framework_report.json` |
+| Framework drift | `make framework-drift` | `state/reports/implementation-drift_report.json` |
+| Harness quality | `make harness-check` | `state/reports/harness-quality_report.json` |
+| Improvement Queue | `make improvement-queue` | `state/reports/improvement-queue_report.json` |
+| Team reliability | `make team-reliability` | `state/reports/team-reliability_report.json` |
+| Release gate | `make release-gate` | `state/reports/release-gate_report.json` |
+| Combined report | `make report-html` | `state/reports/combined_report.html` |
+
+## Failure And Self-Healing
+
+When a gate fails, preserve the failure report first. Then route repair:
+
+- stale role prompt -> owning role plus `docs_drift_guard`
+- missing regression -> `dev_test_writer`
+- weak implementation -> `implementation_hardener`
+- stale memory/state -> `sdlc_orchestrator`
+- missing evidence -> `evidence_judge`
+- repeated failure -> `self_healer`
+
+The repair is not complete until the failing command passes again and regression
+evidence exists.
+
+## One-Command View
+
+```bash
+./scripts/build_and_launch.sh
+```
+
+It runs the framework evidence loop and launches the searchable knowledge base at
+`http://localhost:8001`.

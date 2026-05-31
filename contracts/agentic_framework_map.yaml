@@ -1,0 +1,442 @@
+version: 2
+name: autonomous-sdlc-team-framework
+purpose: >
+  Package the reusable autonomous full-stack SDLC team methodology: role prompts,
+  lifecycle gates, memory recovery, improvement hardening, evidence reports,
+  reliability scoring, and release readiness for adoption by other teams.
+
+upstream_source:
+  repository: https://github.com/addyosmani/agent-skills
+  license: MIT
+  inspected_at: "2026-04-30"
+  integration_mode: >
+    Taxonomy and workflow concepts are mapped into this framework. Upstream skill
+    bodies are not copied; preserve source attribution if future work copies
+    substantial upstream text or files.
+  core_ideas_adopted:
+    - process_over_prose
+    - progressive_disclosure
+    - anti_rationalization_gates
+    - evidence_based_verification
+    - skill_persona_command_separation
+    - parallel_fanout_with_main_agent_merge
+
+upstream_skills:
+  - idea-refine
+  - spec-driven-development
+  - planning-and-task-breakdown
+  - incremental-implementation
+  - test-driven-development
+  - context-engineering
+  - source-driven-development
+  - frontend-ui-engineering
+  - api-and-interface-design
+  - browser-testing-with-devtools
+  - debugging-and-error-recovery
+  - code-review-and-quality
+  - code-simplification
+  - security-and-hardening
+  - performance-optimization
+  - git-workflow-and-versioning
+  - ci-cd-and-automation
+  - deprecation-and-migration
+  - documentation-and-adrs
+  - shipping-and-launch
+  - using-agent-skills
+
+upstream_personas:
+  - code-reviewer
+  - test-engineer
+  - security-auditor
+
+local_unique_capabilities:
+  autonomous_team_roles:
+    description: Specialist prompts for planning, implementation, tests, reviews, hardening, repair, maintenance, and release.
+    artifacts:
+      - .codex/agents/sdlc_orchestrator.toml
+      - .codex/agents/delivery_planner.toml
+      - .codex/agents/interface_contract_architect.toml
+      - .codex/agents/implementation_hardener.toml
+      - .codex/agents/requirements_auditor.toml
+      - .codex/agents/self_healer.toml
+      - .codex/agents/release_gate.toml
+  memory_and_state:
+    description: Durable context recovery and lifecycle state for long-running autonomous work.
+    artifacts:
+      - memory/PROJECT_MEMORY.template.md
+      - state/sdlc_state.template.json
+      - docs/memory.md
+      - .gitignore
+  evidence_plumbing:
+    description: Deterministic validation and human-readable reports proving the team process is real.
+    artifacts:
+      - tools/run_tests_with_report.py
+      - tools/check_implementation_drift.py
+      - tools/validate_harness_quality.py
+      - tools/generate_combined_report_html.py
+      - tools/run_improvement_queue.py
+      - tools/score_team_reliability.py
+      - tools/run_release_gate.py
+      - state/reports/combined_report.html
+  improvement_loop:
+    description: Bounded hardening, self-healing, regression evidence, and requirements audit.
+    artifacts:
+      - docs/improvement_mode.md
+      - state/reports/improvement_hardening_report.json
+      - state/reports/improvement-queue_report.json
+      - state/reports/requirements_audit_report.json
+  adoption_contract:
+    description: Team-facing contract explaining roles, gates, expected behavior, and adoption boundaries.
+    artifacts:
+      - contracts/team_framework.yaml
+      - contracts/expected_behavior.md
+      - specs/prompt_spec_template.md
+      - docs/agent_plumbing.md
+      - docs/how_this_was_built.md
+  prompt_spec_workflow:
+    description: Local durable per-prompt specs that break user asks into requirements, chunks, owners, artifacts, and verification.
+    artifacts:
+      - specs/prompt_spec_template.md
+      - .codex/agents/delivery_planner.toml
+      - .codex/agents/sdlc_orchestrator.toml
+      - docs/spec_driven_workflow.md
+  goal_command:
+    description: Provider-aware DEFINE-phase command for native goal or planning input when available, with AI Brain clarification when unavailable.
+    artifacts:
+      - .codex/agents/product_context_analyst.toml
+      - docs/spec_driven_workflow.md
+      - contracts/expected_behavior.md
+  provider_goal_adapter:
+    description: Native-input adapter that records provider or AI Brain clarification mode while preserving AI Brain specs, evidence, audits, and release gates.
+    artifacts:
+      - .codex/agents/sdlc_orchestrator.toml
+      - .codex/agents/interface_contract_architect.toml
+      - docs/spec_driven_workflow.md
+  improvement_queue:
+    description: >
+      Desloppify-inspired deterministic scan, strict score, ranked queue, and
+      rescan gate for harness maintainability debt without adding a product
+      runtime or vendoring upstream scanner code.
+    artifacts:
+      - docs/how_this_was_built.md
+      - tools/run_improvement_queue.py
+      - state/reports/improvement-queue_report.json
+      - tools/run_release_gate.py
+
+lifecycle:
+  define:
+    upstream_commands: [/goal, /spec]
+    upstream_skills:
+      - idea-refine
+      - spec-driven-development
+      - context-engineering
+      - using-agent-skills
+    local_phases:
+      - requirements_intake
+      - goal_clarification
+      - prompt_spec
+      - context_recovery
+    local_agents:
+      - sdlc_orchestrator
+      - delivery_planner
+      - product_context_analyst
+    local_artifacts:
+      - AGENTS.md
+      - memory/PROJECT_MEMORY.template.md
+      - contracts/expected_behavior.md
+      - specs/prompt_spec_template.md
+      - docs/spec_driven_workflow.md
+    combined_rule: >
+      Recover context, use provider-native /goal input when available or AI
+      Brain's own clarification when unavailable, clarify intent, success
+      criteria, non-goals, and constraints, capture acceptance criteria in a
+      durable prompt spec, and identify which team roles and gates apply before
+      changing a project. Provider /goal feeds the SDLC loop; it does not
+      replace it.
+  plan:
+    upstream_commands: [/plan]
+    upstream_skills:
+      - planning-and-task-breakdown
+      - api-and-interface-design
+    local_phases:
+      - planning_checkpoint
+      - interface_contract
+    local_agents:
+      - delivery_planner
+      - interface_contract_architect
+      - product_context_analyst
+    local_artifacts:
+      - specs/prompt_spec_template.md
+      - contracts/team_framework.yaml
+      - state/sdlc_state.template.json
+    combined_rule: >
+      Slice work into small, auditable tasks in the prompt spec and define
+      external contracts or user-facing behavior before implementation.
+  build:
+    upstream_commands: [/build]
+    upstream_skills:
+      - incremental-implementation
+      - test-driven-development
+      - source-driven-development
+      - git-workflow-and-versioning
+    local_phases:
+      - implementation
+      - dev_tests
+    local_agents:
+      - dev_builder
+      - dev_test_writer
+      - interface_contract_architect
+    local_artifacts:
+      - tests
+      - tools/run_tests_with_report.py
+    combined_rule: >
+      Build one verified slice at a time, pin repairs with regression evidence,
+      and keep contracts aligned with changed behavior.
+  verify:
+    upstream_commands: [/test]
+    upstream_skills:
+      - test-driven-development
+      - debugging-and-error-recovery
+      - browser-testing-with-devtools
+    local_phases:
+      - test_execution
+      - quality_exploration
+      - adversarial_review
+      - evidence_judge
+      - regression
+    local_agents:
+      - quality_explorer
+      - adversarial_reviewer
+      - evidence_judge
+      - self_healer
+    local_artifacts:
+      - state/reports/test_report.json
+      - state/reports/harness-quality_report.json
+      - state/reports/implementation-drift_report.json
+      - state/reports/improvement-queue_report.json
+    combined_rule: >
+      Treat automated checks and reports as proof; preserve failures, repair root
+      causes, run the improvement queue for ranked maintainability debt, and
+      require source-backed regression evidence.
+  review:
+    upstream_commands: [/review, /code-simplify]
+    upstream_skills:
+      - code-review-and-quality
+      - code-simplification
+      - security-and-hardening
+      - performance-optimization
+    local_phases:
+      - implementation_hardening
+      - security_review
+      - docs_drift_check
+      - pr_review
+      - requirements_audit
+    local_agents:
+      - implementation_hardener
+      - security_reviewer
+      - docs_drift_guard
+      - pr_reviewer
+      - requirements_auditor
+    local_artifacts:
+      - docs/security_review.md
+      - docs/pr_review.md
+      - docs/agent_plumbing.md
+      - state/reports/improvement_hardening_report.json
+      - state/reports/improvement-queue_report.json
+      - state/reports/requirements_audit_report.json
+    combined_rule: >
+      Review correctness, maintainability, risk, documentation, and prompt
+      traceability before declaring a team slice complete; use the improvement
+      queue's strict score and next items to avoid hand-waving maintainability
+      debt.
+  ship:
+    upstream_commands: [/ship]
+    upstream_skills:
+      - ci-cd-and-automation
+      - documentation-and-adrs
+      - shipping-and-launch
+    local_phases:
+      - release_gate
+      - scheduled_maintenance
+    local_agents:
+      - release_gate
+      - maintenance_heartbeat
+      - sdlc_orchestrator
+    local_artifacts:
+      - Makefile
+      - state/reports/release-gate_report.json
+      - state/reports/combined_report.html
+      - state/reports/improvement-queue_report.json
+      - state/reports/team-reliability_report.json
+      - docs/maintenance.md
+    combined_rule: >
+      A ship decision requires current evidence, clear residual risk, docs that
+      match behavior, improvement queue evidence, and release-gate PASS.
+  maintain:
+    upstream_commands: []
+    upstream_skills:
+      - deprecation-and-migration
+      - context-engineering
+      - documentation-and-adrs
+    local_phases:
+      - scheduled_maintenance
+      - durable_memory_update
+    local_agents:
+      - maintenance_heartbeat
+      - self_healer
+      - docs_drift_guard
+    local_artifacts:
+      - memory/PROJECT_MEMORY.template.md
+      - state/sdlc_state.template.json
+      - state/reports/team-reliability_history.jsonl
+      - docs/maintenance.md
+      - docs/memory.md
+    combined_rule: >
+      Keep memory concise, record durable decisions, score team reliability, and
+      route recurring failures into self-healing.
+
+skill_coverage:
+  idea-refine:
+    local_status: adopted
+    local_agents: [product_context_analyst, delivery_planner]
+    local_artifacts: [contracts/expected_behavior.md, docs/ready_to_discuss.md, docs/spec_driven_workflow.md]
+    gap_closed_by: /goal captures provider-native input or AI Brain clarification mode, outcome, success criteria, non-goals, constraints, assumptions, and team adoption edges before specs.
+  spec-driven-development:
+    local_status: adopted
+    local_agents: [sdlc_orchestrator, delivery_planner]
+    local_artifacts: [AGENTS.md, START_HERE_WITH_CODEX.md, specs/prompt_spec_template.md, docs/agentic_sdlc.md, docs/agent_plumbing.md]
+    gap_closed_by: Provider-native /goal input when available, AI Brain clarification when not, durable prompt specs, explicit requirements checklist, and chunked implementation plan.
+  planning-and-task-breakdown:
+    local_status: already_strong
+    local_agents: [delivery_planner]
+    local_artifacts: [.codex/agents/delivery_planner.toml, specs/prompt_spec_template.md]
+    gap_closed_by: Bite-sized SDLC tasks with verification commands.
+  incremental-implementation:
+    local_status: adopted
+    local_agents: [dev_builder, implementation_hardener]
+    local_artifacts: [docs/improvement_mode.md]
+    gap_closed_by: Bounded improvement passes and scoped implementation slices.
+  test-driven-development:
+    local_status: adopted
+    local_agents: [dev_test_writer, adversarial_reviewer]
+    local_artifacts: [tests, tools/run_tests_with_report.py]
+    gap_closed_by: Regression tests required for every repair.
+  context-engineering:
+    local_status: already_strong
+    local_agents: [sdlc_orchestrator]
+    local_artifacts: [AGENTS.md, memory/PROJECT_MEMORY.template.md, docs/memory.md]
+    gap_closed_by: Start-of-turn protocol and durable memory recovery.
+  source-driven-development:
+    local_status: adopted
+    local_agents: [interface_contract_architect, docs_drift_guard]
+    local_artifacts: [contracts/team_framework.yaml, docs/agent_plumbing.md]
+    gap_closed_by: Adoption decisions are grounded in local source artifacts.
+  frontend-ui-engineering:
+    local_status: applicable_by_adopting_team
+    local_agents: [quality_explorer]
+    local_artifacts: [contracts/team_framework.yaml]
+    gap_closed_by: The framework includes the role and gate; target teams provide the product surface.
+  api-and-interface-design:
+    local_status: generalized
+    local_agents: [interface_contract_architect]
+    local_artifacts: [contracts/expected_behavior.md, contracts/team_framework.yaml]
+    gap_closed_by: Interface contracts are treated broadly across product surfaces and team handoffs.
+  browser-testing-with-devtools:
+    local_status: applicable_by_adopting_team
+    local_agents: [quality_explorer]
+    local_artifacts: [contracts/team_framework.yaml]
+    gap_closed_by: Browser checks apply when a target team has a browser surface.
+  debugging-and-error-recovery:
+    local_status: adopted
+    local_agents: [self_healer, implementation_hardener]
+    local_artifacts: [docs/improvement_mode.md]
+    gap_closed_by: Failed gates trigger root-cause repair and regression evidence.
+  code-review-and-quality:
+    local_status: already_strong
+    local_agents: [pr_reviewer]
+    local_artifacts: [docs/pr_review.md]
+    gap_closed_by: Local review artifact and release-gate check.
+  code-simplification:
+    local_status: adopted
+    local_agents: [implementation_hardener]
+    local_artifacts: [docs/improvement_mode.md]
+    gap_closed_by: Hardener can choose simplification when behavior is covered.
+  security-and-hardening:
+    local_status: already_strong
+    local_agents: [security_reviewer]
+    local_artifacts: [docs/security_review.md, docs/security.md]
+    gap_closed_by: Security review is part of definition of done.
+  performance-optimization:
+    local_status: adopted
+    local_agents: [pr_reviewer, implementation_hardener]
+    local_artifacts: [docs/pr_review.md]
+    gap_closed_by: Review gate checks unbounded work and target-team performance risk.
+  git-workflow-and-versioning:
+    local_status: partial
+    local_agents: [pr_reviewer]
+    local_artifacts: [docs/pr_review.md]
+    gap_closed_by: Workspace may not be a git repo; local review artifact documents that boundary.
+  ci-cd-and-automation:
+    local_status: already_strong
+    local_agents: [maintenance_heartbeat, release_gate]
+    local_artifacts: [Makefile, docs/maintenance.md, state/reports/team-reliability_report.json, state/reports/improvement-queue_report.json]
+    gap_closed_by: make maintenance-daily runs the local CI-style gate, improvement queue, and reliability scoring.
+  deprecation-and-migration:
+    local_status: adopted
+    local_agents: [docs_drift_guard, interface_contract_architect]
+    local_artifacts: [docs/how_this_was_built.md, contracts/expected_behavior.md]
+    gap_closed_by: Migration and adoption boundaries are documented as first-class artifacts.
+  documentation-and-adrs:
+    local_status: adopted
+    local_agents: [docs_drift_guard, requirements_auditor, sdlc_orchestrator]
+    local_artifacts: [docs, memory/PROJECT_MEMORY.template.md, state/reports/implementation-drift_report.json]
+    gap_closed_by: Behavior changes update docs, memory, audit reports, and drift evidence.
+  shipping-and-launch:
+    local_status: already_strong
+    local_agents: [release_gate]
+    local_artifacts: [state/reports/release-gate_report.json, state/sdlc_state.template.json]
+    gap_closed_by: Release-gate PASS is required before completion.
+  using-agent-skills:
+    local_status: adopted
+    local_agents: [sdlc_orchestrator]
+    local_artifacts: [contracts/agentic_framework_map.yaml, docs/agent_skills_integration.md]
+    gap_closed_by: This map explains when each general skill concept applies locally.
+
+local_agents:
+  - sdlc_orchestrator
+  - delivery_planner
+  - product_context_analyst
+  - interface_contract_architect
+  - dev_builder
+  - dev_test_writer
+  - quality_explorer
+  - adversarial_reviewer
+  - evidence_judge
+  - implementation_hardener
+  - security_reviewer
+  - docs_drift_guard
+  - requirements_auditor
+  - self_healer
+  - maintenance_heartbeat
+  - pr_reviewer
+  - release_gate
+
+cross_framework_gaps:
+  upstream_adds_to_this_framework:
+    - Explicit skill anatomy and trigger discipline.
+    - Anti-rationalization language for tests, specs, reviews, and launch gates.
+    - Code simplification, deprecation, performance, and source-driven development as named gates.
+    - Command-level lifecycle vocabulary that maps well to DEFINE -> PLAN -> BUILD -> VERIFY -> REVIEW -> SHIP.
+  this_framework_adds_to_upstream:
+    - Durable team memory and state files for long autonomous runs.
+    - Specialist role prompts for a full-stack delivery team.
+    - Source-backed test and report evidence for the team process itself.
+    - Self-healing repair loop tied to concrete regression tests and reports.
+    - Reliability scoring for recurring maintenance and escaped-regression feedback.
+
+verification:
+  required_commands:
+    - PATH=".venv/bin:$PATH" make lint
+    - PATH=".venv/bin:$PATH" make test
+    - PATH=".venv/bin:$PATH" make maintenance-daily
+  release_gate_check: agent_skills_framework

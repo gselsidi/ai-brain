@@ -1,0 +1,28 @@
+site_name: Autonomous SDLC Team Knowledge Base
+site_description: Local documentation portal for the autonomous SDLC team framework.
+docs_dir: docs
+site_dir: site
+theme:
+  name: readthedocs
+nav:
+  - Home: index.md
+  - How This Was Built: how_this_was_built.md
+  - Framework:
+      - Agentic SDLC: agentic_sdlc.md
+      - Spec-Driven Workflow: spec_driven_workflow.md
+      - Agent Roles And Plumbing: agent_plumbing.md
+      - Agent Skills Integration: agent_skills_integration.md
+      - Improvement Mode: improvement_mode.md
+      - Memory: memory.md
+  - Operations:
+      - Maintenance: maintenance.md
+      - Team Reliability: team_reliability.md
+      - Automation Prompts: automation_prompts.md
+      - Codex In GitHub Actions: codex_github_actions.md
+  - Review:
+      - Security: security.md
+      - Security Review: security_review.md
+      - PR Review: pr_review.md
+      - Ready To Discuss: ready_to_discuss.md
+plugins:
+  - search

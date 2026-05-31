@@ -1,0 +1,64 @@
+name: Codex Agent Maintenance Placeholder
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_codex:
+        description: "Type RUN_CODEX to execute the Codex Action. Anything else is a dry run."
+        required: false
+        default: "dry-run"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  dry-run:
+    if: ${{ github.event.inputs.run_codex != 'RUN_CODEX' || vars.ENABLE_CODEX_ACTION != 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Explain placeholder
+        run: |
+          echo "Codex CI placeholder only."
+          echo "To run the Codex Action intentionally:"
+          echo "1. Add OPENAI_API_KEY as a GitHub Actions secret."
+          echo "2. Set repository variable ENABLE_CODEX_ACTION=true."
+          echo "3. Manually dispatch this workflow with run_codex=RUN_CODEX."
+          echo "This guard prevents accidental token usage."
+
+  codex-maintenance:
+    if: ${{ github.event.inputs.run_codex == 'RUN_CODEX' && vars.ENABLE_CODEX_ACTION == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install project dependencies before Codex sandbox
+        run: python -m pip install -e ".[dev]"
+
+      - name: Prepare report directory
+        run: mkdir -p state/reports
+
+      - name: Run Codex maintenance agent
+        id: run_codex
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          prompt-file: .github/prompts/codex-maintenance.md
+          sandbox: workspace-write
+          safety-strategy: drop-sudo
+          output-file: state/reports/codex-maintenance-final.md
+
+      - name: Upload Codex maintenance output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: codex-maintenance-output
+          path: |
+            state/reports/codex-maintenance-final.md
+            state/reports/*.json
+            state/reports/*.html
+          if-no-files-found: ignore
