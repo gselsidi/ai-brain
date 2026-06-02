@@ -15,6 +15,7 @@ Daily:
 - run framework drift checks
 - run harness quality
 - run improvement queue strict scoring and inspect ranked next items
+- run repo-scoped conversation feedback when the local cadence is due
 - generate the source-backed combined report
 - run team reliability scoring
 - run release gate
@@ -23,6 +24,7 @@ Weekly:
 - run security review
 - inspect stale assumptions and TODOs
 - inspect non-blocking improvement queue debt for scheduled repair
+- inspect conversation feedback patch briefs for repeated user friction
 - verify memory and state still match current reports
 
 If anything fails, write state/reports/maintenance_report.json and ask

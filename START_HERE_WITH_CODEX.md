@@ -38,6 +38,9 @@ Workflow:
 
    PATH=".venv/bin:$PATH" make maintenance-daily
 
+   Use `PATH=".venv/bin:$PATH" make conversation-feedback` when you want an
+   immediate repo-scoped scan of local Codex session friction for this project.
+
 9. If a gate fails, preserve evidence, route to the owning role, repair the
    smallest safe slice, add regression evidence, and rerun release evidence.
 10. Update local memory/PROJECT_MEMORY.md and state/sdlc_state.json when

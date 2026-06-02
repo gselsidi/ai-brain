@@ -19,6 +19,7 @@ REPORT_FILES = {
     "Framework Drift": "implementation-drift_report.json",
     "Harness Quality": "harness-quality_report.json",
     "Improvement Queue": "improvement-queue_report.json",
+    "Conversation Feedback": "conversation-feedback_report.json",
     "Team Reliability": "team-reliability_report.json",
     "Hardening": "improvement_hardening_report.json",
     "Requirements Audit": "requirements_audit_report.json",
@@ -124,6 +125,44 @@ def render_improvement_queue(report: dict[str, Any] | None) -> str:
             + "</tbody></table>"
         )
     return summary + queue_html
+
+
+def render_conversation_feedback(report: dict[str, Any] | None) -> str:
+    if not report:
+        return '<p class="muted">No conversation feedback report found. Run <code>make conversation-feedback</code>.</p>'
+
+    rows = []
+    for item in report.get("findings", [])[:8]:
+        if not isinstance(item, dict):
+            continue
+        rows.append(
+            "<tr>"
+            f"<td><code>{escape(str(item.get('category', '')))}</code></td>"
+            f"<td>{escape(str(item.get('severity', '')))}</td>"
+            f"<td>{escape(str(item.get('count', '')))}</td>"
+            f"<td>{escape(str(item.get('summary', '')))}</td>"
+            "</tr>"
+        )
+    findings_html = (
+        '<p class="muted">No recurring repo-scoped friction findings.</p>'
+        if not rows
+        else (
+            "<table><thead><tr><th>Category</th><th>Severity</th><th>Count</th><th>Summary</th></tr></thead><tbody>"
+            + "".join(rows)
+            + "</tbody></table>"
+        )
+    )
+    return (
+        kv_table(
+            {
+                "status": report.get("status"),
+                "summary": report.get("summary"),
+                "scanned_sessions": report.get("scanned_session_count"),
+                "patch_brief": report.get("patch_brief"),
+            }
+        )
+        + findings_html
+    )
 
 
 def test_counts(tests: list[dict[str, Any]]) -> dict[str, int]:
@@ -256,6 +295,7 @@ def render_report(report_dir: Path, output: Path) -> Path:
     reliability = reports["Team Reliability"] or {}
     drift = reports["Framework Drift"] or {}
     improvement_queue = reports["Improvement Queue"]
+    conversation_feedback = reports["Conversation Feedback"]
     hardening = reports["Hardening"] or {}
     audit = reports["Requirements Audit"] or {}
     test_run = reports["Regression Tests"]
@@ -404,6 +444,7 @@ def render_report(report_dir: Path, output: Path) -> Path:
     {section("Regression Test Evidence", render_test_evidence(test_run))}
     {section("Release Gate Checks", render_checks(release.get("checks", {})))}
     {section("Improvement Queue", render_improvement_queue(improvement_queue))}
+    {section("Conversation Feedback", render_conversation_feedback(conversation_feedback))}
     <div class="two-col">
       {section("Framework Drift Summary", kv_table({"status": drift.get("status"), "summary": drift.get("summary"), "generated_at": drift.get("generated_at")}))}
       {section("Team Reliability Summary", kv_table({"status": reliability.get("status"), "score": reliability.get("team_reliability_score"), "classification": reliability.get("run_classification"), "summary": reliability.get("summary")}))}

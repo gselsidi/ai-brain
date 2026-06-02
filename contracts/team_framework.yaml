@@ -42,6 +42,7 @@ required_artifacts:
   - tools/validate_harness_quality.py
   - tools/generate_combined_report_html.py
   - tools/run_improvement_queue.py
+  - tools/analyze_conversation_feedback.py
   - tools/score_team_reliability.py
   - tools/run_release_gate.py
   - docs/agent_plumbing.md
@@ -80,6 +81,7 @@ required_document_markers:
       - memory/PROJECT_MEMORY.md
       - specs/prompt_spec_template.md
       - make maintenance-daily
+      - conversation-feedback
   - path: docs/agent_plumbing.md
     markers:
       - Specialist Behavior
@@ -105,6 +107,7 @@ required_document_markers:
     markers:
       - framework drift
       - improvement queue
+      - conversation feedback
       - team reliability
       - release gate
   - path: docs/improvement_mode.md

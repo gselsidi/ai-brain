@@ -19,9 +19,10 @@ still write evidence for Codex to inspect.
 
 ```text
 Use maintenance_heartbeat. Run lint, tests, framework drift, harness quality,
-combined report generation, team reliability scoring, and release gate. If
-anything fails, update local state/sdlc_state.json when present and ask
-self_healer to repair.
+repo-scoped conversation feedback when due, combined report generation, team
+reliability scoring, and release gate. If anything fails, update local
+state/sdlc_state.json when present and ask self_healer to repair. Set
+AI_BRAIN_FEEDBACK_CADENCE_DAYS to choose the feedback interval.
 ```
 
 ## Weekly Review

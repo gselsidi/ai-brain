@@ -12,6 +12,7 @@ would run.
   and tests
 - prompt spec workflow checks through framework drift and harness quality
 - improvement queue scan with strict score and ranked next items
+- repo-scoped conversation feedback when the local cadence is due
 - combined report generation
 - harness quality validation
 - team reliability scoring
@@ -49,6 +50,37 @@ artifacts.
 The release gate fails if the queue finds blocker-severity debt or the strict
 score drops below its threshold. Non-blocking findings remain visible in the
 combined report so maintenance can chip away over time.
+
+## Conversation Feedback
+
+`make conversation-feedback` writes
+`state/reports/conversation-feedback_report.json` and
+`state/reports/conversation-feedback_patch_brief.md`.
+
+This is the repo-scoped version of the "learn from repeated chats" idea. It does
+not read every Codex chat on the computer. It only considers local session files
+that mention the configured project root, strips repeated instruction
+boilerplate such as `AGENTS.md`, redacts common secret/token patterns, and
+summarizes recurring friction. The output is a patch brief for the normal SDLC
+loop, not an automatic rewrite of public source from private chat data.
+
+Run it for the current checkout:
+
+```bash
+PATH=".venv/bin:$PATH" make conversation-feedback
+```
+
+Run it for a deployed project:
+
+```bash
+AI_BRAIN_TARGET_ROOT=/path/to/project \
+CODEX_SESSION_DIR="$HOME/.codex/sessions" \
+AI_BRAIN_FEEDBACK_CADENCE_DAYS=7 \
+PATH=".venv/bin:$PATH" make conversation-feedback-due
+```
+
+Use `AI_BRAIN_PROJECT_TOKEN` only when the session logs do not contain a stable
+absolute project path. Keep that token repo-specific, never personal.
 
 ## Team Reliability
 
@@ -103,6 +135,7 @@ make lint
 make framework-check
 make framework-drift
 make improvement-queue
+make conversation-feedback
 make harness-check
 make test
 make team-reliability

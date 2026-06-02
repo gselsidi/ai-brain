@@ -4,7 +4,7 @@ HOST ?= 127.0.0.1
 KB_PORT ?= 8001
 KB_URL ?= http://localhost:$(KB_PORT)
 
-.PHONY: setup build-all docs test lint framework-check framework-drift implementation-drift improvement-queue harness-check team-reliability release-gate report-html maintenance-daily
+.PHONY: setup build-all docs test lint framework-check framework-drift implementation-drift improvement-queue conversation-feedback conversation-feedback-due harness-check team-reliability release-gate report-html maintenance-daily
 
 setup:
 	$(PYTHON) -m venv $(VENV)
@@ -35,6 +35,12 @@ implementation-drift: framework-drift
 improvement-queue:
 	python tools/run_improvement_queue.py
 
+conversation-feedback:
+	python tools/analyze_conversation_feedback.py --force
+
+conversation-feedback-due:
+	python tools/analyze_conversation_feedback.py
+
 harness-check:
 	python tools/validate_harness_quality.py
 
@@ -54,6 +60,7 @@ maintenance-daily:
 	$(MAKE) test
 	$(MAKE) framework-drift
 	$(MAKE) improvement-queue
+	$(MAKE) conversation-feedback-due
 	$(MAKE) report-html
 	$(MAKE) harness-check
 	$(MAKE) team-reliability

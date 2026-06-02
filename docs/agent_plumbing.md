@@ -91,6 +91,7 @@ implementation, update the spec or document the boundary before continuing.
 | Framework drift | `make framework-drift` | `state/reports/implementation-drift_report.json` |
 | Harness quality | `make harness-check` | `state/reports/harness-quality_report.json` |
 | Improvement Queue | `make improvement-queue` | `state/reports/improvement-queue_report.json` |
+| Conversation feedback | `make conversation-feedback` | `state/reports/conversation-feedback_report.json` |
 | Team reliability | `make team-reliability` | `state/reports/team-reliability_report.json` |
 | Release gate | `make release-gate` | `state/reports/release-gate_report.json` |
 | Combined report | `make report-html` | `state/reports/combined_report.html` |

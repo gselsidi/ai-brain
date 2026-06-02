@@ -19,7 +19,8 @@ evidence. It does not include a built-in product runtime.
   lifecycle taxonomy maps to this framework.
 - [Improvement Mode](improvement_mode.md): bounded hardening workflow plus the
   improvement queue.
-- [Maintenance](maintenance.md): recurring checks and release evidence.
+- [Maintenance](maintenance.md): recurring checks, repo-scoped conversation
+  feedback, and release evidence.
 - [Team Reliability](team_reliability.md): reliability score and feedback loop.
 - [Memory](memory.md): durable context rules.
 
@@ -51,3 +52,4 @@ team method and evidence loop.
 - `memory/PROJECT_MEMORY.template.md`
 - `state/sdlc_state.template.json`
 - `state/reports/improvement-queue_report.json`
+- `state/reports/conversation-feedback_report.json`

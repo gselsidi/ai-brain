@@ -1,8 +1,13 @@
 # Autonomous SDLC Team Framework
 
-Reusable, LLM-provider-neutral framework for an autonomous full-stack SDLC team.
-It can be run from Codex, adapted for Claude, or wired into another agent
-runtime that can read the instructions and execute the local checks.
+Drop this repo into a codebase, point your agent at `AGENTS.md`, and start using
+the SDLC loop right away. It gives an LLM an autonomous full-stack SDLC team
+harness: role prompts, prompt specs, local memory templates, deterministic
+checks, evidence reports, and release gates.
+
+It is LLM-provider-neutral. The checked-in agent files are Codex-shaped, but
+the workflow can be adapted for Claude or any runtime that can read project
+instructions and run shell commands.
 
 This repo contains the team methodology: specialist role prompts, durable
 memory, planning checkpoints, improvement hardening, requirements audit,
@@ -12,7 +17,32 @@ It has no default product runtime and no required model vendor. Bring your own
 codebase, product surface, tests, domain rules, and provider/runtime adapter;
 use this framework to run the delivery loop.
 
-## What Is Here
+## Drop-In Adoption
+
+1. Copy this framework into your project, or keep it as a harness repo next to
+   the project you want it to run.
+2. Tell your coding agent to read `AGENTS.md` before doing project work.
+3. Keep `specs/prompt_spec_template.md`; local prompt specs created during work
+   are ignored by default.
+4. Copy `memory/PROJECT_MEMORY.template.md` to `memory/PROJECT_MEMORY.md` only
+   if you want local durable memory.
+5. Run the local checks:
+
+```bash
+./scripts/build_and_launch.sh
+```
+
+That command creates or updates `.venv`, installs development dependencies,
+runs the framework evidence loop, and opens the local docs at
+<http://localhost:8001>.
+
+If the default docs port is busy:
+
+```bash
+KB_PORT=8012 ./scripts/build_and_launch.sh
+```
+
+## Core Files
 
 - `AGENTS.md`: project-wide operating protocol and definition of done.
 - `.codex/agents/`: specialist role prompts for the autonomous SDLC team. These
@@ -58,40 +88,7 @@ This public repo intentionally tracks only `specs/prompt_spec_template.md`.
 Adopter-specific prompt specs are ignored by git so teams can drop the framework
 into their own work without inheriting this repo's build notes.
 
-## Generated Outputs
-
-- `site/`: generated MkDocs static site output. It is built from `docs/` and
-  `mkdocs.yml`, ignored by git, safe to delete locally, and recreated by
-  `make docs` or `mkdocs build --strict --clean`.
-- `state/reports/`: generated evidence reports from the framework gates. The
-  source of truth is the contracts, tools, tests, docs, memory, and role
-  prompts that produce these reports.
-- `memory/PROJECT_MEMORY.md` and `state/sdlc_state.json`: local workspace files
-  copied from the templates when needed. They are ignored by git so private
-  memory, run status, and adoption details are not published.
-
-## Quick Start
-
-```bash
-./scripts/build_and_launch.sh
-```
-
-Open:
-
-- Knowledge Base: <http://localhost:8001>
-- Combined Report: `state/reports/combined_report.html`
-
-The script creates or updates `.venv`, installs development dependencies, runs
-the full local framework evidence loop, then launches the searchable MkDocs
-knowledge base. Stop it with `Ctrl-C`.
-
-If the default knowledge-base port is busy:
-
-```bash
-KB_PORT=8012 ./scripts/build_and_launch.sh
-```
-
-## Useful Commands
+## Checks
 
 ```bash
 make setup
@@ -101,6 +98,7 @@ make lint
 make framework-check
 make framework-drift
 make improvement-queue
+make conversation-feedback
 make harness-check
 make team-reliability
 make release-gate
@@ -108,29 +106,39 @@ make report-html
 make maintenance-daily
 ```
 
-`make improvement-queue` writes a Desloppify-inspired strict score and ranked
-next-item queue for harness maintainability debt. `make report-html` combines
-JSON evidence under `state/reports/` into `state/reports/combined_report.html`.
+The main release check is:
 
-## Adoption
+```bash
+make release-gate
+```
 
-To apply this methodology to another team:
+Generated outputs stay local:
 
-1. Copy or reference `AGENTS.md`, `.codex/agents/`, and the docs that describe
-   the lifecycle. If your provider is not Codex, translate the `.codex/agents/`
-   role prompts into that provider's agent, project-instruction, or subagent
-   format.
-2. Replace `contracts/expected_behavior.md` with the adopting team's product
-   behavior contract.
-3. Keep `specs/prompt_spec_template.md` or replace it with the team's stricter
-   spec template. Local dated specs created during work are ignored by default.
-4. Add target-specific tests and commands to that team's Makefile or CI.
-5. Copy `memory/PROJECT_MEMORY.template.md` to local
-   `memory/PROJECT_MEMORY.md` when you want durable workspace context.
-6. Use provider-native `/goal` or planning when available, then continue through
-   the AI Brain spec, plan, harden, audit, self-heal, and release gates. With
-   Claude, that means Claude can help clarify the goal, but the AI Brain
-   evidence loop still decides whether the work is actually done.
+- `site/`
+- `state/reports/`
+- `memory/PROJECT_MEMORY.md`
+- `state/sdlc_state.json`
+
+Those paths are ignored by git so private memory, run status, and evidence logs
+do not get published by accident.
+
+`make conversation-feedback` is optional and local. It scans Codex session files
+only when they mention the configured project root, strips repeated boilerplate,
+redacts common secret patterns, and writes ignored feedback reports under
+`state/reports/`. `make maintenance-daily` runs the cadence-aware version so a
+deployed project can learn from its own recurring friction without reading every
+chat on the computer.
+
+## Adapting It
+
+For a real product repo, usually you only need to adjust these pieces:
+
+- Replace `contracts/expected_behavior.md` with your product behavior contract.
+- Add your product's test, lint, build, and deploy commands to `Makefile` or CI.
+- Translate `.codex/agents/` into your provider's agent format if you are not
+  using Codex.
+- Keep provider-native `/goal` or planning as input only; the AI Brain spec,
+  audit, self-heal, and release gates still decide whether work is done.
 
 The framework supplies the autonomous SDLC team. The adopting team supplies the
 product.

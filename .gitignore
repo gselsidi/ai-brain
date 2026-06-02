@@ -16,6 +16,7 @@ state/reports/*.json
 state/reports/*.jsonl
 state/reports/*.html
 state/reports/*.log
+state/reports/*.md
 !state/reports/.gitkeep
 state/agent_runs/*
 !state/agent_runs/.gitkeep

@@ -122,6 +122,16 @@ local_unique_capabilities:
       - tools/run_improvement_queue.py
       - state/reports/improvement-queue_report.json
       - tools/run_release_gate.py
+  conversation_feedback:
+    description: >
+      Repo-scoped local conversation feedback loop that filters Codex session
+      data to the configured project root, strips boilerplate, redacts common
+      secret patterns, and emits ignored patch briefs for recurring friction.
+    artifacts:
+      - tools/analyze_conversation_feedback.py
+      - docs/maintenance.md
+      - Makefile
+      - state/reports/conversation-feedback_report.json
 
 lifecycle:
   define:
@@ -269,6 +279,7 @@ lifecycle:
       - state/reports/improvement-queue_report.json
       - state/reports/team-reliability_report.json
       - docs/maintenance.md
+      - state/reports/conversation-feedback_report.json
     combined_rule: >
       A ship decision requires current evidence, clear residual risk, docs that
       match behavior, improvement queue evidence, and release-gate PASS.
@@ -289,11 +300,13 @@ lifecycle:
       - memory/PROJECT_MEMORY.template.md
       - state/sdlc_state.template.json
       - state/reports/team-reliability_history.jsonl
+      - state/reports/conversation-feedback_report.json
       - docs/maintenance.md
       - docs/memory.md
     combined_rule: >
-      Keep memory concise, record durable decisions, score team reliability, and
-      route recurring failures into self-healing.
+      Keep memory concise, record durable decisions, score team reliability,
+      summarize repo-scoped conversation friction on cadence, and route
+      recurring failures into self-healing.
 
 skill_coverage:
   idea-refine:
@@ -379,8 +392,8 @@ skill_coverage:
   ci-cd-and-automation:
     local_status: already_strong
     local_agents: [maintenance_heartbeat, release_gate]
-    local_artifacts: [Makefile, docs/maintenance.md, state/reports/team-reliability_report.json, state/reports/improvement-queue_report.json]
-    gap_closed_by: make maintenance-daily runs the local CI-style gate, improvement queue, and reliability scoring.
+    local_artifacts: [Makefile, docs/maintenance.md, state/reports/team-reliability_report.json, state/reports/improvement-queue_report.json, state/reports/conversation-feedback_report.json]
+    gap_closed_by: make maintenance-daily runs the local CI-style gate, improvement queue, cadence-aware conversation feedback, and reliability scoring.
   deprecation-and-migration:
     local_status: adopted
     local_agents: [docs_drift_guard, interface_contract_architect]

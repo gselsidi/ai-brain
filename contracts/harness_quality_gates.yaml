@@ -20,6 +20,8 @@ required_test_node_fragments:
   - tests/test_team_framework.py::test_goal_command_is_a_define_phase_before_local_specs
   - tests/test_team_framework.py::test_provider_native_goal_adapter_feeds_required_sdlc_loop
   - tests/test_improvement_queue.py::test_improvement_queue_detects_and_prioritizes_blockers
+  - tests/test_conversation_feedback.py::test_conversation_feedback_filters_to_project_and_suggests_patches
+  - tests/test_conversation_feedback.py::test_conversation_feedback_respects_cadence
   - tests/test_team_framework.py::test_framework_drift_validator_passes_for_current_contract
   - tests/test_memory_state.py::test_memory_and_state_templates_describe_generic_team_framework
   - tests/test_memory_state.py::test_release_gate_accepts_state_template_without_local_state
@@ -45,6 +47,7 @@ required_artifacts:
   - tools/validate_harness_quality.py
   - tools/generate_combined_report_html.py
   - tools/run_improvement_queue.py
+  - tools/analyze_conversation_feedback.py
   - tools/score_team_reliability.py
   - tools/run_release_gate.py
   - tests/test_agentic_framework_map.py
@@ -52,6 +55,7 @@ required_artifacts:
   - tests/test_harness_quality_contract.py
   - tests/test_memory_state.py
   - tests/test_improvement_queue.py
+  - tests/test_conversation_feedback.py
   - tests/test_team_framework.py
   - tests/test_team_reliability.py
 required_reports:
@@ -78,6 +82,7 @@ required_artifact_markers:
       - state/sdlc_state.json
       - memory/*.local.md
       - state/*.local.json
+      - state/reports/*.md
   - path: memory/PROJECT_MEMORY.template.md
     markers:
       - Project Memory Template
@@ -182,8 +187,15 @@ required_artifact_markers:
     markers:
       - framework-drift
       - improvement-queue
+      - conversation-feedback
       - team-reliability
       - release-gate
+  - path: tools/analyze_conversation_feedback.py
+    markers:
+      - conversation-feedback
+      - repo_scoped_only
+      - patch_brief
+      - cadence_days
   - path: tools/run_improvement_queue.py
     markers:
       - improvement-queue
@@ -208,6 +220,7 @@ required_artifact_markers:
     markers:
       - framework drift
       - improvement queue
+      - conversation feedback
       - team reliability
       - caught regression
       - escaped regression
