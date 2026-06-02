@@ -19,22 +19,29 @@ use this framework to run the delivery loop.
 
 ## Drop-In Adoption
 
-1. Copy this framework into your project, or keep it as a harness repo next to
-   the project you want it to run.
-2. Tell your coding agent to read `AGENTS.md` before doing project work.
-3. Keep `specs/prompt_spec_template.md`; local prompt specs created during work
-   are ignored by default.
-4. Copy `memory/PROJECT_MEMORY.template.md` to `memory/PROJECT_MEMORY.md` only
-   if you want local durable memory.
-5. Run the local checks:
+1. Drop AI Brain into the repo you want it to run.
+2. Run the initializer:
+
+```bash
+make init-repo
+```
+
+That inspects the checkout and creates ignored local files:
+
+- `memory/PROJECT_MEMORY.md`
+- `state/sdlc_state.json`
+- `state/ai_brain_repo_profile.local.json`
+
+3. Tell your coding agent to read `AGENTS.md` before doing project work.
+4. Run the local checks:
 
 ```bash
 ./scripts/build_and_launch.sh
 ```
 
 That command creates or updates `.venv`, installs development dependencies,
-runs the framework evidence loop, and opens the local docs at
-<http://localhost:8001>.
+runs `make init-repo`, runs the framework evidence loop, and opens the local
+docs at <http://localhost:8001>.
 
 If the default docs port is busy:
 
@@ -50,9 +57,14 @@ KB_PORT=8012 ./scripts/build_and_launch.sh
   provider-neutral and can be ported to Claude or another agent runtime.
 - `contracts/team_framework.yaml`: machine-readable framework contract.
 - `contracts/agentic_framework_map.yaml`: lifecycle skill map.
-- `contracts/expected_behavior.md`: human-readable behavior contract.
+- `contracts/expected_behavior.md`: human-readable AI Brain framework behavior
+  contract.
 - `memory/PROJECT_MEMORY.template.md`: safe template for local durable memory.
+- `memory/PROJECT_MEMORY.md`: ignored local memory generated and updated by
+  `make init-repo` and the SDLC loop.
 - `state/sdlc_state.template.json`: safe template for local lifecycle state.
+- `state/ai_brain_repo_profile.local.json`: ignored local repo profile generated
+  from package metadata, source markers, git metadata, and common commands.
 - `tools/`: deterministic validation, reliability, release, and report tooling.
 - `tests/`: framework regression tests with source-backed reporting.
 - `docs/`: adoption and operation guide.
@@ -92,6 +104,7 @@ into their own work without inheriting this repo's build notes.
 
 ```bash
 make setup
+make init-repo
 make build-all
 make test
 make lint
@@ -116,6 +129,7 @@ Generated outputs stay local:
 
 - `site/`
 - `state/reports/`
+- `state/ai_brain_repo_profile.local.json`
 - `memory/PROJECT_MEMORY.md`
 - `state/sdlc_state.json`
 
@@ -129,16 +143,23 @@ redacts common secret patterns, and writes ignored feedback reports under
 deployed project can learn from its own recurring friction without reading every
 chat on the computer.
 
-## Adapting It
+## Repo Initialization
 
-For a real product repo, usually you only need to adjust these pieces:
+You should not need to manually copy the memory template, replace the tracked
+contracts, or hand-edit this Makefile just to start. `make init-repo` discovers
+the target repo and writes the local files AI Brain needs.
 
-- Replace `contracts/expected_behavior.md` with your product behavior contract.
-- Add your product's test, lint, build, and deploy commands to `Makefile` or CI.
-- Translate `.codex/agents/` into your provider's agent format if you are not
-  using Codex.
-- Keep provider-native `/goal` or planning as input only; the AI Brain spec,
-  audit, self-heal, and release gates still decide whether work is done.
+It looks for common project signals such as `package.json`, `pyproject.toml`,
+`Cargo.toml`, `go.mod`, source folders, tests, git branch, and git remote. It
+then records detected test, lint, build, typecheck, dev, start, and deploy
+commands where it can find them.
+
+Contracts describe AI Brain itself: roles, gates, memory rules, prompt specs,
+checks, and release behavior. They are not populated from the product repo.
+Product-repo facts live in local memory, local state, the repo profile, and the
+current prompt spec. Provider-native `/goal` or planning can still clarify the
+request, but AI Brain's spec, audit, self-heal, and release gates decide whether
+work is done.
 
 The framework supplies the autonomous SDLC team. The adopting team supplies the
 product.

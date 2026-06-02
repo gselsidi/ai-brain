@@ -2,10 +2,11 @@
 
 This file is the safe, tracked template for local project memory.
 
-Copy it to `memory/PROJECT_MEMORY.md` in a working checkout when you want the
-agent team to keep durable local context. The real `memory/PROJECT_MEMORY.md`
-file is intentionally ignored by git so workspace notes, report summaries, and
-local adoption details do not get published.
+Run `make init-repo` in a working checkout when you want the agent team to keep
+durable local context. The initializer creates or updates the real
+`memory/PROJECT_MEMORY.md` file, which is intentionally ignored by git so
+workspace notes, report summaries, and local adoption details do not get
+published.
 
 Keep local memory concise, factual, and high-signal. Do not store secrets,
 credentials, private personal data, speculative scratch notes, or large logs.
@@ -91,6 +92,8 @@ PATH=".venv/bin:$PATH" make maintenance-daily
   conclusions.
 - Local memory and state files are ignored by git and should stay private to
   the checkout.
+- `make init-repo` owns a generated repo-profile section in local memory and
+  preserves human notes outside that section.
 
 ## Memory Maintenance Rules
 

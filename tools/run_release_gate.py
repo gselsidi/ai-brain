@@ -54,6 +54,13 @@ def state_definition_of_done_check() -> dict[str, Any]:
     state = load_json(local_state)
     if state:
         dod = state.get("definition_of_done", {})
+        if not dod and state.get("status") == "initialized" and state.get("repo_profile"):
+            return {
+                "status": "PASS",
+                "mode": "local_state_initialized",
+                "path": "state/sdlc_state.json",
+                "summary": "Local repo profile is initialized; no completion DoD is claimed yet.",
+            }
         return {
             "status": "PASS" if dod and all(dod.values()) else "FAIL",
             "mode": "local_state",

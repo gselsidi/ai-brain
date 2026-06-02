@@ -9,19 +9,24 @@ maintenance heartbeat, PR reviewer, and release gate.
 
 ## What It Is Not
 
-It is not a default product implementation. Adopting teams bring the product,
-surface contracts, tests, deployment commands, and domain checks.
+It is not a default product implementation. Adopting teams bring the product.
+AI Brain initializes local product context from the repo instead of asking the
+team to rewrite framework files by hand.
 
 ## How To Adopt It
 
-Start by copying the role prompts and `AGENTS.md` into a target codebase. Add the
-target team's behavior contracts and Make targets, then keep the evidence loop:
-test report, framework drift, harness quality, reliability scoring, requirements
-audit, and release gate.
+Start by dropping AI Brain into a target codebase and running:
 
-Keep `specs/prompt_spec_template.md` or replace it with the target team's
-standard. Each project-work prompt should create a durable spec before
-implementation so planning, ownership, and verification are auditable.
+```bash
+make init-repo
+```
+
+That creates ignored local memory, lifecycle state, and a repo profile from the
+checkout. Then keep the evidence loop: test report, framework drift, harness
+quality, reliability scoring, requirements audit, and release gate.
+
+Each project-work prompt should create a durable spec before implementation so
+planning, ownership, and verification are auditable.
 Use provider-native `/goal` before `/spec` when the active runtime supports it,
 but treat it as clarification for the AI Brain SDLC loop, not a replacement for
 the loop. When native `/goal` is unavailable, use AI Brain's own clarification

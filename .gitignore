@@ -11,6 +11,7 @@ specs/*.md
 memory/PROJECT_MEMORY.md
 memory/*.local.md
 state/sdlc_state.json
+state/ai_brain_repo_profile.local.json
 state/*.local.json
 state/reports/*.json
 state/reports/*.jsonl

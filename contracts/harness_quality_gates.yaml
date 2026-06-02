@@ -22,9 +22,12 @@ required_test_node_fragments:
   - tests/test_improvement_queue.py::test_improvement_queue_detects_and_prioritizes_blockers
   - tests/test_conversation_feedback.py::test_conversation_feedback_filters_to_project_and_suggests_patches
   - tests/test_conversation_feedback.py::test_conversation_feedback_respects_cadence
+  - tests/test_repo_init.py::test_repo_init_detects_product_commands_and_writes_local_files
+  - tests/test_repo_init.py::test_public_docs_point_to_init_instead_of_manual_template_copying
   - tests/test_team_framework.py::test_framework_drift_validator_passes_for_current_contract
   - tests/test_memory_state.py::test_memory_and_state_templates_describe_generic_team_framework
   - tests/test_memory_state.py::test_release_gate_accepts_state_template_without_local_state
+  - tests/test_memory_state.py::test_release_gate_accepts_initialized_repo_profile_state
   - tests/test_memory_state.py::test_tracked_source_does_not_publish_workspace_identifiers
   - tests/test_team_reliability.py::test_team_reliability_scores_healthy_evidence_without_penalty
   - tests/test_team_reliability.py::test_team_reliability_credits_regressions_caught_by_tests
@@ -48,6 +51,7 @@ required_artifacts:
   - tools/generate_combined_report_html.py
   - tools/run_improvement_queue.py
   - tools/analyze_conversation_feedback.py
+  - tools/init_repo_profile.py
   - tools/score_team_reliability.py
   - tools/run_release_gate.py
   - tests/test_agentic_framework_map.py
@@ -83,12 +87,14 @@ required_artifact_markers:
       - memory/*.local.md
       - state/*.local.json
       - state/reports/*.md
+      - state/ai_brain_repo_profile.local.json
   - path: memory/PROJECT_MEMORY.template.md
     markers:
       - Project Memory Template
       - no default product runtime
       - provider-native
       - Local memory and state files are ignored by git
+      - make init-repo
   - path: state/sdlc_state.template.json
     markers:
       - autonomous-sdlc-team
@@ -111,6 +117,7 @@ required_artifact_markers:
       - provider-native
       - prompt spec
       - release gate
+      - make init-repo
   - path: .codex/agents/sdlc_orchestrator.toml
     markers:
       - autonomous full-stack SDLC team
@@ -118,6 +125,7 @@ required_artifact_markers:
       - /goal
       - provider-native
       - prompt spec
+      - make init-repo
       - release evidence
   - path: .codex/agents/product_context_analyst.toml
     markers:
@@ -185,11 +193,17 @@ required_artifact_markers:
       - source-backed combined report
   - path: Makefile
     markers:
+      - init-repo
       - framework-drift
       - improvement-queue
       - conversation-feedback
       - team-reliability
       - release-gate
+  - path: tools/init_repo_profile.py
+    markers:
+      - ai-brain-repo-init
+      - PROJECT_MEMORY.md
+      - detected_commands
   - path: tools/analyze_conversation_feedback.py
     markers:
       - conversation-feedback
@@ -252,6 +266,7 @@ required_artifact_markers:
       - Completion Audit
   - path: scripts/build_and_launch.sh
     markers:
+      - make init-repo
       - make maintenance-daily
       - mkdocs serve
       - Knowledge
@@ -260,3 +275,4 @@ required_artifact_markers:
       - autonomous full-stack SDLC team
       - adoption
       - improvement queue
+      - init-repo

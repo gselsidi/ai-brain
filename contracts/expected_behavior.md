@@ -3,14 +3,16 @@
 This contract describes the reusable autonomous full-stack SDLC team framework.
 It has no default product runtime and does not ship a default application
 surface.
-Adopting teams bring their own codebase, product interfaces, tests, and domain
-rules; this repo provides the team operating model and evidence loop.
+Adopting teams bring their own codebase. `make init-repo` inspects that checkout
+and writes ignored local memory, lifecycle state, and repo-profile facts. This
+repo provides the generic team operating model and evidence loop.
 
 ## Mission
 
 The framework should help a team run repeatable autonomous delivery:
 
 - recover context from durable memory
+- initialize local repo context with `make init-repo`
 - prefer provider-native `/goal` or planning input when the active runtime
   supports it, otherwise clarify inside AI Brain, then always continue through
   AI Brain's SDLC loop
@@ -41,7 +43,9 @@ The framework should help a team run repeatable autonomous delivery:
 - `state/sdlc_state.template.json`: tracked safe template for local lifecycle
   state and report pointers.
 - `memory/PROJECT_MEMORY.md` and `state/sdlc_state.json`: ignored local
-  workspace files copied from the templates when needed.
+  workspace files generated or updated by `make init-repo`.
+- `state/ai_brain_repo_profile.local.json`: ignored machine-readable profile of
+  the target checkout.
 - `/goal`: provider-aware DEFINE-phase command. It can use provider-native goal
   or planning input when available, or AI Brain's own clarification step when
   not; either way it records outcome, success criteria, non-goals, constraints,
@@ -119,13 +123,18 @@ The expected specialist roles are:
 ## Adoption Boundary
 
 This framework intentionally does not include a default product implementation.
-When another team adopts it, they supply:
+When another team adopts it, the product already lives in the target repo. AI
+Brain should infer local context from that repo instead of requiring manual
+replacement of generic framework files.
+
+The tracked files under `contracts/` describe AI Brain itself: roles, gates,
+memory rules, prompt specs, checks, and release behavior. They are not populated
+from the product repo during normal use.
 
 - product source code
-- product-specific contract files
-- target-specific test suites
-- runtime or deployment commands
-- domain-specific invariant checks
-- team-specific memory entries
+- detectable package and source metadata
+- test, lint, build, and deployment commands where the repo exposes them
+- domain-specific invariant checks where the repo exposes them
+- human clarification when the repo does not contain enough signal
 
 The framework supplies the autonomous SDLC team, not the target product.

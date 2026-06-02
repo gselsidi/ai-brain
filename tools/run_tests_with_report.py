@@ -22,6 +22,7 @@ SECTION_BY_FILE = {
     "tests/test_health.py": "Team Framework Tests",
     "tests/test_improvement_queue.py": "Harness Quality Tests",
     "tests/test_memory_state.py": "Memory And State Tests",
+    "tests/test_repo_init.py": "Memory And State Tests",
     "tests/test_team_framework.py": "Team Framework Tests",
     "tests/test_team_reliability.py": "Team Reliability Tests",
 }

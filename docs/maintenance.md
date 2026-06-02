@@ -6,6 +6,7 @@ would run.
 ## Daily
 
 - lint
+- repo initialization through `make init-repo`
 - framework map validation
 - source-backed regression tests
 - framework drift check across role prompts, contracts, docs, memory, reports,
@@ -131,6 +132,7 @@ If maintenance fails:
 ```bash
 ./scripts/build_and_launch.sh
 source .venv/bin/activate
+make init-repo
 make lint
 make framework-check
 make framework-drift

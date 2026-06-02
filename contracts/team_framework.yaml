@@ -43,6 +43,7 @@ required_artifacts:
   - tools/generate_combined_report_html.py
   - tools/run_improvement_queue.py
   - tools/analyze_conversation_feedback.py
+  - tools/init_repo_profile.py
   - tools/score_team_reliability.py
   - tools/run_release_gate.py
   - docs/agent_plumbing.md
@@ -67,6 +68,7 @@ required_document_markers:
       - provider-native
       - prompt spec
       - release gate
+      - make init-repo
   - path: README.md
     markers:
       - autonomous full-stack SDLC team
@@ -75,10 +77,12 @@ required_document_markers:
       - /goal
       - provider-native
       - Prompt Specs
+      - init-repo
   - path: START_HERE_WITH_CODEX.md
     markers:
       - autonomous full-stack SDLC team
       - memory/PROJECT_MEMORY.md
+      - ai_brain_repo_profile.local.json
       - specs/prompt_spec_template.md
       - make maintenance-daily
       - conversation-feedback
@@ -90,6 +94,7 @@ required_document_markers:
       - Memory And State
       - Prompt Specs
       - no built-in product runtime
+      - init-repo
   - path: docs/how_this_was_built.md
     markers:
       - How This Was Built

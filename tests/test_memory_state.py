@@ -63,6 +63,34 @@ def test_release_gate_accepts_state_template_without_local_state(
     assert check["path"] == "state/sdlc_state.template.json"
 
 
+def test_release_gate_accepts_initialized_repo_profile_state(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    state_dir = tmp_path / "state"
+    state_dir.mkdir()
+    (state_dir / "sdlc_state.json").write_text(
+        json.dumps(
+            {
+                "project": "sample-product",
+                "status": "initialized",
+                "repo_profile": {
+                    "profile_path": "state/ai_brain_repo_profile.local.json",
+                    "detected_commands": [{"purpose": "test", "command": "npm run test"}],
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr(run_release_gate, "ROOT", tmp_path)
+
+    check = run_release_gate.state_definition_of_done_check()
+
+    assert check["status"] == "PASS"
+    assert check["mode"] == "local_state_initialized"
+
+
 def test_tracked_source_does_not_publish_workspace_identifiers() -> None:
     tracked_files = subprocess.check_output(
         ["git", "ls-files"],

@@ -6,6 +6,10 @@ The framework provides role prompts, durable memory, planning, hardening,
 self-healing, requirements audit, maintenance, reliability scoring, and release
 evidence. It does not include a built-in product runtime.
 
+Run `make init-repo` after dropping AI Brain into a codebase. The initializer
+detects repo metadata and writes ignored local memory, state, and repo-profile
+files.
+
 ## Start Here
 
 - [Agentic SDLC](agentic_sdlc.md): lifecycle loop and gates.
@@ -26,8 +30,9 @@ evidence. It does not include a built-in product runtime.
 
 ## Adoption
 
-Bring your target codebase and product tests. Keep this repo focused on the
-team method and evidence loop.
+Bring your target codebase. AI Brain initializes local context from the checkout
+instead of asking you to copy memory templates or replace generic contracts by
+hand.
 
 ## Local URLs
 
@@ -50,6 +55,8 @@ team method and evidence loop.
 - `contracts/agentic_framework_map.yaml`
 - `contracts/expected_behavior.md`
 - `memory/PROJECT_MEMORY.template.md`
+- `memory/PROJECT_MEMORY.md`
 - `state/sdlc_state.template.json`
+- `state/ai_brain_repo_profile.local.json`
 - `state/reports/improvement-queue_report.json`
 - `state/reports/conversation-feedback_report.json`

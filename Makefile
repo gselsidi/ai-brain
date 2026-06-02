@@ -4,13 +4,16 @@ HOST ?= 127.0.0.1
 KB_PORT ?= 8001
 KB_URL ?= http://localhost:$(KB_PORT)
 
-.PHONY: setup build-all docs test lint framework-check framework-drift implementation-drift improvement-queue conversation-feedback conversation-feedback-due harness-check team-reliability release-gate report-html maintenance-daily
+.PHONY: setup init-repo build-all docs test lint framework-check framework-drift implementation-drift improvement-queue conversation-feedback conversation-feedback-due harness-check team-reliability release-gate report-html maintenance-daily
 
 setup:
 	$(PYTHON) -m venv $(VENV)
 	$(VENV)/bin/python -m pip install --upgrade pip
 	$(VENV)/bin/python -m pip install -e ".[dev]"
 	@echo "Ready. Run: source $(VENV)/bin/activate"
+
+init-repo:
+	python tools/init_repo_profile.py
 
 build-all: lint framework-check test framework-drift improvement-queue report-html harness-check team-reliability release-gate
 	$(MAKE) report-html
@@ -55,6 +58,7 @@ report-html:
 
 maintenance-daily:
 	mkdir -p state/reports
+	$(MAKE) init-repo
 	$(MAKE) lint
 	$(MAKE) framework-check
 	$(MAKE) test

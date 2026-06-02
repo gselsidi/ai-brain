@@ -67,6 +67,16 @@ local_unique_capabilities:
       - state/sdlc_state.template.json
       - docs/memory.md
       - .gitignore
+  repo_initialization:
+    description: >
+      Drop-in initializer that inspects the target checkout and writes ignored
+      local memory, lifecycle state, and repo profile.
+    artifacts:
+      - tools/init_repo_profile.py
+      - contracts/expected_behavior.md
+      - memory/PROJECT_MEMORY.template.md
+      - docs/memory.md
+      - README.md
   evidence_plumbing:
     description: Deterministic validation and human-readable reports proving the team process is real.
     artifacts:
@@ -143,6 +153,7 @@ lifecycle:
       - using-agent-skills
     local_phases:
       - requirements_intake
+      - repo_initialization
       - goal_clarification
       - prompt_spec
       - context_recovery
@@ -154,15 +165,17 @@ lifecycle:
       - AGENTS.md
       - memory/PROJECT_MEMORY.template.md
       - contracts/expected_behavior.md
+      - tools/init_repo_profile.py
       - specs/prompt_spec_template.md
       - docs/spec_driven_workflow.md
     combined_rule: >
-      Recover context, use provider-native /goal input when available or AI
-      Brain's own clarification when unavailable, clarify intent, success
-      criteria, non-goals, and constraints, capture acceptance criteria in a
-      durable prompt spec, and identify which team roles and gates apply before
-      changing a project. Provider /goal feeds the SDLC loop; it does not
-      replace it.
+      Initialize local repo context with make init-repo when needed, recover
+      generated memory/state/profile facts, use provider-native /goal input when
+      available or AI Brain's own clarification when unavailable, clarify
+      intent, success criteria, non-goals, and constraints, capture acceptance
+      criteria in a durable prompt spec, and identify which team roles and gates
+      apply before changing a project. Provider /goal feeds the SDLC loop; it
+      does not replace it.
   plan:
     upstream_commands: [/plan]
     upstream_skills:

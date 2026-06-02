@@ -23,6 +23,9 @@ export PATH="${ROOT_DIR}/${VENV_DIR}/bin:${PATH}"
 export HOST
 export KB_PORT
 
+echo "Initializing local AI Brain repo profile..."
+make init-repo
+
 echo "Running full local framework evidence loop..."
 make maintenance-daily
 
