@@ -44,6 +44,9 @@ required_artifacts:
   - tools/run_improvement_queue.py
   - tools/analyze_conversation_feedback.py
   - tools/init_repo_profile.py
+  - tools/manage_repo_work_spec.py
+  - tools/run_target_commands.py
+  - tools/check_target_drift.py
   - tools/score_team_reliability.py
   - tools/run_release_gate.py
   - docs/agent_plumbing.md
@@ -86,6 +89,7 @@ required_document_markers:
       - specs/prompt_spec_template.md
       - make maintenance-daily
       - conversation-feedback
+      - target-check
   - path: docs/agent_plumbing.md
     markers:
       - Specialist Behavior
@@ -94,6 +98,7 @@ required_document_markers:
       - Memory And State
       - Prompt Specs
       - no built-in product runtime
+      - target-drift
       - init-repo
   - path: docs/how_this_was_built.md
     markers:
@@ -108,11 +113,13 @@ required_document_markers:
       - delivery_planner
       - sdlc_orchestrator
       - specs/YYYY-MM-DD_short_slug.md
+      - specs/work
   - path: docs/maintenance.md
     markers:
       - framework drift
       - improvement queue
       - conversation feedback
+      - target repo
       - team reliability
       - release gate
   - path: docs/improvement_mode.md

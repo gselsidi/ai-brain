@@ -9,6 +9,7 @@ required_test_sections:
   - Harness Quality Tests
   - Memory And State Tests
   - Report Rendering Tests
+  - Target Repo Workflow Tests
   - Team Framework Tests
   - Team Reliability Tests
 required_test_node_fragments:
@@ -24,6 +25,10 @@ required_test_node_fragments:
   - tests/test_conversation_feedback.py::test_conversation_feedback_respects_cadence
   - tests/test_repo_init.py::test_repo_init_detects_product_commands_and_writes_local_files
   - tests/test_repo_init.py::test_public_docs_point_to_init_instead_of_manual_template_copying
+  - tests/test_target_repo_workflow.py::test_target_commands_run_detected_repo_commands
+  - tests/test_target_repo_workflow.py::test_target_commands_fail_when_profile_has_no_runnable_commands
+  - tests/test_target_repo_workflow.py::test_repo_work_spec_updates_state_and_target_drift
+  - tests/test_target_repo_workflow.py::test_release_gate_fails_when_target_commands_fail
   - tests/test_team_framework.py::test_framework_drift_validator_passes_for_current_contract
   - tests/test_memory_state.py::test_memory_and_state_templates_describe_generic_team_framework
   - tests/test_memory_state.py::test_release_gate_accepts_state_template_without_local_state
@@ -52,6 +57,9 @@ required_artifacts:
   - tools/run_improvement_queue.py
   - tools/analyze_conversation_feedback.py
   - tools/init_repo_profile.py
+  - tools/manage_repo_work_spec.py
+  - tools/run_target_commands.py
+  - tools/check_target_drift.py
   - tools/score_team_reliability.py
   - tools/run_release_gate.py
   - tests/test_agentic_framework_map.py
@@ -60,6 +68,7 @@ required_artifacts:
   - tests/test_memory_state.py
   - tests/test_improvement_queue.py
   - tests/test_conversation_feedback.py
+  - tests/test_target_repo_workflow.py
   - tests/test_team_framework.py
   - tests/test_team_reliability.py
 required_reports:
@@ -74,6 +83,8 @@ required_reports:
       - Regression Test Evidence
       - Team Reliability
       - Framework Drift
+      - Target Repo Commands
+      - Target Repo Drift
       - Improvement Queue
       - source-code
       - tests/test_team_framework.py::test_team_framework_contract_lists_existing_role_files
@@ -81,6 +92,7 @@ required_artifact_markers:
   - path: .gitignore
     markers:
       - specs/*.md
+      - specs/work/*.md
       - "!specs/prompt_spec_template.md"
       - memory/PROJECT_MEMORY.md
       - state/sdlc_state.json
@@ -195,6 +207,9 @@ required_artifact_markers:
     markers:
       - init-repo
       - framework-drift
+      - target-check
+      - target-drift
+      - target-release
       - improvement-queue
       - conversation-feedback
       - team-reliability
@@ -204,6 +219,24 @@ required_artifact_markers:
       - ai-brain-repo-init
       - PROJECT_MEMORY.md
       - detected_commands
+  - path: tools/manage_repo_work_spec.py
+    markers:
+      - repo-work-spec
+      - specs
+      - current_work_spec
+      - Completion Audit
+  - path: tools/run_target_commands.py
+    markers:
+      - target-command
+      - DEFAULT_PURPOSES
+      - detected_commands
+      - timeout_seconds
+  - path: tools/check_target_drift.py
+    markers:
+      - target-drift
+      - current_work_spec
+      - missing_commands
+      - changed_commands
   - path: tools/analyze_conversation_feedback.py
     markers:
       - conversation-feedback
@@ -219,6 +252,8 @@ required_artifact_markers:
   - path: tools/run_release_gate.py
     markers:
       - improvement_queue
+      - target_commands
+      - target_drift
       - tools/run_improvement_queue.py
   - path: tools/score_team_reliability.py
     markers:
@@ -246,6 +281,8 @@ required_artifact_markers:
       - Improvement Queue
       - Memory And State
       - no built-in product runtime
+      - target-check
+      - target-drift
   - path: docs/improvement_mode.md
     markers:
       - improvement queue
@@ -258,6 +295,7 @@ required_artifact_markers:
       - delivery_planner
       - sdlc_orchestrator
       - specs/YYYY-MM-DD_short_slug.md
+      - specs/work
   - path: specs/prompt_spec_template.md
     markers:
       - Prompt Spec Template
@@ -276,3 +314,4 @@ required_artifact_markers:
       - adoption
       - improvement queue
       - init-repo
+      - target repo

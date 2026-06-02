@@ -33,22 +33,25 @@ Workflow:
 4. For project-work prompts that change artifacts, create or update a local
    spec under specs/ using specs/prompt_spec_template.md. Dated local specs are
    ignored by git by default.
-5. Convert the prompt spec into an auditable checklist.
-6. Use a planning checkpoint for substantial work.
-7. Identify the specialist roles and gates that apply.
-8. Make the smallest useful source/docs/test changes from the spec chunks.
-9. Run:
+5. For target repo changes, create or update a repo work spec under specs/work/
+   and tie affected files, docs updates, target-check, target-drift, and release
+   evidence to it.
+6. Convert the prompt spec into an auditable checklist.
+7. Use a planning checkpoint for substantial work.
+8. Identify the specialist roles and gates that apply.
+9. Make the smallest useful source/docs/test changes from the spec chunks.
+10. Run:
 
    PATH=".venv/bin:$PATH" make maintenance-daily
 
    Use `PATH=".venv/bin:$PATH" make conversation-feedback` when you want an
    immediate repo-scoped scan of local Codex session friction for this project.
 
-10. If a gate fails, preserve evidence, route to the owning role, repair the
+11. If a gate fails, preserve evidence, route to the owning role, repair the
    smallest safe slice, add regression evidence, and rerun release evidence.
-11. Update local memory/PROJECT_MEMORY.md and state/sdlc_state.json when
+12. Update local memory/PROJECT_MEMORY.md and state/sdlc_state.json when
    durable workspace state changes. These files are ignored by git; the repo
    tracks templates instead.
-12. Do not mark complete unless release evidence passes or a real blocker is
+13. Do not mark complete unless release evidence passes or a real blocker is
    documented.
 ```

@@ -12,6 +12,8 @@ Before substantial work starts, convert the user's prompt, any provider-native
 execution plan for the autonomous full-stack SDLC team. For every project-work
 prompt that changes artifacts, create or update a durable prompt spec under
 specs/ before implementation begins.
+When work changes the target repo, also create or update a repo work spec under
+specs/work/ so the target repo keeps its own spec-driven development ledger.
 
 Deliver:
 - a prompt spec path, normally `specs/YYYY-MM-DD_short_slug.md`
@@ -20,6 +22,7 @@ Deliver:
 - a requirements checklist using the user's concrete asks
 - small work chunks with clear owners
 - expected contracts, tests, docs, memory, state, and reports that may change
+- target repo commands, docs updates, and target drift evidence when applicable
 - dependencies between chunks
 - final verification commands or artifacts
 

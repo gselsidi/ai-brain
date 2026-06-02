@@ -9,6 +9,8 @@ would run.
 - repo initialization through `make init-repo`
 - framework map validation
 - source-backed regression tests
+- target repo commands through `make target-check`
+- target repo drift through `make target-drift`
 - framework drift check across role prompts, contracts, docs, memory, reports,
   and tests
 - prompt spec workflow checks through framework drift and harness quality
@@ -136,6 +138,8 @@ make init-repo
 make lint
 make framework-check
 make framework-drift
+make target-check
+make target-drift
 make improvement-queue
 make conversation-feedback
 make harness-check

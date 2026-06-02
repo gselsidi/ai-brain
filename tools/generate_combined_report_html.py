@@ -20,6 +20,8 @@ REPORT_FILES = {
     "Harness Quality": "harness-quality_report.json",
     "Improvement Queue": "improvement-queue_report.json",
     "Conversation Feedback": "conversation-feedback_report.json",
+    "Target Commands": "target-command_report.json",
+    "Target Drift": "target-drift_report.json",
     "Team Reliability": "team-reliability_report.json",
     "Hardening": "improvement_hardening_report.json",
     "Requirements Audit": "requirements_audit_report.json",
@@ -165,6 +167,79 @@ def render_conversation_feedback(report: dict[str, Any] | None) -> str:
     )
 
 
+def render_target_commands(report: dict[str, Any] | None) -> str:
+    if not report:
+        return '<p class="muted">No target command report found. Run <code>make target-check</code>.</p>'
+    rows = []
+    for item in report.get("commands", []):
+        if not isinstance(item, dict):
+            continue
+        rows.append(
+            "<tr>"
+            f"<td><code>{escape(str(item.get('purpose', '')))}</code></td>"
+            f"<td><code>{escape(str(item.get('command', '')))}</code></td>"
+            f"<td>{tag(item.get('status'))}</td>"
+            f"<td>{escape(str(item.get('returncode', '')))}</td>"
+            "</tr>"
+        )
+    commands_html = (
+        '<p class="muted">No target commands were selected.</p>'
+        if not rows
+        else (
+            "<table><thead><tr><th>Purpose</th><th>Command</th><th>Status</th><th>Return Code</th></tr></thead><tbody>"
+            + "".join(rows)
+            + "</tbody></table>"
+        )
+    )
+    return (
+        kv_table(
+            {
+                "status": report.get("status"),
+                "summary": report.get("summary"),
+                "project_root": report.get("project_root"),
+            }
+        )
+        + commands_html
+    )
+
+
+def render_target_drift(report: dict[str, Any] | None) -> str:
+    if not report:
+        return '<p class="muted">No target drift report found. Run <code>make target-drift</code>.</p>'
+    checks = report.get("checks", {})
+    rows = []
+    if isinstance(checks, dict):
+        for name, item in sorted(checks.items()):
+            if not isinstance(item, dict):
+                continue
+            rows.append(
+                "<tr>"
+                f"<td><code>{escape(str(name))}</code></td>"
+                f"<td>{tag(item.get('status'))}</td>"
+                f"<td>{escape(str(item.get('summary', '')))}</td>"
+                "</tr>"
+            )
+    checks_html = (
+        '<p class="muted">No target drift checks were recorded.</p>'
+        if not rows
+        else (
+            "<table><thead><tr><th>Check</th><th>Status</th><th>Summary</th></tr></thead><tbody>"
+            + "".join(rows)
+            + "</tbody></table>"
+        )
+    )
+    return (
+        kv_table(
+            {
+                "status": report.get("status"),
+                "summary": report.get("summary"),
+                "profile": report.get("profile"),
+            }
+        )
+        + checks_html
+    )
+
+
 def test_counts(tests: list[dict[str, Any]]) -> dict[str, int]:
     counts: dict[str, int] = {}
     for test in tests:
@@ -296,6 +371,8 @@ def render_report(report_dir: Path, output: Path) -> Path:
     drift = reports["Framework Drift"] or {}
     improvement_queue = reports["Improvement Queue"]
     conversation_feedback = reports["Conversation Feedback"]
+    target_commands = reports["Target Commands"]
+    target_drift = reports["Target Drift"]
     hardening = reports["Hardening"] or {}
     audit = reports["Requirements Audit"] or {}
     test_run = reports["Regression Tests"]
@@ -443,6 +520,8 @@ def render_report(report_dir: Path, output: Path) -> Path:
   <main>
     {section("Regression Test Evidence", render_test_evidence(test_run))}
     {section("Release Gate Checks", render_checks(release.get("checks", {})))}
+    {section("Target Repo Commands", render_target_commands(target_commands))}
+    {section("Target Repo Drift", render_target_drift(target_drift))}
     {section("Improvement Queue", render_improvement_queue(improvement_queue))}
     {section("Conversation Feedback", render_conversation_feedback(conversation_feedback))}
     <div class="two-col">

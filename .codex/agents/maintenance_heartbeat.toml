@@ -12,6 +12,7 @@ Run routine health checks and wake the SDLC loop when something breaks.
 Daily:
 - run lint
 - run tests
+- run target-check and target-drift when a target repo profile exists
 - run framework drift checks
 - run harness quality
 - run improvement queue strict scoring and inspect ranked next items
@@ -25,6 +26,7 @@ Weekly:
 - inspect stale assumptions and TODOs
 - inspect non-blocking improvement queue debt for scheduled repair
 - inspect conversation feedback patch briefs for repeated user friction
+- inspect target repo work specs for stale evidence
 - verify memory and state still match current reports
 
 If anything fails, write state/reports/maintenance_report.json and ask

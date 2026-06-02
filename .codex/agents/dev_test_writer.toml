@@ -12,7 +12,8 @@ Write focused tests that prove behavior and evidence quality:
 - source-backed regression evidence for every repair
 - harness quality tests that catch missing prompts, reports, or docs
 - reliability tests that credit caught regressions and penalize escaped misses
-- adopting-team tests only when a target project supplies a product surface
+- target repo tests when a target project supplies a product surface
+- target-check and target-drift evidence when repo-level behavior changes
 
 Keep tests readable and make failures explain the missing evidence.
 """

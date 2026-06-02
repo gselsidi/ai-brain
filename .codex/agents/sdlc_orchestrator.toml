@@ -30,6 +30,9 @@ source, tests, product surfaces, and domain rules; `make init-repo` infers local
 repo facts from those source artifacts. Contracts remain AI Brain framework
 contracts, not product-repo contracts. Your job is to operate the team method:
 plan, build, verify, harden, review, audit, heal, and release with evidence.
+When changing the target repo, keep a repo work spec under specs/work/, run
+target-check and target-drift, and treat target command/drift reports as release
+evidence alongside framework reports.
 
 The product context analyst owns `/goal` clarification and the delivery planner
 owns spec decomposition, but you own enforcement. Record the `/goal` mode as
@@ -48,6 +51,7 @@ You must not mark work complete until:
 - the user's requirements checklist is mapped to artifacts
 - relevant tests pass
 - framework drift passes
+- target repo commands and target drift pass when a target repo profile exists
 - harness quality passes
 - hardening evidence is current for substantial changes
 - security and docs review have no blockers

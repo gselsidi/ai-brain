@@ -19,10 +19,12 @@ The framework should help a team run repeatable autonomous delivery:
 - clarify broad or ambiguous work with `/goal` before the prompt spec
 - convert project-work prompts into durable prompt specs with auditable
   requirements
+- keep target repo work specs under `specs/work/` for actual repo changes
 - plan small implementation slices
 - define product or handoff interfaces before broad changes
 - build incrementally
 - write and run regression evidence
+- run target repo commands and target drift checks from the local repo profile
 - harden weak implementations
 - run a deterministic improvement queue with a strict score and ranked next
   items for maintainability debt
@@ -46,6 +48,11 @@ The framework should help a team run repeatable autonomous delivery:
   workspace files generated or updated by `make init-repo`.
 - `state/ai_brain_repo_profile.local.json`: ignored machine-readable profile of
   the target checkout.
+- `specs/work/YYYY-MM-DD_short_slug.md`: repo-level work spec for target repo
+  changes and evidence.
+- `state/reports/target-command_report.json`: target repo command evidence.
+- `state/reports/target-drift_report.json`: target repo profile/spec drift
+  evidence.
 - `/goal`: provider-aware DEFINE-phase command. It can use provider-native goal
   or planning input when available, or AI Brain's own clarification step when
   not; either way it records outcome, success criteria, non-goals, constraints,
@@ -110,6 +117,9 @@ The expected specialist roles are:
   `specs/` before implementation starts.
 - Prompt specs break work into small chunks with owners, affected artifacts, and
   verification commands.
+- Target repo changes keep an auditable repo work spec under `specs/work/`.
+- Target repo commands and target drift checks run when a target repo profile
+  exists.
 - The improvement queue can surface non-blocking maintainability debt, but
   release decisions fail closed for blocker findings or a low strict score.
 - Public behavior or team workflow changes update contracts and docs.

@@ -4,7 +4,7 @@ HOST ?= 127.0.0.1
 KB_PORT ?= 8001
 KB_URL ?= http://localhost:$(KB_PORT)
 
-.PHONY: setup init-repo build-all docs test lint framework-check framework-drift implementation-drift improvement-queue conversation-feedback conversation-feedback-due harness-check team-reliability release-gate report-html maintenance-daily
+.PHONY: setup init-repo repo-work-spec target-check target-drift target-release build-all docs test lint framework-check framework-drift implementation-drift improvement-queue conversation-feedback conversation-feedback-due harness-check team-reliability release-gate report-html maintenance-daily
 
 setup:
 	$(PYTHON) -m venv $(VENV)
@@ -14,6 +14,17 @@ setup:
 
 init-repo:
 	python tools/init_repo_profile.py
+
+repo-work-spec:
+	python tools/manage_repo_work_spec.py --title "$(or $(SPEC_TITLE),repo work)"
+
+target-check:
+	python tools/run_target_commands.py
+
+target-drift:
+	python tools/check_target_drift.py
+
+target-release: target-check target-drift
 
 build-all: lint framework-check test framework-drift improvement-queue report-html harness-check team-reliability release-gate
 	$(MAKE) report-html
@@ -62,6 +73,8 @@ maintenance-daily:
 	$(MAKE) lint
 	$(MAKE) framework-check
 	$(MAKE) test
+	$(MAKE) target-check
+	$(MAKE) target-drift
 	$(MAKE) framework-drift
 	$(MAKE) improvement-queue
 	$(MAKE) conversation-feedback-due

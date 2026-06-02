@@ -101,6 +101,14 @@ def run_release_gate() -> dict[str, Any]:
             "improvement_queue",
             ["python", "tools/run_improvement_queue.py"],
         ),
+        "target_commands": command_check(
+            "target_commands",
+            ["python", "tools/run_target_commands.py"],
+        ),
+        "target_drift": command_check(
+            "target_drift",
+            ["python", "tools/check_target_drift.py"],
+        ),
         "combined_report_generation": command_check(
             "combined_report_generation",
             ["python", "tools/generate_combined_report_html.py"],

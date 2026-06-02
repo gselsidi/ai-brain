@@ -65,6 +65,9 @@ KB_PORT=8012 ./scripts/build_and_launch.sh
 - `state/sdlc_state.template.json`: safe template for local lifecycle state.
 - `state/ai_brain_repo_profile.local.json`: ignored local repo profile generated
   from package metadata, source markers, git metadata, and common commands.
+- `specs/work/*.md`: repo-level work specs for actual target-repo changes. This
+  framework repo ignores them by default; adopting repos can track them if they
+  want spec history in git.
 - `tools/`: deterministic validation, reliability, release, and report tooling.
 - `tests/`: framework regression tests with source-backed reporting.
 - `docs/`: adoption and operation guide.
@@ -96,9 +99,14 @@ updates a local durable spec under `specs/` before implementation starts. The
 affected artifacts, and verification commands; the `sdlc_orchestrator`
 implements from that spec and audits completion against it.
 
+When AI Brain is operating on a target repo, actual work evidence belongs in
+repo work specs under `specs/work/`. Those specs are the repo's spec-driven
+development ledger: prompt, goal, affected files, tests, docs updates, commands,
+reports, and completion audit. AI Brain contracts remain generic.
+
 This public repo intentionally tracks only `specs/prompt_spec_template.md`.
-Adopter-specific prompt specs are ignored by git so teams can drop the framework
-into their own work without inheriting this repo's build notes.
+Adopter-specific prompt and work specs are ignored here so teams can drop the
+framework into their own work without inheriting this repo's build notes.
 
 ## Checks
 
@@ -110,6 +118,9 @@ make test
 make lint
 make framework-check
 make framework-drift
+make target-check
+make target-drift
+make target-release
 make improvement-queue
 make conversation-feedback
 make harness-check
@@ -130,6 +141,7 @@ Generated outputs stay local:
 - `site/`
 - `state/reports/`
 - `state/ai_brain_repo_profile.local.json`
+- `specs/work/*.md`
 - `memory/PROJECT_MEMORY.md`
 - `state/sdlc_state.json`
 
@@ -157,9 +169,11 @@ commands where it can find them.
 Contracts describe AI Brain itself: roles, gates, memory rules, prompt specs,
 checks, and release behavior. They are not populated from the product repo.
 Product-repo facts live in local memory, local state, the repo profile, and the
-current prompt spec. Provider-native `/goal` or planning can still clarify the
-request, but AI Brain's spec, audit, self-heal, and release gates decide whether
-work is done.
+current repo work spec. `make target-check` runs detected repo commands such as
+test, lint, typecheck, check, and build. `make target-drift` checks that the
+repo profile and active work spec still match the checkout. Provider-native
+`/goal` or planning can still clarify the request, but AI Brain's spec, audit,
+self-heal, target checks, and release gates decide whether work is done.
 
 The framework supplies the autonomous SDLC team. The adopting team supplies the
 product.

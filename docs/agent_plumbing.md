@@ -17,6 +17,7 @@ user prompt
   -> local memory/PROJECT_MEMORY.md context recovery when present
   -> /goal provider-native input or AI Brain clarification
   -> specs/YYYY-MM-DD_short_slug.md prompt spec
+  -> specs/work/YYYY-MM-DD_short_slug.md repo work spec when changing the target repo
   -> sdlc_orchestrator checklist and plan
   -> specialist roles
   -> deterministic commands and reports
@@ -36,6 +37,8 @@ user prompt
 - `specs/prompt_spec_template.md`: default structure for prompt specs.
 - `specs/YYYY-MM-DD_short_slug.md`: durable prompt spec for a project-work
   request.
+- `specs/work/YYYY-MM-DD_short_slug.md`: repo-level work spec for actual target
+  repo changes and evidence.
 - `state/sdlc_state.template.json`: tracked safe template for lifecycle state.
 - `state/sdlc_state.json`: ignored local lifecycle status and latest report
   paths.
@@ -93,6 +96,9 @@ implementation, update the spec or document the boundary before continuing.
 | Gate | Command | Report |
 | --- | --- | --- |
 | Repo initialization | `make init-repo` | `state/ai_brain_repo_profile.local.json` |
+| Repo work spec | `make repo-work-spec` | `specs/work/YYYY-MM-DD_short_slug.md` |
+| Target commands | `make target-check` | `state/reports/target-command_report.json` |
+| Target drift | `make target-drift` | `state/reports/target-drift_report.json` |
 | Regression tests | `make test` | `state/reports/test_report.json` |
 | Framework map | `make framework-check` | `state/reports/agent-skills-framework_report.json` |
 | Framework drift | `make framework-drift` | `state/reports/implementation-drift_report.json` |
@@ -111,6 +117,9 @@ When a gate fails, preserve the failure report first. Then route repair:
 - missing regression -> `dev_test_writer`
 - weak implementation -> `implementation_hardener`
 - stale memory/state -> `sdlc_orchestrator`
+- stale target repo profile or work spec -> `sdlc_orchestrator` plus
+  `delivery_planner`
+- failing target command -> `self_healer` plus the owning implementation role
 - missing evidence -> `evidence_judge`
 - repeated failure -> `self_healer`
 

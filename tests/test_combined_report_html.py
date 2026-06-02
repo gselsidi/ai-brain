@@ -45,6 +45,8 @@ def test_render_report_combines_team_framework_reports(tmp_path: Path) -> None:
         "improvement_hardening_report.json": "Hardening passed.",
         "requirements_audit_report.json": "Audit passed.",
         "release-gate_report.json": "Release passed.",
+        "target-command_report.json": "Target commands passed.",
+        "target-drift_report.json": "Target drift passed.",
     }.items():
         write_json(report_dir / filename, {"status": "PASS", "summary": summary, "checks": {}})
 
@@ -55,6 +57,8 @@ def test_render_report_combines_team_framework_reports(tmp_path: Path) -> None:
     assert "Regression Test Evidence" in html
     assert "Team Reliability" in html
     assert "Framework Drift" in html
+    assert "Target Repo Commands" in html
+    assert "Target Repo Drift" in html
     assert "source-code" in html
     assert "tests/test_team_framework.py::test_real_constraint" in html
     assert "def test_real_constraint" in html

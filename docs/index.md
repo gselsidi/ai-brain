@@ -10,6 +10,9 @@ Run `make init-repo` after dropping AI Brain into a codebase. The initializer
 detects repo metadata and writes ignored local memory, state, and repo-profile
 files.
 
+Target repo checks are first-class. `make target-check` runs safe detected repo
+commands and `make target-drift` checks repo-profile and work-spec evidence.
+
 ## Start Here
 
 - [Agentic SDLC](agentic_sdlc.md): lifecycle loop and gates.
@@ -58,5 +61,7 @@ hand.
 - `memory/PROJECT_MEMORY.md`
 - `state/sdlc_state.template.json`
 - `state/ai_brain_repo_profile.local.json`
+- `state/reports/target-command_report.json`
+- `state/reports/target-drift_report.json`
 - `state/reports/improvement-queue_report.json`
 - `state/reports/conversation-feedback_report.json`

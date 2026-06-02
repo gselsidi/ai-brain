@@ -77,6 +77,18 @@ local_unique_capabilities:
       - memory/PROJECT_MEMORY.template.md
       - docs/memory.md
       - README.md
+  target_repo_workflow:
+    description: >
+      Target-repo adapter that keeps repo work specs, runs detected repo
+      commands, checks target drift, and feeds target evidence into release
+      gates without populating AI Brain contracts from the product repo.
+    artifacts:
+      - tools/manage_repo_work_spec.py
+      - tools/run_target_commands.py
+      - tools/check_target_drift.py
+      - state/reports/target-command_report.json
+      - state/reports/target-drift_report.json
+      - docs/spec_driven_workflow.md
   evidence_plumbing:
     description: Deterministic validation and human-readable reports proving the team process is real.
     artifacts:
@@ -239,8 +251,9 @@ lifecycle:
       - state/reports/improvement-queue_report.json
     combined_rule: >
       Treat automated checks and reports as proof; preserve failures, repair root
-      causes, run the improvement queue for ranked maintainability debt, and
-      require source-backed regression evidence.
+      causes, run target repo commands from the local repo profile, run the
+      improvement queue for ranked maintainability debt, and require
+      source-backed regression evidence.
   review:
     upstream_commands: [/review, /code-simplify]
     upstream_skills:
@@ -264,14 +277,15 @@ lifecycle:
       - docs/security_review.md
       - docs/pr_review.md
       - docs/agent_plumbing.md
+      - state/reports/target-drift_report.json
       - state/reports/improvement_hardening_report.json
       - state/reports/improvement-queue_report.json
       - state/reports/requirements_audit_report.json
     combined_rule: >
       Review correctness, maintainability, risk, documentation, and prompt
       traceability before declaring a team slice complete; use the improvement
-      queue's strict score and next items to avoid hand-waving maintainability
-      debt.
+      queue's strict score and next items plus target drift evidence to avoid
+      hand-waving maintainability debt.
   ship:
     upstream_commands: [/ship]
     upstream_skills:
@@ -291,11 +305,14 @@ lifecycle:
       - state/reports/combined_report.html
       - state/reports/improvement-queue_report.json
       - state/reports/team-reliability_report.json
+      - state/reports/target-command_report.json
+      - state/reports/target-drift_report.json
       - docs/maintenance.md
       - state/reports/conversation-feedback_report.json
     combined_rule: >
-      A ship decision requires current evidence, clear residual risk, docs that
-      match behavior, improvement queue evidence, and release-gate PASS.
+      A ship decision requires current framework and target repo evidence, clear
+      residual risk, docs that match behavior, improvement queue evidence,
+      target command and drift evidence, and release-gate PASS.
   maintain:
     upstream_commands: []
     upstream_skills:
@@ -314,12 +331,14 @@ lifecycle:
       - state/sdlc_state.template.json
       - state/reports/team-reliability_history.jsonl
       - state/reports/conversation-feedback_report.json
+      - state/reports/target-drift_report.json
       - docs/maintenance.md
       - docs/memory.md
     combined_rule: >
       Keep memory concise, record durable decisions, score team reliability,
-      summarize repo-scoped conversation friction on cadence, and route
-      recurring failures into self-healing.
+      summarize repo-scoped conversation friction on cadence, refresh target
+      repo profile/drift evidence, and route recurring failures into
+      self-healing.
 
 skill_coverage:
   idea-refine:
@@ -405,8 +424,8 @@ skill_coverage:
   ci-cd-and-automation:
     local_status: already_strong
     local_agents: [maintenance_heartbeat, release_gate]
-    local_artifacts: [Makefile, docs/maintenance.md, state/reports/team-reliability_report.json, state/reports/improvement-queue_report.json, state/reports/conversation-feedback_report.json]
-    gap_closed_by: make maintenance-daily runs the local CI-style gate, improvement queue, cadence-aware conversation feedback, and reliability scoring.
+    local_artifacts: [Makefile, docs/maintenance.md, state/reports/team-reliability_report.json, state/reports/improvement-queue_report.json, state/reports/conversation-feedback_report.json, state/reports/target-command_report.json, state/reports/target-drift_report.json]
+    gap_closed_by: make maintenance-daily runs the local CI-style gate, target repo checks, improvement queue, cadence-aware conversation feedback, and reliability scoring.
   deprecation-and-migration:
     local_status: adopted
     local_agents: [docs_drift_guard, interface_contract_architect]
@@ -420,8 +439,8 @@ skill_coverage:
   shipping-and-launch:
     local_status: already_strong
     local_agents: [release_gate]
-    local_artifacts: [state/reports/release-gate_report.json, state/sdlc_state.template.json]
-    gap_closed_by: Release-gate PASS is required before completion.
+    local_artifacts: [state/reports/release-gate_report.json, state/reports/target-command_report.json, state/reports/target-drift_report.json, state/sdlc_state.template.json]
+    gap_closed_by: Release-gate PASS requires framework evidence plus target repo command and drift evidence when a target profile exists.
   using-agent-skills:
     local_status: adopted
     local_agents: [sdlc_orchestrator]

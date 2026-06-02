@@ -28,12 +28,15 @@ maintenance, or project work, Codex must:
 8. For project-work prompts that change code, docs, tests, contracts, memory,
    state, reports, automation, or team workflow, create or update a durable
    prompt spec under `specs/` before implementation starts.
-9. For substantial or ambiguous work, create a bite-sized implementation plan
+9. When the work changes the target repo, create or update a repo work spec
+   under `specs/work/` and keep target command, target drift, docs-update, and
+   release evidence tied to it.
+10. For substantial or ambiguous work, create a bite-sized implementation plan
    in that spec before editing.
-10. Capture the user's explicit requirements as a checklist that can be audited.
-11. Follow the Agentic SDLC Loop unless the user explicitly asks for a narrow
+11. Capture the user's explicit requirements as a checklist that can be audited.
+12. Follow the Agentic SDLC Loop unless the user explicitly asks for a narrow
    answer only.
-12. Continue until the requested slice reaches its definition of done or a real
+13. Continue until the requested slice reaches its definition of done or a real
    blocker is documented.
 
 For tiny direct questions, Codex may answer directly. Any implementation or
@@ -265,6 +268,7 @@ The harness must catch gaps that would otherwise show up as follow-up prompts:
 - Project-work prompts create or update a durable prompt spec before
   implementation starts.
 - Framework drift, harness quality, tests, lint, and release gate pass.
+- Target repo commands and target drift pass when a target repo profile exists.
 - Combined reports include source-backed test evidence.
 - Substantial changes pass implementation hardening.
 - Requirements audit maps the current prompt to artifacts or documented scope

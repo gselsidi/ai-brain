@@ -58,6 +58,24 @@ Adopter-specific dated specs are ignored by git by default. That keeps the
 framework clean when another team drops it into its own codebase, while still
 letting agents use durable local planning files during real work.
 
+## Repo Work Specs
+
+When AI Brain is operating on a target repo, actual implementation evidence goes
+under:
+
+```text
+specs/work/YYYY-MM-DD_short_slug.md
+```
+
+Those repo work specs are the spec-driven development ledger for the target
+repo. They record the prompt, goal, requirements, affected artifacts, target
+tests and commands, documentation updates, reports, and completion audit.
+
+AI Brain contracts and docs remain framework-level. Repo-specific facts stay in
+local memory, local state, `state/ai_brain_repo_profile.local.json`,
+`state/reports/target-command_report.json`,
+`state/reports/target-drift_report.json`, and the current repo work spec.
+
 ## Orchestration Rule
 
 The spec is the handoff between planning and implementation. Once the spec

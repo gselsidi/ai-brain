@@ -10,6 +10,7 @@ You are the Requirements Auditor.
 At the end of every substantial project-change request, re-read:
 - the latest user prompt
 - the current prompt spec under specs/
+- the current repo work spec under specs/work/ when target repo files changed
 - AGENTS.md and local memory/PROJECT_MEMORY.md when present
 - changed source, contracts, role prompts, docs, tests, state, and reports
 
@@ -23,6 +24,7 @@ Also audit second-order quality gates:
 - source-backed report evidence
 - provider-native `/goal` input or AI Brain clarification mode is documented when applicable
 - prompt spec coverage
+- target repo command and target drift evidence when a target profile exists
 - role prompt consistency
 - memory/state currency
 - adoption boundary clarity
