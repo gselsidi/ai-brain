@@ -1,25 +1,121 @@
-# Autonomous SDLC Team Framework
+# AI Brain Orchestrator Harness
 
-Drop this repo into a codebase, point your agent at `AGENTS.md`, and start using
-the SDLC loop right away. It gives an LLM an autonomous full-stack SDLC team
-harness: role prompts, prompt specs, local memory templates, deterministic
-checks, evidence reports, and release gates.
+AI Brain is a reusable agent orchestration harness. Drop it into a codebase,
+point your coding agent at `AGENTS.md`, and it gives the agent a disciplined
+way to read a prompt, classify the work, choose the right roles and source-skill
+lenses, preserve memory, run deterministic evidence, and decide when the slice
+is actually done.
 
-It is LLM-provider-neutral. The checked-in agent files are Codex-shaped, but
-the workflow can be adapted for Claude or any runtime that can read project
-instructions and run shell commands.
-
-This repo contains the team methodology: specialist role prompts, durable
-memory, planning checkpoints, improvement hardening, requirements audit,
-self-healing, maintenance, reliability scoring, and release evidence.
+The original center of gravity is an autonomous full-stack SDLC team, and that
+still matters. The broader purpose is now larger: AI Brain is a
+provider-neutral orchestrator for agentic work. The SDLC lifecycle is one
+execution loop inside the harness, not the whole identity.
 
 It has no default product runtime and no required model vendor. Bring your own
-codebase, product surface, tests, domain rules, and provider/runtime adapter;
-use this framework to run the delivery loop.
+codebase, product surface, tests, domain rules, credentials, and
+provider/runtime adapter. AI Brain supplies the orchestration method:
+prompt-to-agent routing, source-skill catalogs, durable specs, local memory,
+target-repo checks, hardening loops, reliability scoring, and release evidence.
+
+## What It Does
+
+AI Brain helps an agent answer four practical questions before it spends tokens:
+
+- What kind of work is this prompt asking for?
+- Which division, framework roles, and specialists are actually needed?
+- Which source skills add useful context, and which should stay deferred?
+- What evidence proves the work is complete?
+
+The orchestrator starts small. It can route a programming task into engineering,
+a marketing task into SEO/copy/CRO/analytics, a sales task into RevOps or
+enablement, or a product task into requirements and roadmap work. It records
+plausible adjacent agents and source skills as deferred options instead of
+loading a whole folder of prompts up front.
+
+## Core Capabilities
+
+- **Prompt-to-agent routing:** `tools/select_agent_route.py` reads the prompt
+  and returns a primary division, adjacent divisions, selected framework agents,
+  selected specialists, deferred specialists, selected source skills, deferred
+  source skills, and verification gates.
+- **Token-thrifty source skills:** source catalogs are metadata-only. The
+  router uses slugs, categories, summaries, and trigger terms to pick a few
+  useful lenses without loading every skill body.
+- **Durable Prompt Specs:** every project-work prompt that changes artifacts
+  gets a local spec under `specs/` before implementation starts.
+- **Target repo adapter:** `make init-repo` detects the product checkout,
+  writes ignored local memory/state/profile files, and lets AI Brain run target
+  repo checks without turning AI Brain into the product.
+- **Evidence-first execution:** tests, lint, target commands, drift checks,
+  harness quality, improvement queue, reliability score, and release gate turn
+  agent work into auditable evidence.
+- **SDLC lifecycle mode:** for software delivery, the harness runs the full
+  requirements -> `/goal` -> spec -> plan -> build -> verify -> review -> ship
+  loop with specialist roles.
+
+## Source Skill Catalogs
+
+AI Brain uses external skill repos as source-backed routing catalogs. It does
+not vendor upstream skill bodies or reference files.
+
+| Catalog | Contract | Count | Purpose |
+| --- | --- | --- | --- |
+| RampStack Claude Skills | `contracts/rampstack_skill_integration.yaml` | 103 | Broad web-lifecycle lenses for brand, content, SEO, product, growth, design, research, operations, and delivery work. |
+| Corey Haines Marketing Skills | `contracts/marketing_skill_integration.yaml` | 44 | Focused marketing lenses for CRO, copywriting, SEO, analytics, growth engineering, GTM, sales, RevOps, retention, and monetization. |
+
+Each source skill is classified as:
+
+- `merge_existing`: AI Brain already has a close lifecycle lane or specialist.
+- `add_catalog_lens`: the skill adds a useful optional domain lens.
+- `tool_dependent_lens`: the skill needs adopter-provided URLs, accounts,
+  credentials, analytics/ad data, CRM data, market data, MCPs, or web research
+  before execution.
+
+Overlapping slugs across catalogs represent the same concept and are deduped by
+the selector.
+
+## Marketing Skill Coverage
+
+The Marketing Skills catalog adds sharper marketing routing. Current groups:
+
+| Group | Skills |
+| --- | --- |
+| Marketing foundation | `product-marketing`, `customer-research`, `marketing-plan`, `marketing-ideas`, `marketing-psychology` |
+| Conversion optimization | `cro`, `signup`, `onboarding`, `popups`, `paywalls`, `ab-testing` |
+| Content and copy | `copywriting`, `copy-editing`, `cold-email`, `emails`, `social`, `image`, `video`, `sms` |
+| SEO and discovery | `seo-audit`, `ai-seo`, `programmatic-seo`, `site-architecture`, `schema`, `content-strategy`, `competitors`, `competitor-profiling`, `aso`, `directory-submissions` |
+| Paid and measurement | `ads`, `ad-creative`, `analytics` |
+| Growth and retention | `churn-prevention`, `co-marketing`, `community-marketing`, `free-tools`, `referrals`, `lead-magnets` |
+| GTM, sales, and RevOps | `launch`, `pricing`, `revops`, `sales-enablement`, `prospecting`, `public-relations` |
+
+Examples:
+
+```bash
+python tools/select_agent_route.py --prompt "Set up GA4 tracking for paid ads and write cold outreach emails"
+python tools/select_agent_route.py --prompt "Plan programmatic SEO pages at scale with schema markup"
+python tools/select_agent_route.py --prompt "Create a launch plan with pricing, sales enablement, and RevOps lead routing"
+```
+
+## Token-Thrifty Routing
+
+The default routing caps are intentionally conservative:
+
+| Cap | Default | Meaning |
+| --- | ---: | --- |
+| `max_primary_specialists` | 3 | Select up to three specialists from the primary division. |
+| `max_adjacent_specialists` | 2 | Select up to two specialists from one adjacent division. |
+| `max_adjacent_divisions` | 1 | Usually branch into only one nearby division. |
+| `max_source_skills` | 4 | Select up to four source-catalog skills. |
+| `max_deferred_source_skills` | 8 | Record up to eight plausible source skills as deferred. |
+
+Selected means the orchestrator should use the role or lens now. Deferred means
+AI Brain records it as a likely next helper without loading or running it yet.
+That is the main guard against burning tokens on agents that are only
+tangentially related.
 
 ## Drop-In Adoption
 
-1. Drop AI Brain into the repo you want it to run.
+1. Drop AI Brain into the repo you want it to orchestrate.
 2. Run the initializer:
 
 ```bash
@@ -33,7 +129,7 @@ That inspects the checkout and creates ignored local files:
 - `state/ai_brain_repo_profile.local.json`
 
 3. Tell your coding agent to read `AGENTS.md` before doing project work.
-4. Run the local checks:
+4. Run the local checks and knowledge base:
 
 ```bash
 ./scripts/build_and_launch.sh
@@ -49,87 +145,80 @@ If the default docs port is busy:
 KB_PORT=8012 ./scripts/build_and_launch.sh
 ```
 
-## Core Files
-
-- `AGENTS.md`: project-wide operating protocol and definition of done.
-- `.codex/agents/`: specialist role prompts for the autonomous SDLC team. These
-  files are Codex-shaped in this checkout, but the role text and SDLC gates are
-  provider-neutral and can be ported to Claude or another agent runtime.
-- `contracts/team_framework.yaml`: machine-readable framework contract.
-- `contracts/agentic_framework_map.yaml`: lifecycle skill map.
-- `contracts/domain_agent_routing.yaml`: prompt-to-agent routing contract for
-  selecting a primary division, SDLC roles, specialists, deferred specialists,
-  and evidence gates without unnecessary fan-out.
-- `contracts/rampstack_skill_integration.yaml`: metadata-only integration of
-  RampStack's 103-skill catalog into existing AI Brain lanes or optional
-  source-catalog lenses without vendoring upstream skill bodies.
-- `contracts/marketing_skill_integration.yaml`: metadata-only integration of
-  Corey Haines' 44 Marketing Skills into marketing, sales, product, growth, and
-  measurement lenses.
-- `contracts/expected_behavior.md`: human-readable AI Brain framework behavior
-  contract.
-- `memory/PROJECT_MEMORY.template.md`: safe template for local durable memory.
-- `memory/PROJECT_MEMORY.md`: ignored local memory generated and updated by
-  `make init-repo` and the SDLC loop.
-- `state/sdlc_state.template.json`: safe template for local lifecycle state.
-- `state/ai_brain_repo_profile.local.json`: ignored local repo profile generated
-  from package metadata, source markers, git metadata, and common commands.
-- `specs/work/*.md`: repo-level work specs for actual target-repo changes. This
-  framework repo ignores them by default; adopting repos can track them if they
-  want spec history in git.
-- `tools/`: deterministic validation, reliability, release, and report tooling.
-- `tests/`: framework regression tests with source-backed reporting.
-- `docs/`: adoption and operation guide.
-- `docs/how_this_was_built.md`: sanitized build history for people curious
-  about how the framework came together.
-- `specs/prompt_spec_template.md`: durable spec template for project-work
-  prompts.
-
-## Prompt Specs
+## Prompt Specs And `/goal`
 
 For broad or ambiguous work, start with `/goal`. It clarifies outcome, success
 criteria, non-goals, constraints, assumptions, and open questions before the
 spec is written.
 
 If the active provider supports a native `/goal` or planning feature, AI Brain
-can use it to clarify the work. But that does not replace AI Brain's SDLC loop.
-After `/goal`, the work still goes through the durable spec, memory, checks,
-evidence, audits, and release gates. If native `/goal` is unavailable, disabled,
-or incompatible, AI Brain does the same clarification step itself.
-
-For example, a Claude-based setup can load the same operating instructions,
-role prompts, specs, memory rules, and Make targets, then use Claude's own
-planning features where available. The important contract is still the AI Brain
-loop and evidence, not the provider name.
+can use it to clarify the work. But provider-native planning does not replace
+AI Brain's spec, memory, evidence, audit, or release gates. If provider-native
+`/goal` is unavailable, disabled, or incompatible, AI Brain performs the same
+clarification inside the harness.
 
 For every project-work prompt that changes artifacts, the framework creates or
 updates a local durable spec under `specs/` before implementation starts. The
-`delivery_planner` breaks the prompt into requirements, small chunks, owners,
-affected artifacts, and verification commands; the `sdlc_orchestrator`
-implements from that spec and audits completion against it.
+spec records the prompt, clarified goal, requirements checklist, routing
+decision, owners, implementation chunks, affected artifacts, and verification
+commands.
 
-Before assignment, the `sdlc_orchestrator` also runs prompt-to-agent routing.
-It reads the prompt, chooses a primary division such as
-engineering/programming, marketing, sales, design, product, security, testing,
-or support, and selects only the specialists justified by the prompt or
-evidence. Adjacent specialists are kept as deferred options in the spec so AI
-Brain can escalate later without burning tokens up front.
-
-The router can also consult metadata-only source catalogs. RampStack Claude
-Skills and Corey Haines' Marketing Skills are mapped by slug and category so
-matching concepts are merged into existing AI Brain lanes when possible, or
-exposed as optional lenses when AI Brain does not already have the skill. The
-selector still caps active source skills, dedupes overlapping slugs, and records
-plausible extras as deferred source skills.
-
-When AI Brain is operating on a target repo, actual work evidence belongs in
-repo work specs under `specs/work/`. Those specs are the repo's spec-driven
-development ledger: prompt, goal, affected files, tests, docs updates, commands,
-reports, and completion audit. AI Brain contracts remain generic.
+When AI Brain is operating on a target repo, target work evidence belongs in
+repo work specs under `specs/work/`. Those specs are the repo's delivery ledger:
+prompt, goal, affected files, target commands, docs updates, reports, and
+completion audit.
 
 This public repo intentionally tracks only `specs/prompt_spec_template.md`.
-Adopter-specific prompt and work specs are ignored here so teams can drop the
-framework into their own work without inheriting this repo's build notes.
+Adopter-specific prompt and work specs are ignored here by default.
+
+## SDLC Lifecycle Mode
+
+For implementation work, AI Brain can run the full Agentic SDLC loop:
+
+```text
+requirements intake -> /goal -> prompt spec -> planning checkpoint -> interface contract -> build
+-> dev tests -> quality exploration -> adversarial review
+-> implementation hardening -> evidence judge -> security review
+-> docs drift check -> requirements audit -> self-healing repair
+-> regression -> PR review -> release gate -> scheduled maintenance
+```
+
+That loop is strongest for software delivery, automation, docs, tests, and team
+workflow changes. For narrower strategy, marketing, research, or support work,
+the same harness can still route the prompt, select lenses, preserve evidence,
+and avoid unnecessary fan-out.
+
+## Core Files
+
+- `AGENTS.md`: project-wide operating protocol and definition of done.
+- `.codex/agents/`: specialist role prompts for the autonomous full-stack SDLC
+  team. The files are Codex-shaped in this checkout, but the role text and
+  gates are provider-neutral.
+- `contracts/domain_agent_routing.yaml`: prompt-to-agent routing contract for
+  primary divisions, adjacent divisions, specialists, source catalogs, deferred
+  work, and evidence gates.
+- `contracts/marketing_skill_integration.yaml`: metadata-only mapping of Corey
+  Haines' 44 Marketing Skills.
+- `contracts/rampstack_skill_integration.yaml`: metadata-only mapping of
+  RampStack's 103-skill catalog.
+- `contracts/team_framework.yaml`: machine-readable framework contract.
+- `contracts/agentic_framework_map.yaml`: lifecycle and unique-capability map.
+- `contracts/expected_behavior.md`: human-readable AI Brain behavior contract.
+- `specs/prompt_spec_template.md`: durable spec template for project-work
+  prompts.
+- `memory/PROJECT_MEMORY.template.md`: safe template for local durable memory.
+- `memory/PROJECT_MEMORY.md`: ignored local memory generated and updated by
+  `make init-repo` and the orchestration loop.
+- `state/sdlc_state.template.json`: safe template for local lifecycle state.
+- `state/ai_brain_repo_profile.local.json`: ignored local repo profile generated
+  from package metadata, source markers, git metadata, and common commands.
+- `specs/work/*.md`: repo-level work specs for target-repo changes.
+- `tools/`: deterministic validation, routing, reliability, release, and report
+  tooling.
+- `tests/`: framework regression tests with source-backed reporting.
+- `docs/`: adoption and operation guide.
+- `docs/how_this_was_built.md`: sanitized build history and public-source
+  hygiene notes.
 
 ## Checks
 
@@ -190,17 +279,16 @@ It looks for common project signals such as `package.json`, `pyproject.toml`,
 then records detected test, lint, build, typecheck, dev, start, and deploy
 commands where it can find them.
 
-Contracts describe AI Brain itself: roles, gates, memory rules, prompt specs,
-checks, and release behavior. They are not populated from the product repo.
-Product-repo facts live in local memory, local state, the repo profile, and the
-current repo work spec. `make target-check` runs detected repo commands such as
-test, lint, typecheck, check, and build. `make target-drift` checks that the
-repo profile and active work spec still match the checkout. Provider-native
-`/goal` or planning can still clarify the request, but AI Brain's spec, audit,
-self-heal, target checks, and release gates decide whether work is done.
+Contracts describe AI Brain itself: routing, roles, source catalogs, gates,
+memory rules, prompt specs, checks, and release behavior. They are not
+populated from the product repo. Product-repo facts live in local memory, local
+state, the repo profile, and the current repo work spec. `make target-check`
+runs detected repo commands such as test, lint, typecheck, check, and build.
+`make target-drift` checks that the repo profile and active work spec still
+match the checkout.
 
-The framework supplies the autonomous SDLC team. The adopting team supplies the
-product.
+The framework supplies the orchestrator harness and autonomous SDLC team. The
+adopting team supplies the product.
 
 ## License
 
