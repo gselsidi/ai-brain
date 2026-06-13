@@ -12,6 +12,7 @@ DEFAULT_OUTPUT = ROOT / "dist" / "ai-brain-dropin"
 
 EXCLUDED_DIR_NAMES = {
     ".git",
+    ".ai-brain",
     ".pytest_cache",
     ".ruff_cache",
     ".venv",

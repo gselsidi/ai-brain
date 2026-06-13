@@ -20,6 +20,13 @@ def write_profile(path: Path, project: Path, commands: list[dict[str, str]]) -> 
         "project_root": project.as_posix(),
         "detected_commands": commands,
         "source_markers": ["package.json", "tests"],
+        "local_files": {
+            "profile": ".ai-brain/state/ai_brain_repo_profile.local.json",
+            "memory": ".ai-brain/memory/PROJECT_MEMORY.md",
+            "state": ".ai-brain/state/sdlc_state.json",
+            "reports": ".ai-brain/state/reports",
+            "work_specs": ".ai-brain/specs/work",
+        },
     }
     path.write_text(json.dumps(payload), encoding="utf-8")
 
@@ -176,7 +183,7 @@ def test_repo_work_spec_defaults_to_target_repo_specs_work(tmp_path: Path) -> No
     )
 
     spec_path = Path(result["spec_path"])
-    assert spec_path.parent == product / "specs" / "work"
+    assert spec_path.parent == product / ".ai-brain" / "specs" / "work"
     assert spec_path.exists()
 
 
@@ -201,7 +208,7 @@ def test_release_gate_fails_when_target_commands_fail(monkeypatch, tmp_path: Pat
     monkeypatch.setattr(run_release_gate, "command_check", fake_command_check)
     monkeypatch.setattr(run_release_gate, "load_json", fake_load_json)
     monkeypatch.setattr(run_release_gate, "text_has_status", lambda path: True)
-    monkeypatch.setattr(run_release_gate, "state_definition_of_done_check", lambda: {"status": "PASS"})
+    monkeypatch.setattr(run_release_gate, "state_definition_of_done_check", lambda path=None: {"status": "PASS"})
     monkeypatch.setattr(run_release_gate, "ROOT", tmp_path)
 
     report = run_release_gate.run_release_gate()

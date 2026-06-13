@@ -4,8 +4,10 @@ This contract describes the reusable autonomous full-stack SDLC team framework.
 It has no default product runtime and does not ship a default application
 surface.
 Adopting teams bring their own codebase. `make init-repo` inspects that checkout
-and writes ignored local memory, lifecycle state, and repo-profile facts. This
-repo provides the generic team operating model and evidence loop.
+and writes ignored local memory, lifecycle state, repo-profile facts, specs,
+and evidence. For subfolder installs, those target-local artifacts live under
+`.ai-brain/` in the target repo so `ai-brain/` remains replaceable framework
+code. This repo provides the generic team operating model and evidence loop.
 
 ## Mission
 
@@ -13,6 +15,8 @@ The framework should help a team run repeatable autonomous delivery:
 
 - recover context from durable memory
 - initialize local repo context with `make init-repo`
+- keep target-local memory, state, specs, and evidence outside replaceable
+  `ai-brain/` framework code for subfolder installs
 - install a target repo root `AGENTS.md` bridge for subfolder installs so Codex
   discovers `ai-brain/AGENTS.md` on future repo work
 - prefer an existing AI Brain virtualenv for Makefile commands and fail with a
@@ -28,7 +32,8 @@ The framework should help a team run repeatable autonomous delivery:
   choose core SDLC roles, and add adjacent specialists only when justified
 - convert project-work prompts into durable prompt specs with auditable
   requirements
-- keep target repo work specs under `specs/work/` for actual repo changes
+- keep target repo work specs under `.ai-brain/specs/work/` for subfolder
+  installs, or `specs/work/` when AI Brain is the repo root
 - plan small implementation slices
 - define product or handoff interfaces before broad changes
 - build incrementally
@@ -63,9 +68,14 @@ The framework should help a team run repeatable autonomous delivery:
 - `state/sdlc_state.template.json`: tracked safe template for local lifecycle
   state and report pointers.
 - `memory/PROJECT_MEMORY.md` and `state/sdlc_state.json`: ignored local
-  workspace files generated or updated by `make init-repo`.
+  workspace files generated or updated by `make init-repo` when AI Brain is the
+  repo root.
+- `.ai-brain/memory/PROJECT_MEMORY.md` and `.ai-brain/state/sdlc_state.json`:
+  ignored target-local files for subfolder installs.
 - `state/ai_brain_repo_profile.local.json`: ignored machine-readable profile of
-  the target checkout.
+  the target checkout when AI Brain is the repo root.
+- `.ai-brain/state/ai_brain_repo_profile.local.json`: ignored target-local
+  machine-readable profile for subfolder installs.
 - `tools/export_dropin_bundle.py`: clean bundle exporter for one-off vendoring
   without Git internals or local generated artifacts.
 - `tools/clean_manual_copy.py`: guarded cleanup for manually copied AI Brain
@@ -75,10 +85,17 @@ The framework should help a team run repeatable autonomous delivery:
 - `tools/install_root_agents.py`: target repo root `AGENTS.md` bridge installer
   that points Codex to nested AI Brain instructions.
 - `specs/work/YYYY-MM-DD_short_slug.md`: repo-level work spec for target repo
-  changes and evidence.
-- `state/reports/target-command_report.json`: target repo command evidence.
+  changes and evidence when AI Brain is the repo root.
+- `.ai-brain/specs/work/YYYY-MM-DD_short_slug.md`: target-local repo work spec
+  for subfolder installs.
+- `state/reports/target-command_report.json`: target repo command evidence
+  when AI Brain is the repo root.
+- `.ai-brain/state/reports/target-command_report.json`: target-local command
+  evidence for subfolder installs.
 - `state/reports/target-drift_report.json`: target repo profile/spec drift
-  evidence.
+  evidence when AI Brain is the repo root.
+- `.ai-brain/state/reports/target-drift_report.json`: target-local drift
+  evidence for subfolder installs.
 - `/goal`: provider-aware DEFINE-phase command. It can use provider-native goal
   or planning input when available, or AI Brain's own clarification step when
   not; either way it records outcome, success criteria, non-goals, constraints,
@@ -161,7 +178,9 @@ The expected specialist roles are:
   Duplicate slugs across catalogs should not activate twice. Tool-dependent
   lenses require an adopting team's credentials, MCPs, URLs, analytics/ad data,
   CRM data, market data, or web research before execution.
-- Target repo changes keep an auditable repo work spec under `specs/work/`.
+- Target repo changes keep an auditable repo work spec under
+  `.ai-brain/specs/work/` for subfolder installs, or `specs/work/` when AI
+  Brain is the repo root.
 - Target repo commands and target drift checks run when a target repo profile
   exists.
 - The improvement queue can surface non-blocking maintainability debt, but
@@ -199,6 +218,12 @@ When AI Brain lives under an `ai-brain/` prefix in the target repo, initialize
 local context with `make -C ai-brain init-repo TARGET_ROOT=..` so repo profiling
 uses the target checkout rather than the framework subfolder.
 
+For subfolder installs, the initializer must write target-local memory, state,
+repo profile, repo work specs, and reports under `.ai-brain/` at the target repo
+root, and it must update the target repo `.gitignore` so `.ai-brain/` remains
+local by default. Updating or replacing `ai-brain/` should not delete
+target-local project memory, specs, state, or evidence.
+
 AI Brain commands require Python 3.11 or newer. The Makefile should prefer
 `ai-brain/.venv/bin/python` when it exists, then compatible Python executables
 such as `python3.12`, `python3.13`, or `python3.11`. If a machine only exposes
@@ -209,9 +234,14 @@ A nested `ai-brain/AGENTS.md` is not enough by itself to control future Codex
 work in the target repo. For subfolder installs, `make -C ai-brain init-repo
 TARGET_ROOT=..` should create or update root `AGENTS.md` with a marker-delimited
 AI Brain bridge that tells Codex to read `ai-brain/AGENTS.md`, local AI Brain
-memory, local AI Brain repo profile, and routing contracts before repo work.
-Existing root `AGENTS.md` content must be preserved outside the managed bridge
-block. Private local-only installs can disable the bridge with
+memory under `.ai-brain/memory/PROJECT_MEMORY.md`, local AI Brain repo profile
+under `.ai-brain/state/ai_brain_repo_profile.local.json`, and routing contracts
+before repo work. The bridge must treat every new repo prompt as an AI Brain
+routing signal, require selected/deferred specialists and selected/deferred
+source skills to be identified before action, and require AI Brain
+specs/evidence for project-work prompts. Existing root `AGENTS.md` content must
+be preserved outside the managed bridge block. Private local-only installs can
+disable the bridge with
 `INSTALL_ROOT_AGENTS=0`.
 
 The tracked files under `contracts/` describe AI Brain itself: roles, gates,

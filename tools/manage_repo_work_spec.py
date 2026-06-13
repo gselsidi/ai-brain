@@ -58,6 +58,18 @@ def target_root_from_profile(profile_path: Path = DEFAULT_PROFILE) -> Path:
     return ROOT
 
 
+def work_spec_dir_from_profile(profile_path: Path = DEFAULT_PROFILE, root: Path | None = None) -> Path:
+    profile = load_json(profile_path)
+    target_root = root or target_root_from_profile(profile_path)
+    local_files = profile.get("local_files", {})
+    if isinstance(local_files, dict):
+        work_specs = local_files.get("work_specs")
+        if isinstance(work_specs, str) and work_specs.strip():
+            path = Path(work_specs).expanduser()
+            return path if path.is_absolute() else target_root / path
+    return target_root / "specs" / "work"
+
+
 def spec_path_for(title: str, spec_dir: Path | None = None, root: Path | None = None) -> Path:
     if spec_dir is None:
         spec_dir = (root or ROOT) / "specs" / "work"
@@ -149,7 +161,8 @@ def create_or_update_spec(
 ) -> dict[str, Any]:
     generated_at = generated_at or utc_now()
     target_root = root or target_root_from_profile(profile_path)
-    spec_path = path or spec_path_for(title, root=target_root)
+    spec_dir = work_spec_dir_from_profile(profile_path, root=target_root)
+    spec_path = path or spec_path_for(title, spec_dir=spec_dir, root=target_root)
     spec_path.parent.mkdir(parents=True, exist_ok=True)
     content = render_spec(
         title=title,

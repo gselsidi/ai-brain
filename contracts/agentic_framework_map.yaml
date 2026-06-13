@@ -70,13 +70,16 @@ local_unique_capabilities:
   repo_initialization:
     description: >
       Drop-in initializer that inspects the target checkout and writes ignored
-      local memory, lifecycle state, and repo profile.
+      local memory, lifecycle state, repo profile, reports, and work-spec
+      storage under target `.ai-brain/` for subfolder installs, preserving that
+      data across `ai-brain/` framework updates.
     artifacts:
       - tools/init_repo_profile.py
       - contracts/expected_behavior.md
       - memory/PROJECT_MEMORY.template.md
       - docs/memory.md
       - README.md
+      - .gitignore
   python_bootstrap:
     description: >
       Makefile and launcher bootstrap behavior that prefers an existing AI
@@ -91,7 +94,8 @@ local_unique_capabilities:
     description: >
       Target-repo root AGENTS.md bridge that makes nested AI Brain discoverable
       to Codex after init-repo, preserving existing root instructions and
-      allowing local-only installs to opt out.
+      pointing future sessions to target-local `.ai-brain/` memory/profile
+      files while allowing local-only installs to opt out.
     artifacts:
       - tools/install_root_agents.py
       - tools/init_repo_profile.py

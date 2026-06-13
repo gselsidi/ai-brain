@@ -178,10 +178,14 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Check drift across autonomous SDLC team roles, docs, reports, and tests.",
     )
+    parser.add_argument("--report-dir", default=None)
     parser.add_argument("--output", default=str(DEFAULT_OUTPUT))
     args = parser.parse_args()
 
-    result = validate()
+    test_report = None
+    if args.report_dir:
+        test_report = load_json(Path(args.report_dir) / "test_report.json")
+    result = validate(test_report=test_report)
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(result, indent=2, sort_keys=True), encoding="utf-8")

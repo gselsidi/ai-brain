@@ -26,11 +26,13 @@ parent Git repo.
 
 Run `make init-repo` after adding AI Brain to a codebase. If AI Brain lives in
 an `ai-brain/` subfolder, run `make -C ai-brain init-repo TARGET_ROOT=..`. The
-initializer detects target repo metadata and writes ignored local memory, state,
-and repo-profile files. It also creates or updates the target repo root
-`AGENTS.md` with an AI Brain AGENTS.md bridge so future Codex sessions know to
-read `ai-brain/AGENTS.md` before repo work. Use `INSTALL_ROOT_AGENTS=0` for
-private local-only installs that should not add a root bridge.
+initializer detects target repo metadata and writes ignored target-local memory,
+state, repo-profile, work-spec, and report files under `.ai-brain/`. It also
+updates target `.gitignore` for `.ai-brain/` and creates or updates the target
+repo root `AGENTS.md` with an AI Brain AGENTS.md bridge so future Codex sessions
+know to read `ai-brain/AGENTS.md` before repo work. Use
+`INSTALL_ROOT_AGENTS=0` for private local-only installs that should not add a
+root bridge.
 
 Target repo checks are first-class. `make target-check` runs safe detected repo
 commands and `make target-drift` checks repo-profile and work-spec evidence.

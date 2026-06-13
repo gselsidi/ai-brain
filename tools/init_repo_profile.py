@@ -16,8 +16,11 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PROFILE = ROOT / "state" / "ai_brain_repo_profile.local.json"
 DEFAULT_MEMORY = ROOT / "memory" / "PROJECT_MEMORY.md"
 DEFAULT_STATE = ROOT / "state" / "sdlc_state.json"
+TARGET_DATA_DIR = ".ai-brain"
 GENERATED_START = "<!-- AI_BRAIN_REPO_PROFILE_START -->"
 GENERATED_END = "<!-- AI_BRAIN_REPO_PROFILE_END -->"
+GITIGNORE_START = "# AI_BRAIN_LOCAL_DATA_START"
+GITIGNORE_END = "# AI_BRAIN_LOCAL_DATA_END"
 
 
 def utc_now() -> str:
@@ -35,6 +38,60 @@ def read_json(path: Path) -> dict[str, Any]:
 def write_json(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def merge_block(existing: str, start: str, end: str, block: str) -> str:
+    if start in existing and end in existing:
+        before, rest = existing.split(start, 1)
+        _, after = rest.split(end, 1)
+        return before.rstrip() + "\n\n" + block.rstrip() + "\n" + after.lstrip()
+    if existing.strip():
+        return existing.rstrip() + "\n\n" + block
+    return block
+
+
+def display_path(path: Path, base: Path) -> str:
+    try:
+        return path.resolve().relative_to(base.resolve()).as_posix()
+    except ValueError:
+        return path.resolve().as_posix()
+
+
+def target_data_root_for(target_root: Path, *, data_root: Path | None = None) -> Path:
+    target_root = target_root.resolve()
+    if data_root is not None:
+        return data_root.expanduser().resolve()
+    if target_root == ROOT:
+        return ROOT
+    return target_root / TARGET_DATA_DIR
+
+
+def local_artifact_paths(
+    target_root: Path,
+    *,
+    data_root: Path | None = None,
+) -> dict[str, Path]:
+    root = target_data_root_for(target_root, data_root=data_root)
+    return {
+        "data_root": root,
+        "profile": root / "state" / "ai_brain_repo_profile.local.json",
+        "memory": root / "memory" / "PROJECT_MEMORY.md",
+        "state": root / "state" / "sdlc_state.json",
+        "reports": root / "state" / "reports",
+        "work_specs": root / "specs" / "work",
+    }
+
+
+def local_file_refs(target_root: Path, *, data_root: Path | None = None) -> dict[str, str]:
+    paths = local_artifact_paths(target_root, data_root=data_root)
+    return {
+        "data_root": display_path(paths["data_root"], target_root),
+        "profile": display_path(paths["profile"], target_root),
+        "memory": display_path(paths["memory"], target_root),
+        "state": display_path(paths["state"], target_root),
+        "reports": display_path(paths["reports"], target_root),
+        "work_specs": display_path(paths["work_specs"], target_root),
+    }
 
 
 def run_git(root: Path, args: list[str]) -> str:
@@ -155,8 +212,14 @@ def command_list(commands: dict[str, str]) -> list[dict[str, str]]:
     return [{"purpose": key, "command": value} for key, value in sorted(commands.items())]
 
 
-def build_profile(root: Path = ROOT, *, generated_at: str | None = None) -> dict[str, Any]:
+def build_profile(
+    root: Path = ROOT,
+    *,
+    generated_at: str | None = None,
+    data_root: Path | None = None,
+) -> dict[str, Any]:
     generated_at = generated_at or utc_now()
+    root = root.resolve()
     node_frameworks, node_commands = detect_node_commands(root)
     python_frameworks, python_commands = detect_python_commands(root)
     other_frameworks, other_commands = detect_other_commands(root)
@@ -193,11 +256,7 @@ def build_profile(root: Path = ROOT, *, generated_at: str | None = None) -> dict
         "detected_commands": command_list(commands),
         "make_targets": detect_make_targets(root),
         "source_markers": source_markers,
-        "local_files": {
-            "profile": "state/ai_brain_repo_profile.local.json",
-            "memory": "memory/PROJECT_MEMORY.md",
-            "state": "state/sdlc_state.json",
-        },
+        "local_files": local_file_refs(root, data_root=data_root),
         "privacy": {
             "local_only": True,
             "ignored_by_git": True,
@@ -275,6 +334,38 @@ def write_state(path: Path, profile: dict[str, Any]) -> None:
     write_json(path, state)
 
 
+def install_target_gitignore(target_root: Path, data_root: Path) -> dict[str, Any]:
+    target_root = target_root.resolve()
+    data_root = data_root.resolve()
+    if target_root == ROOT or data_root == ROOT:
+        return {
+            "status": "SKIP",
+            "mode": "target-local-data-gitignore",
+            "summary": "AI Brain is the repo root; existing framework ignores apply.",
+        }
+
+    entry = display_path(data_root, target_root)
+    block = "\n".join(
+        [
+            GITIGNORE_START,
+            "# AI Brain target-local memory, specs, state, and reports.",
+            f"{entry}/",
+            GITIGNORE_END,
+            "",
+        ]
+    )
+    path = target_root / ".gitignore"
+    existing = path.read_text(encoding="utf-8") if path.exists() else ""
+    path.write_text(merge_block(existing, GITIGNORE_START, GITIGNORE_END, block), encoding="utf-8")
+    return {
+        "status": "PASS",
+        "mode": "target-local-data-gitignore",
+        "path": path.as_posix(),
+        "entry": f"{entry}/",
+        "summary": "Installed or updated target repo .gitignore for AI Brain local data.",
+    }
+
+
 def write_local_files(
     profile: dict[str, Any],
     *,
@@ -292,9 +383,10 @@ def main() -> None:
         description="Initialize AI Brain local repo profile, memory, and state."
     )
     parser.add_argument("--root", default=str(ROOT))
-    parser.add_argument("--profile", default=str(DEFAULT_PROFILE))
-    parser.add_argument("--memory", default=str(DEFAULT_MEMORY))
-    parser.add_argument("--state", default=str(DEFAULT_STATE))
+    parser.add_argument("--data-root", default=None)
+    parser.add_argument("--profile", default=None)
+    parser.add_argument("--memory", default=None)
+    parser.add_argument("--state", default=None)
     parser.add_argument(
         "--skip-root-agents",
         action="store_true",
@@ -303,19 +395,26 @@ def main() -> None:
     args = parser.parse_args()
 
     root = Path(args.root).expanduser().resolve()
-    profile = build_profile(root)
+    data_root = Path(args.data_root).expanduser().resolve() if args.data_root else None
+    local_paths = local_artifact_paths(root, data_root=data_root)
+    profile = build_profile(root, data_root=local_paths["data_root"])
     bridge_report: dict[str, Any] | None = None
     if not args.skip_root_agents and should_install_from_env(os.environ.get("INSTALL_ROOT_AGENTS")):
-        bridge_report = install_root_agents(target_root=root, ai_brain_root=ROOT)
+        bridge_report = install_root_agents(
+            target_root=root,
+            ai_brain_root=ROOT,
+            data_root=local_paths["data_root"],
+        )
     profile["root_agents_bridge"] = bridge_report or {
         "status": "SKIP",
         "summary": "Root AGENTS bridge installation was disabled.",
     }
+    profile["target_gitignore"] = install_target_gitignore(root, local_paths["data_root"])
     write_local_files(
         profile,
-        profile_path=Path(args.profile),
-        memory_path=Path(args.memory),
-        state_path=Path(args.state),
+        profile_path=Path(args.profile) if args.profile else local_paths["profile"],
+        memory_path=Path(args.memory) if args.memory else local_paths["memory"],
+        state_path=Path(args.state) if args.state else local_paths["state"],
     )
     print(json.dumps(profile, indent=2, sort_keys=True))
 

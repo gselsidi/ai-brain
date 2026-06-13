@@ -40,6 +40,7 @@ def test_dropin_adoption_avoids_nested_git_checkouts() -> None:
     assert "make -C ai-brain manual-copy-clean" in readme
     assert readme.index("target repo's `.gitignore`") < readme.index("## What It Does")
     assert readme.index("root `AGENTS.md`") < readme.index("## What It Does")
+    assert "start a new Codex session" in readme
     assert "INSTALL_ROOT_AGENTS=0" in readme
     assert "nested `.git`" in readme
     assert "make -C ai-brain init-repo TARGET_ROOT=.." in expected

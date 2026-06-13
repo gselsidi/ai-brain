@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import json
 from datetime import UTC, datetime
 from pathlib import Path
@@ -70,9 +71,13 @@ def artifact_marker_check(contract: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def test_report_check(contract: dict[str, Any]) -> dict[str, Any]:
+def test_report_check(contract: dict[str, Any], report_dir: Path | None = None) -> dict[str, Any]:
     report_spec = contract.get("required_reports", {}).get("test_report", {})
-    path = ROOT_DIR / report_spec.get("path", "")
+    path = (
+        report_dir / Path(str(report_spec.get("path", ""))).name
+        if report_dir is not None
+        else ROOT_DIR / report_spec.get("path", "")
+    )
     report = load_json(path)
     if report is None:
         return {"status": "FAIL", "path": relative(path), "reason": "missing_or_invalid_json"}
@@ -125,9 +130,13 @@ def test_report_check(contract: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def combined_report_check(contract: dict[str, Any]) -> dict[str, Any]:
+def combined_report_check(contract: dict[str, Any], report_dir: Path | None = None) -> dict[str, Any]:
     report_spec = contract.get("required_reports", {}).get("combined_report", {})
-    path = ROOT_DIR / report_spec.get("path", "")
+    path = (
+        report_dir / Path(str(report_spec.get("path", ""))).name
+        if report_dir is not None
+        else ROOT_DIR / report_spec.get("path", "")
+    )
     text = load_text(path)
     if not text:
         return {"status": "FAIL", "path": relative(path), "reason": "missing_or_empty"}
@@ -140,13 +149,13 @@ def combined_report_check(contract: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def validate() -> dict[str, Any]:
+def validate(report_dir: Path | None = None) -> dict[str, Any]:
     contract = yaml.safe_load(CONTRACT_PATH.read_text(encoding="utf-8"))
     checks = {
         "artifacts": artifact_check(contract),
         "artifact_markers": artifact_marker_check(contract),
-        "test_report": test_report_check(contract),
-        "combined_report": combined_report_check(contract),
+        "test_report": test_report_check(contract, report_dir=report_dir),
+        "combined_report": combined_report_check(contract, report_dir=report_dir),
     }
     status = "PASS" if all(check["status"] == "PASS" for check in checks.values()) else "FAIL"
     return {
@@ -164,9 +173,15 @@ def validate() -> dict[str, Any]:
 
 
 def main() -> None:
-    result = validate()
-    REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    REPORT_PATH.write_text(json.dumps(result, indent=2, sort_keys=True), encoding="utf-8")
+    parser = argparse.ArgumentParser(description="Validate AI Brain harness quality gates.")
+    parser.add_argument("--report-dir", default=None)
+    parser.add_argument("--output", default=str(REPORT_PATH))
+    args = parser.parse_args()
+
+    result = validate(report_dir=Path(args.report_dir) if args.report_dir else None)
+    output = Path(args.output)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(result, indent=2, sort_keys=True), encoding="utf-8")
     print(json.dumps(result, indent=2, sort_keys=True))
     raise SystemExit(0 if result["status"] == "PASS" else 1)
 

@@ -110,6 +110,7 @@ required_reports:
 required_artifact_markers:
   - path: .gitignore
     markers:
+      - .ai-brain/
       - specs/*.md
       - specs/work/*.md
       - "!specs/prompt_spec_template.md"
@@ -233,6 +234,8 @@ required_artifact_markers:
   - path: Makefile
     markers:
       - init-repo
+      - AI_BRAIN_DATA_ROOT
+      - AI_BRAIN_REPORT_DIR
       - dropin-bundle
       - manual-copy-clean
       - TARGET_ROOT
@@ -251,6 +254,8 @@ required_artifact_markers:
   - path: tools/init_repo_profile.py
     markers:
       - ai-brain-repo-init
+      - TARGET_DATA_DIR
+      - install_target_gitignore
       - PROJECT_MEMORY.md
       - detected_commands
       - install_root_agents
@@ -264,6 +269,10 @@ required_artifact_markers:
     markers:
       - AI_BRAIN_ROOT_BRIDGE_START
       - install_root_agents
+      - target_data_root_for
+      - Mandatory start-of-turn rule
+      - AI Brain routing signal
+      - selected specialists
       - Treat AI Brain as the primary workflow layer
       - INSTALL_ROOT_AGENTS
       - AGENTS.md
@@ -284,6 +293,7 @@ required_artifact_markers:
   - path: tools/manage_repo_work_spec.py
     markers:
       - repo-work-spec
+      - work_spec_dir_from_profile
       - specs
       - current_work_spec
       - Completion Audit
@@ -425,11 +435,15 @@ required_artifact_markers:
       - AGENTS.md bridge
       - improvement queue
       - init-repo
+      - .ai-brain/
       - target repo
   - path: README.md
     markers:
       - Start Here
       - make -C ai-brain setup
+      - .ai-brain/
+      - replaceable framework code
       - Python 3.11+
       - ai-brain/.venv/bin/python
+      - start a new Codex session
       - INSTALL_ROOT_AGENTS=0

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 from typing import Any
@@ -143,9 +144,14 @@ def validate() -> dict[str, Any]:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Validate the AI Brain framework map.")
+    parser.add_argument("--output", default=str(REPORT_PATH))
+    args = parser.parse_args()
+
     result = validate()
-    REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    REPORT_PATH.write_text(json.dumps(result, indent=2, sort_keys=True), encoding="utf-8")
+    output = Path(args.output)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(result, indent=2, sort_keys=True), encoding="utf-8")
     print(json.dumps(result, indent=2, sort_keys=True))
     raise SystemExit(0 if result["status"] == "PASS" else 1)
 
