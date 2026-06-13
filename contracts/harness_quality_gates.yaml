@@ -28,6 +28,7 @@ required_test_node_fragments:
   - tests/test_conversation_feedback.py::test_conversation_feedback_respects_cadence
   - tests/test_repo_init.py::test_repo_init_detects_product_commands_and_writes_local_files
   - tests/test_repo_init.py::test_public_docs_point_to_init_instead_of_manual_template_copying
+  - tests/test_dropin_export.py::test_dropin_export_excludes_git_and_local_artifacts
   - tests/test_target_repo_workflow.py::test_target_commands_run_detected_repo_commands
   - tests/test_target_repo_workflow.py::test_target_commands_fail_when_profile_has_no_runnable_commands
   - tests/test_target_repo_workflow.py::test_repo_work_spec_updates_state_and_target_drift
@@ -62,6 +63,7 @@ required_artifacts:
   - tools/generate_combined_report_html.py
   - tools/run_improvement_queue.py
   - tools/analyze_conversation_feedback.py
+  - tools/export_dropin_bundle.py
   - tools/init_repo_profile.py
   - tools/manage_repo_work_spec.py
   - tools/run_target_commands.py
@@ -75,6 +77,7 @@ required_artifacts:
   - tests/test_memory_state.py
   - tests/test_improvement_queue.py
   - tests/test_conversation_feedback.py
+  - tests/test_dropin_export.py
   - tests/test_target_repo_workflow.py
   - tests/test_team_framework.py
   - tests/test_team_reliability.py
@@ -107,6 +110,7 @@ required_artifact_markers:
       - state/*.local.json
       - state/reports/*.md
       - state/ai_brain_repo_profile.local.json
+      - dist/
   - path: memory/PROJECT_MEMORY.template.md
     markers:
       - Project Memory Template
@@ -220,6 +224,8 @@ required_artifact_markers:
   - path: Makefile
     markers:
       - init-repo
+      - dropin-bundle
+      - TARGET_ROOT
       - framework-drift
       - target-check
       - target-drift
@@ -233,6 +239,13 @@ required_artifact_markers:
       - ai-brain-repo-init
       - PROJECT_MEMORY.md
       - detected_commands
+  - path: tools/export_dropin_bundle.py
+    markers:
+      - export_bundle
+      - .git
+      - ai-brain-dropin
+      - PROJECT_MEMORY.md
+      - prompt_spec_template.md
   - path: tools/manage_repo_work_spec.py
     markers:
       - repo-work-spec
@@ -325,6 +338,8 @@ required_artifact_markers:
   - path: docs/agent_plumbing.md
     markers:
       - Specialist Behavior
+      - Git subtree
+      - dropin-bundle
       - Prompt-To-Agent Routing
       - source skills
       - Prompt Specs
@@ -365,6 +380,8 @@ required_artifact_markers:
     markers:
       - autonomous full-stack SDLC team
       - adoption
+      - git subtree
+      - dropin-bundle
       - improvement queue
       - init-repo
       - target repo

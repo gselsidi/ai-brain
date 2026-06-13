@@ -20,6 +20,7 @@ def test_memory_and_state_templates_describe_generic_team_framework() -> None:
     assert "provider-native" in memory
     assert "memory/PROJECT_MEMORY.md" in gitignore
     assert "state/sdlc_state.json" in gitignore
+    assert "dist/" in gitignore
     assert state["project"] == "autonomous-sdlc-team"
     assert state["status"] == "template"
     assert "team_reliability" in state["last_reports"]

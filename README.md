@@ -115,11 +115,45 @@ tangentially related.
 
 ## Drop-In Adoption
 
-1. Drop AI Brain into the repo you want it to orchestrate.
-2. Run the initializer:
+Recommended ongoing-update path: add AI Brain as a Git subtree. From the target
+repo root:
+
+```bash
+git subtree add --prefix=ai-brain https://github.com/YOUR_ORG/ai-brain.git main --squash
+```
+
+Later updates use the same prefix:
+
+```bash
+git subtree pull --prefix=ai-brain https://github.com/YOUR_ORG/ai-brain.git main --squash
+```
+
+Subtree keeps `ai-brain/` as normal files in the target repo, so ordinary
+clones, deploys, and commits see the framework without submodule setup. Do not
+copy a live AI Brain checkout with its nested `.git` directory into another repo
+and commit it; the outer repo will not store those files in the way you expect.
+
+For one-off vendoring without an upstream update path, export a clean bundle:
+
+```bash
+make dropin-bundle
+```
+
+That writes `dist/ai-brain-dropin/` without `.git`, virtualenvs, caches, local
+memory, local state, generated reports, or dated local specs. Copy that exported
+folder into the target repo when you want plain committed files.
+
+After AI Brain is in the target repo, run the initializer. If AI Brain is the
+repo root:
 
 ```bash
 make init-repo
+```
+
+If AI Brain lives in an `ai-brain/` subfolder:
+
+```bash
+make -C ai-brain init-repo TARGET_ROOT=..
 ```
 
 That inspects the checkout and creates ignored local files:
@@ -128,8 +162,8 @@ That inspects the checkout and creates ignored local files:
 - `state/sdlc_state.json`
 - `state/ai_brain_repo_profile.local.json`
 
-3. Tell your coding agent to read `AGENTS.md` before doing project work.
-4. Run the local checks and knowledge base:
+Tell your coding agent to read `AGENTS.md` before doing project work. Then run
+the local checks and knowledge base:
 
 ```bash
 ./scripts/build_and_launch.sh

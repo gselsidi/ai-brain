@@ -5,6 +5,7 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 *.egg-info/
+dist/
 site/
 specs/*.md
 specs/work/*.md

@@ -6,9 +6,23 @@ The framework provides role prompts, durable memory, planning, hardening,
 self-healing, requirements audit, maintenance, reliability scoring, and release
 evidence. It does not include a built-in product runtime.
 
-Run `make init-repo` after dropping AI Brain into a codebase. The initializer
-detects repo metadata and writes ignored local memory, state, and repo-profile
-files.
+Use Git subtree when you want AI Brain to live as normal files inside another
+repo while still being able to pull upstream updates:
+
+```bash
+git subtree add --prefix=ai-brain https://github.com/YOUR_ORG/ai-brain.git main --squash
+git subtree pull --prefix=ai-brain https://github.com/YOUR_ORG/ai-brain.git main --squash
+```
+
+Do not commit a plain nested checkout that still contains `ai-brain/.git`; use a
+subtree, an intentional submodule, or a clean exported bundle instead. For
+one-off vendoring, run `make dropin-bundle` from an AI Brain checkout and copy
+`dist/ai-brain-dropin/` into the target repo.
+
+Run `make init-repo` after adding AI Brain to a codebase. If AI Brain lives in
+an `ai-brain/` subfolder, run `make -C ai-brain init-repo TARGET_ROOT=..`. The
+initializer detects target repo metadata and writes ignored local memory, state,
+and repo-profile files.
 
 Target repo checks are first-class. `make target-check` runs safe detected repo
 commands and `make target-drift` checks repo-profile and work-spec evidence.

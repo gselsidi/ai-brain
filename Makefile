@@ -3,8 +3,9 @@ VENV ?= .venv
 HOST ?= 127.0.0.1
 KB_PORT ?= 8001
 KB_URL ?= http://localhost:$(KB_PORT)
+TARGET_ROOT ?= .
 
-.PHONY: setup init-repo repo-work-spec target-check target-drift target-release build-all docs test lint framework-check framework-drift implementation-drift improvement-queue conversation-feedback conversation-feedback-due harness-check team-reliability release-gate report-html maintenance-daily
+.PHONY: setup init-repo dropin-bundle repo-work-spec target-check target-drift target-release build-all docs test lint framework-check framework-drift implementation-drift improvement-queue conversation-feedback conversation-feedback-due harness-check team-reliability release-gate report-html maintenance-daily
 
 setup:
 	$(PYTHON) -m venv $(VENV)
@@ -13,16 +14,19 @@ setup:
 	@echo "Ready. Run: source $(VENV)/bin/activate"
 
 init-repo:
-	python tools/init_repo_profile.py
+	$(PYTHON) tools/init_repo_profile.py --root "$(TARGET_ROOT)"
+
+dropin-bundle:
+	$(PYTHON) tools/export_dropin_bundle.py --clean
 
 repo-work-spec:
-	python tools/manage_repo_work_spec.py --title "$(or $(SPEC_TITLE),repo work)"
+	$(PYTHON) tools/manage_repo_work_spec.py --title "$(or $(SPEC_TITLE),repo work)"
 
 target-check:
-	python tools/run_target_commands.py
+	$(PYTHON) tools/run_target_commands.py
 
 target-drift:
-	python tools/check_target_drift.py
+	$(PYTHON) tools/check_target_drift.py
 
 target-release: target-check target-drift
 
@@ -33,39 +37,39 @@ docs:
 	mkdocs serve --dev-addr $(HOST):$(KB_PORT)
 
 test:
-	python tools/run_tests_with_report.py
+	$(PYTHON) tools/run_tests_with_report.py
 
 lint:
 	ruff check team_framework tests tools
 
 framework-check:
-	python tools/validate_agentic_framework.py
+	$(PYTHON) tools/validate_agentic_framework.py
 
 framework-drift:
-	python tools/check_implementation_drift.py
+	$(PYTHON) tools/check_implementation_drift.py
 
 implementation-drift: framework-drift
 
 improvement-queue:
-	python tools/run_improvement_queue.py
+	$(PYTHON) tools/run_improvement_queue.py
 
 conversation-feedback:
-	python tools/analyze_conversation_feedback.py --force
+	$(PYTHON) tools/analyze_conversation_feedback.py --force
 
 conversation-feedback-due:
-	python tools/analyze_conversation_feedback.py
+	$(PYTHON) tools/analyze_conversation_feedback.py
 
 harness-check:
-	python tools/validate_harness_quality.py
+	$(PYTHON) tools/validate_harness_quality.py
 
 team-reliability:
-	python tools/score_team_reliability.py
+	$(PYTHON) tools/score_team_reliability.py
 
 release-gate:
-	python tools/run_release_gate.py
+	$(PYTHON) tools/run_release_gate.py
 
 report-html:
-	python tools/generate_combined_report_html.py
+	$(PYTHON) tools/generate_combined_report_html.py
 
 maintenance-daily:
 	mkdir -p state/reports

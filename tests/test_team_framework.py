@@ -27,6 +27,22 @@ def test_team_framework_contract_has_no_default_product_runtime() -> None:
     assert "no default product runtime" in readme
 
 
+def test_dropin_adoption_avoids_nested_git_checkouts() -> None:
+    expected = (ROOT / "contracts/expected_behavior.md").read_text()
+    readme = (ROOT / "README.md").read_text()
+    plumbing = (ROOT / "docs/agent_plumbing.md").read_text()
+    framework_map = yaml.safe_load((ROOT / "contracts/agentic_framework_map.yaml").read_text())
+
+    assert "Git subtree" in plumbing
+    assert "git subtree add --prefix=ai-brain" in readme
+    assert "git subtree pull --prefix=ai-brain" in readme
+    assert "make dropin-bundle" in readme
+    assert "nested `.git`" in readme
+    assert "make -C ai-brain init-repo TARGET_ROOT=.." in expected
+    assert "plain nested `.git`\ndirectory is not a supported committed state" in expected
+    assert "dropin_vendoring" in framework_map["local_unique_capabilities"]
+
+
 def test_prompt_spec_template_and_current_spec_are_actionable() -> None:
     template = (ROOT / "specs/prompt_spec_template.md").read_text()
     gitignore = (ROOT / ".gitignore").read_text()

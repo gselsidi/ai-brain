@@ -172,8 +172,11 @@ The real `memory/PROJECT_MEMORY.md` and `state/sdlc_state.json` files are
 workspace-local and ignored by git. Do not commit local memory or lifecycle
 state files.
 
-Run `make init-repo` after dropping AI Brain into a product checkout. It
-inspects the repo and populates local memory, local lifecycle state, and a
+Run `make init-repo` after adding AI Brain to a product checkout. If AI Brain
+lives in an `ai-brain/` subfolder, run
+`make -C ai-brain init-repo TARGET_ROOT=..` from the target repo root so the
+profile describes the target checkout rather than the framework subfolder. The
+initializer populates local memory, local lifecycle state, and a
 machine-readable repo profile. Contracts remain AI Brain framework contracts;
 do not manually copy the memory template or replace the tracked generic
 framework contracts just to adopt the harness.

@@ -25,7 +25,8 @@ user supplies or explicitly requests a target project.
 
 Workflow:
 1. Run `make init-repo` when local repo profile, memory, or state files are
-   missing.
+   missing. If AI Brain lives under an `ai-brain/` prefix inside a target repo,
+   run `make -C ai-brain init-repo TARGET_ROOT=..` from the target repo root.
 2. Recover context from AGENTS.md, local memory/PROJECT_MEMORY.md, and
    state/ai_brain_repo_profile.local.json when they exist.
 3. For broad, ambiguous, risky, or outcome-oriented prompts, run `/goal` first.

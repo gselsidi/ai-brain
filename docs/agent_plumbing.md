@@ -8,6 +8,30 @@ There is no built-in product runtime. Adopting teams bring their own codebase
 and product checks. AI Brain initializes local repo context from that checkout
 with `make init-repo`.
 
+## Vendoring Into A Target Repo
+
+Use Git subtree when a target repo should commit AI Brain as ordinary files and
+still pull upstream framework updates:
+
+```bash
+git subtree add --prefix=ai-brain https://github.com/YOUR_ORG/ai-brain.git main --squash
+git subtree pull --prefix=ai-brain https://github.com/YOUR_ORG/ai-brain.git main --squash
+```
+
+Subtree avoids the nested `.git` problem while keeping clones and deploys
+simple. A Git submodule is valid only when the team wants the target repo to
+store a pointer to a separate checkout. A plain nested `.git` directory is local
+only and should not be treated as committed framework contents.
+
+For one-off vendoring, `make dropin-bundle` exports `dist/ai-brain-dropin/`
+without `.git`, caches, virtualenvs, local memory, local state, generated
+reports, or local dated specs. After adding AI Brain under an `ai-brain/`
+prefix, initialize against the parent target repo:
+
+```bash
+make -C ai-brain init-repo TARGET_ROOT=..
+```
+
 ## Mental Model
 
 ```text
@@ -138,6 +162,7 @@ implementation, update the spec or document the boundary before continuing.
 
 | Gate | Command | Report |
 | --- | --- | --- |
+| Drop-in bundle | `make dropin-bundle` | `dist/ai-brain-dropin/` |
 | Repo initialization | `make init-repo` | `state/ai_brain_repo_profile.local.json` |
 | Repo work spec | `make repo-work-spec` | `specs/work/YYYY-MM-DD_short_slug.md` |
 | Target commands | `make target-check` | `state/reports/target-command_report.json` |

@@ -46,6 +46,7 @@ required_artifacts:
   - tools/generate_combined_report_html.py
   - tools/run_improvement_queue.py
   - tools/analyze_conversation_feedback.py
+  - tools/export_dropin_bundle.py
   - tools/init_repo_profile.py
   - tools/manage_repo_work_spec.py
   - tools/run_target_commands.py
@@ -89,6 +90,8 @@ required_document_markers:
       - Prompt Specs
       - init-repo
       - prompt-to-agent routing
+      - git subtree
+      - dropin-bundle
       - Marketing Skills
       - RampStack
   - path: START_HERE_WITH_CODEX.md
@@ -111,6 +114,8 @@ required_document_markers:
       - Memory And State
       - Prompt Specs
       - Prompt-To-Agent Routing
+      - Git subtree
+      - dropin-bundle
       - source skills
       - no built-in product runtime
       - target-drift

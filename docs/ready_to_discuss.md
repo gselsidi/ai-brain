@@ -15,15 +15,35 @@ team to rewrite framework files by hand.
 
 ## How To Adopt It
 
-Start by dropping AI Brain into a target codebase and running:
+Best default: add AI Brain to a target codebase as a Git subtree so the
+framework is committed as normal files and can still pull upstream updates:
+
+```bash
+git subtree add --prefix=ai-brain https://github.com/YOUR_ORG/ai-brain.git main --squash
+git subtree pull --prefix=ai-brain https://github.com/YOUR_ORG/ai-brain.git main --squash
+```
+
+Use a submodule only when you intentionally want the target repo to store a
+pointer to a separate AI Brain checkout. Avoid committing a plain nested `.git`
+directory; normal clones and deploys will not get the contents as ordinary
+files. For one-off vendoring, `make dropin-bundle` creates
+`dist/ai-brain-dropin/` without Git internals or local generated artifacts.
+
+After adding AI Brain to the target codebase, run:
 
 ```bash
 make init-repo
 ```
 
+If AI Brain is in an `ai-brain/` subfolder, run:
+
+```bash
+make -C ai-brain init-repo TARGET_ROOT=..
+```
+
 That creates ignored local memory, lifecycle state, and a repo profile from the
-checkout. Then keep the evidence loop: test report, framework drift, harness
-quality, reliability scoring, requirements audit, and release gate.
+target checkout. Then keep the evidence loop: test report, framework drift,
+harness quality, reliability scoring, requirements audit, and release gate.
 
 Each project-work prompt should create a durable spec before implementation so
 planning, ownership, and verification are auditable.

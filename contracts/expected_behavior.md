@@ -13,6 +13,8 @@ The framework should help a team run repeatable autonomous delivery:
 
 - recover context from durable memory
 - initialize local repo context with `make init-repo`
+- support safe vendoring through Git subtree or a clean exported bundle instead
+  of plain nested `.git` checkouts
 - prefer provider-native `/goal` or planning input when the active runtime
   supports it, otherwise clarify inside AI Brain, then always continue through
   AI Brain's SDLC loop
@@ -59,6 +61,8 @@ The framework should help a team run repeatable autonomous delivery:
   workspace files generated or updated by `make init-repo`.
 - `state/ai_brain_repo_profile.local.json`: ignored machine-readable profile of
   the target checkout.
+- `tools/export_dropin_bundle.py`: clean bundle exporter for one-off vendoring
+  without Git internals or local generated artifacts.
 - `specs/work/YYYY-MM-DD_short_slug.md`: repo-level work spec for target repo
   changes and evidence.
 - `state/reports/target-command_report.json`: target repo command evidence.
@@ -165,6 +169,18 @@ This framework intentionally does not include a default product implementation.
 When another team adopts it, the product already lives in the target repo. AI
 Brain should infer local context from that repo instead of requiring manual
 replacement of generic framework files.
+
+Default vendoring guidance is Git subtree when the target repo should contain
+AI Brain as ordinary committed files while retaining an upstream update path.
+For one-off vendoring, `make dropin-bundle` creates a clean copy without `.git`,
+virtualenvs, caches, local memory, local state, generated reports, or local
+dated specs. A Git submodule is an intentional alternative only when the target
+repo should store a pointer to a separate checkout. A plain nested `.git`
+directory is not a supported committed state.
+
+When AI Brain lives under an `ai-brain/` prefix in the target repo, initialize
+local context with `make -C ai-brain init-repo TARGET_ROOT=..` so repo profiling
+uses the target checkout rather than the framework subfolder.
 
 The tracked files under `contracts/` describe AI Brain itself: roles, gates,
 memory rules, prompt specs, checks, and release behavior. They are not populated

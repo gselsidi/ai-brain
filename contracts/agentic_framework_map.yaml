@@ -77,6 +77,18 @@ local_unique_capabilities:
       - memory/PROJECT_MEMORY.template.md
       - docs/memory.md
       - README.md
+  dropin_vendoring:
+    description: >
+      Generic adoption guidance and exporter for adding AI Brain to any target
+      repo without committing a plain nested .git checkout; recommends Git
+      subtree for ongoing updates and a clean bundle for one-off vendoring.
+    artifacts:
+      - tools/export_dropin_bundle.py
+      - Makefile
+      - README.md
+      - docs/agent_plumbing.md
+      - docs/ready_to_discuss.md
+      - docs/index.md
   target_repo_workflow:
     description: >
       Target-repo adapter that keeps repo work specs, runs detected repo

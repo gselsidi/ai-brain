@@ -18,6 +18,8 @@ DEFAULT_REPORT = ROOT / "state" / "reports" / "test_report.json"
 SECTION_BY_FILE = {
     "tests/test_agentic_framework_map.py": "Agent Skills Framework Tests",
     "tests/test_combined_report_html.py": "Report Rendering Tests",
+    "tests/test_conversation_feedback.py": "Harness Quality Tests",
+    "tests/test_dropin_export.py": "Harness Quality Tests",
     "tests/test_harness_quality_contract.py": "Harness Quality Tests",
     "tests/test_health.py": "Team Framework Tests",
     "tests/test_improvement_queue.py": "Harness Quality Tests",
