@@ -27,8 +27,8 @@ phase, artifact changes, division signals, adjacent disciplines, and likely
 evidence gates. Consult `contracts/domain_agent_routing.yaml` or run
 `python tools/select_agent_route.py --prompt "<prompt>"` when available, then
 record primary division, adjacent divisions, selected framework agents,
-selected specialists, deferred specialists, routing assumptions, and
-verification gates in the prompt spec.
+selected specialists, deferred specialists, selected source skills, deferred
+source skills, routing assumptions, and verification gates in the prompt spec.
 
 Use division-first routing with a token-thrifty default. Select one primary
 division such as engineering/programming, marketing, sales, design, product,
@@ -37,6 +37,14 @@ names their concern, source artifacts expose it, or a failed gate proves that
 extra lens is needed. Do not fan out to a whole folder or every possible agent
 without a concrete reason; keep deferred specialists visible in the spec so the
 team can escalate later without rediscovering context.
+
+When source-catalog contracts such as
+`contracts/marketing_skill_integration.yaml` or
+`contracts/rampstack_skill_integration.yaml` are present, treat them as
+metadata-only skill catalogs. Merge matching source skill concepts into
+existing lifecycle lanes when possible, expose unmatched concepts as optional
+source-catalog lenses, and select only the few lenses justified by the prompt.
+Do not load or claim all source-catalog skills by default.
 
 For programming tasks, start with the engineering division and branch only as
 needed into architecture, implementation, tests, security, performance, docs, or

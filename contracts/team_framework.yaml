@@ -35,6 +35,8 @@ required_artifacts:
   - contracts/team_framework.yaml
   - contracts/agentic_framework_map.yaml
   - contracts/domain_agent_routing.yaml
+  - contracts/marketing_skill_integration.yaml
+  - contracts/rampstack_skill_integration.yaml
   - specs/prompt_spec_template.md
   - memory/PROJECT_MEMORY.template.md
   - state/sdlc_state.template.json
@@ -75,6 +77,8 @@ required_document_markers:
       - release gate
       - make init-repo
       - domain_agent_routing.yaml
+      - marketing_skill_integration.yaml
+      - rampstack_skill_integration.yaml
   - path: README.md
     markers:
       - autonomous full-stack SDLC team
@@ -85,6 +89,8 @@ required_document_markers:
       - Prompt Specs
       - init-repo
       - prompt-to-agent routing
+      - Marketing Skills
+      - RampStack
   - path: START_HERE_WITH_CODEX.md
     markers:
       - autonomous full-stack SDLC team
@@ -92,6 +98,8 @@ required_document_markers:
       - ai_brain_repo_profile.local.json
       - specs/prompt_spec_template.md
       - domain_agent_routing.yaml
+      - marketing_skill_integration.yaml
+      - rampstack_skill_integration.yaml
       - make maintenance-daily
       - conversation-feedback
       - target-check
@@ -103,6 +111,7 @@ required_document_markers:
       - Memory And State
       - Prompt Specs
       - Prompt-To-Agent Routing
+      - source skills
       - no built-in product runtime
       - target-drift
       - init-repo
@@ -137,6 +146,7 @@ required_document_markers:
     markers:
       - Prompt Spec Template
       - Prompt-To-Agent Routing
+      - Selected source skills
       - Requirements Checklist
       - Implementation Chunks
       - Completion Audit

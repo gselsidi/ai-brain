@@ -1,0 +1,503 @@
+version: 1
+name: rampstack-skill-integration
+purpose: Map RampStack Claude Skills into AI Brain lifecycle skills, routing divisions, and optional source-catalog
+  lenses without vendoring upstream skill bodies.
+source:
+  repository: https://github.com/rampstackco/claude-skills
+  inspected_commit: c0b6ba8004ec12985d0a336197b1800adfb5a9dd
+  license: MIT
+  inspected_skill_count: 103
+  catalog_claim: 103 skills in the rendered GitHub README; raw README may lag at 102.
+  integration_mode: metadata_mapping_only_no_skill_body_copy
+routing_policy:
+  default: merge into existing AI Brain lifecycle skills when the lifecycle role already exists; otherwise
+    expose as a new optional catalog lens.
+  token_budget: Select only a few source skills per prompt and defer plausible extras.
+  tool_boundary: tool_dependent_lens skills require adopting-team MCPs, credentials, or data before execution.
+category_mappings:
+  brand:
+    divisions:
+    - design
+    - marketing
+    merge_into: brand_and_design_lens
+    default_action: add_catalog_lens
+    skills:
+    - slug: brand-archetype-system
+      summary: '12 archetype defaults across 18 verticals: color, type, voice, imagery starters'
+      integration_action: add_catalog_lens
+    - slug: brand-ideation
+      summary: Naming, positioning territories, mood directions, narrative angles
+      integration_action: add_catalog_lens
+    - slug: brand-identity
+      summary: Logo system, color, typography, imagery, iconography, motion
+      integration_action: add_catalog_lens
+    - slug: brand-style-guide
+      summary: The canonical reference document for the full brand system
+      integration_action: add_catalog_lens
+    - slug: brand-voice
+      summary: Voice attributes, tone shifts, vocabulary, paired-example library
+      integration_action: add_catalog_lens
+    - slug: creative-brief-selector
+      summary: Live-reference-grounded creative briefs with divergence check against prior builds
+      integration_action: add_catalog_lens
+    - slug: logo-design
+      summary: Logo variants across architectures (wordmark, lockup, monogram, letterform-as-symbol),
+        with rationale and application specs
+      integration_action: add_catalog_lens
+  content:
+    divisions:
+    - marketing
+    merge_into: marketing_content_lens
+    default_action: add_catalog_lens
+    skills:
+    - slug: ai-content-collaboration
+      summary: 'How humans and AI compose in content workflows: participation boundaries, hybrid patterns,
+        voice ownership, the AI slop problem, disclosure and transparency, team calibration, and the ethics
+        of honest AI-assisted production'
+      integration_action: add_catalog_lens
+    - slug: content-and-copy
+      summary: Website copy, blog content, content production frameworks
+      integration_action: add_catalog_lens
+    - slug: content-brief-authoring
+      summary: 'Per-piece editorial brief: target keyword, intent, audience, outline, entity coverage,
+        internal linking, success criteria, and the discipline that distinguishes useful briefs from bloat'
+      integration_action: add_catalog_lens
+    - slug: content-distribution
+      summary: 'Content distribution discipline: owned, earned, and paid channels matched to audience
+        and content type. Channel-fit decisions, distribution cadence, the strategic alternative to spam-everywhere
+        or hope-and-pray'
+      integration_action: add_catalog_lens
+    - slug: content-refresh-system
+      summary: 'Systematic content refresh: quarterly audits, refresh prioritization, refresh-vs-merge-vs-delete
+        decisions, the lifecycle discipline that distinguishes intentional programs from set-and-forget
+        decay'
+      integration_action: add_catalog_lens
+    - slug: content-repurposing
+      summary: 'Cross-format content adaptation: one piece becomes many (blog series, email, social, webinar,
+        podcast, video) with per-format adaptation rather than mass-blast that ignores medium constraints'
+      integration_action: add_catalog_lens
+    - slug: editorial-qa
+      summary: 'Pre-publish QA framework: brief adherence, voice consistency, fact accuracy, AI-content
+        audit, AEO/SEO compliance, sampling at scale, and the workflow that distinguishes catch-problems
+        QA from process theater'
+      integration_action: add_catalog_lens
+    - slug: email-sequences
+      summary: Onboarding flows, lifecycle campaigns, transactional copy
+      integration_action: add_catalog_lens
+    - slug: evidence-based-reviews
+      summary: Evidence tiers, methodology disclosure, honest review claims
+      integration_action: add_catalog_lens
+    - slug: landing-page-copy
+      summary: Landing pages, sales pages, hero-to-CTA flow
+      integration_action: add_catalog_lens
+    - slug: long-form-content-frameworks
+      summary: Structural patterns for individual long-form pieces (case studies, whitepapers, research
+        reports, definitive guides, manifestos, ebooks, long-form tutorials) that distinguish publication-quality
+        work from bloggy-long padding or academic bloat
+      integration_action: add_catalog_lens
+    - slug: pillar-content-architecture
+      summary: 'Hub-level content architecture: pillar topic selection, cluster planning, internal linking,
+        URL structure, pillar and cluster page anatomy, topical authority signals, refresh discipline'
+      integration_action: add_catalog_lens
+    - slug: programmatic-seo
+      summary: 'Designing pSEO programs that work: data sources, template design, quality control at scale,
+        internal linking, crawl budget, AEO/GEO patterns, refresh discipline, and when pSEO is and is
+        not the right answer'
+      integration_action: add_catalog_lens
+  cross-cutting:
+    divisions:
+    - engineering
+    - product
+    - support
+    - security
+    merge_into: cross_cutting_delivery_lifecycle
+    default_action: merge_existing
+    skills:
+    - slug: content-migration
+      summary: Platform migrations with SEO equity preservation
+      integration_action: merge_existing
+    - slug: cost-optimization
+      summary: Infrastructure spend audits, rightsizing, contract negotiation
+      integration_action: merge_existing
+    - slug: dependency-management
+      summary: Package updates, security patches, lockfile hygiene
+      integration_action: merge_existing
+    - slug: form-strategy
+      summary: Form design, validation patterns, spam prevention, conversion tuning
+      integration_action: add_catalog_lens
+    - slug: internationalization
+      summary: Locale strategy, hreflang, translation workflow, RTL design
+      integration_action: add_catalog_lens
+  design:
+    divisions:
+    - design
+    - engineering
+    merge_into: design_and_frontend_lens
+    default_action: add_catalog_lens
+    skills:
+    - slug: art-direction
+      summary: Photography, illustration, and visual direction for campaigns
+      integration_action: add_catalog_lens
+    - slug: design-standards
+      summary: Production-grade page and component design standards
+      integration_action: add_catalog_lens
+    - slug: design-system
+      summary: Component library, design tokens, design system documentation
+      integration_action: add_catalog_lens
+    - slug: vertical-site-conventions
+      summary: Vertical page and site composition built to the experience bar
+      integration_action: add_catalog_lens
+  development:
+    divisions:
+    - engineering
+    merge_into: engineering_delivery_lifecycle
+    default_action: merge_existing
+    skills:
+    - slug: accessibility-audit
+      summary: WCAG compliance audit with remediation plan
+      integration_action: merge_existing
+    - slug: code-review-web
+      summary: PR review, build error diagnosis, security and quality checks
+      integration_action: merge_existing
+    - slug: frontend-component-build
+      summary: Component architecture, props design, accessibility from the start
+      integration_action: merge_existing
+    - slug: performance-optimization
+      summary: Core Web Vitals, asset optimization, render performance
+      integration_action: merge_existing
+  growth:
+    divisions:
+    - marketing
+    - product
+    merge_into: growth_measurement_lens
+    default_action: add_catalog_lens
+    skills:
+    - slug: analytics-strategy
+      summary: Measurement frameworks, dashboard design, event taxonomy
+      integration_action: add_catalog_lens
+    - slug: cro-optimization
+      summary: Hypothesis-driven testing, conversion optimization
+      integration_action: add_catalog_lens
+  growth-tooling:
+    divisions:
+    - marketing
+    - sales
+    - product
+    - design
+    merge_into: interactive_growth_tool_lens
+    default_action: add_catalog_lens
+    skills:
+    - slug: calculator-design
+      summary: Designing interactive calculators that deliver decision-support value while qualifying
+        leads. Distinguishes vanity-calculator (no real value) from lead-trap (hides answer behind email)
+        from transparent-decision-tool (gives genuine value, captures leads honestly)
+      integration_action: add_catalog_lens
+    - slug: chatbot-flow-design
+      summary: Designing conversational flows for chatbots and AI agents on websites. Distinguishes scripted-bot
+        (rigid trees, fail edge cases) from hallucinating-bot (LLM without structure, makes things up)
+        from structured-guided-conversation (LLM-powered with intent architecture and fallback discipline)
+      integration_action: add_catalog_lens
+    - slug: comparison-tool-design
+      summary: Designing comparison tools that help users decide. Distinguishes feature-list-dump (every
+        feature in a row, no decision support) from hidden-recommendation (biased comparison pretending
+        to be neutral) from honest-comparison-with-guidance (genuine comparison plus opinionated recommendation)
+      integration_action: add_catalog_lens
+    - slug: funnel-flow-architecture
+      summary: Architecting cross-tool conversion flows that match audience and stage. Distinguishes silo-funnels
+        (every tool standalone) from kitchen-sink-funnels (every audience squeezed through one path) from
+        matched-funnels (architecture matched to audience-and-stage)
+      integration_action: add_catalog_lens
+    - slug: interactive-product-tour
+      summary: Designing in-product tours and contextual help. Distinguishes tooltip-spam (every button
+        has a tour stop) from one-and-done (tour shows once, never seen again) from contextual-when-needed
+        (surfaces help at the moment friction occurs)
+      integration_action: add_catalog_lens
+    - slug: lead-magnet-design
+      summary: Designing gated content that earns the email. Distinguishes thin-bait (overpromises, underdelivers)
+        from kitchen-sink-resource (everything, helps with nothing) from earned-value-magnet (delivers
+        standalone value while qualifying the lead)
+      integration_action: add_catalog_lens
+    - slug: multi-step-form-design
+      summary: Designing multi-step forms that respect cognitive load while maintaining completion intent.
+        Distinguishes kitchen-sink-single-page (overwhelms) from progress-theater (steps without genuine
+        staging) from genuinely-staged (each step earns its own page)
+      integration_action: add_catalog_lens
+    - slug: onboarding-wizard-design
+      summary: Designing first-run product onboarding wizards. Distinguishes tutorial-overload (dump everything
+        upfront) from skip-friendly-empty (skipped onboarding leads to abandoned product) from earned-progressive-disclosure
+        (right things at the right moments)
+      integration_action: add_catalog_lens
+    - slug: product-configurator-design
+      summary: Designing interactive product configurators. Distinguishes infinite-options (decision paralysis
+        from too many options) from canned-bundles-only (no real customization) from guided-configuration
+        (smart defaults plus meaningful constraints plus escape hatches)
+      integration_action: add_catalog_lens
+    - slug: quiz-and-assessment-design
+      summary: Designing quizzes and assessments that produce actionable segmentation. Distinguishes clickbait-quiz
+        (engagement only) from vanity-result (entertaining, not useful) from actionable-segmentation (genuine
+        categorization that drives next-step recommendations)
+      integration_action: add_catalog_lens
+    - slug: scheduler-and-booking-design
+      summary: Designing schedulers and booking flows. Distinguishes any-time-friction (no qualification,
+        just a booking link) from interrogation-gate (so much qualification it scares users off) from
+        qualified-fast-path (just enough qualification to set up the call well)
+      integration_action: add_catalog_lens
+    - slug: upgrade-flow-design
+      summary: Designing free-to-paid conversion flows. Distinguishes paywall-everywhere (gates everything
+        aggressively) from free-forever-trap (no upgrade path surfaces) from value-triggered-upgrade (paywall
+        surfaces at moments of demonstrated value)
+      integration_action: add_catalog_lens
+  marketing:
+    divisions:
+    - marketing
+    merge_into: paid_media_lens
+    default_action: add_catalog_lens
+    skills:
+    - slug: ads-creative-development
+      summary: Hook patterns, format selection, video pacing, variation systems, testing methodology,
+        fatigue detection, and the platform-specific creative norms that separate ads from clutter
+      integration_action: add_catalog_lens
+    - slug: ads-performance-analytics
+      summary: 'Read paid media dashboards without fooling yourself: attribution models, platform reporting
+        quirks, ROAS vs LTV, multi-platform reconciliation, incrementality testing, and the interpretation
+        failures that compound into wasted budget'
+      integration_action: add_catalog_lens
+    - slug: paid-media-strategy
+      summary: 'Hypothesis to spend: channel selection, budget allocation, audience targeting, bid strategy,
+        attribution reality, and the failure modes that burn agency-scale budgets'
+      integration_action: add_catalog_lens
+  operations:
+    divisions:
+    - support
+    - security
+    - engineering
+    merge_into: ship_maintain_and_incident_lifecycle
+    default_action: merge_existing
+    skills:
+    - slug: after-action-report
+      summary: Post-mortems, retros, learnings documentation
+      integration_action: merge_existing
+    - slug: backup-and-disaster-recovery
+      summary: RPO/RTO targets, backup strategy, restoration drills
+      integration_action: merge_existing
+    - slug: domain-strategy
+      summary: DNS architecture, redirects, registrars, multi-domain portfolios
+      integration_action: merge_existing
+    - slug: email-deliverability
+      summary: DMARC, SPF, DKIM, sender reputation, deliverability monitoring
+      integration_action: merge_existing
+    - slug: incident-response
+      summary: Incident triage, comms, mitigation, escalation
+      integration_action: merge_existing
+    - slug: launch-runbook
+      summary: Go-live runbook, DNS cutover, deploy day procedures
+      integration_action: merge_existing
+    - slug: media-asset-management
+      summary: Image pipelines, video hosting, asset libraries, format selection
+      integration_action: merge_existing
+    - slug: monitoring-and-alerting
+      summary: SLO design, uptime checks, alert routing, on-call rotations
+      integration_action: merge_existing
+    - slug: security-baseline
+      summary: HTTPS, security headers, CSP, secrets management, vulnerability scans
+      integration_action: merge_existing
+  process-and-team:
+    divisions:
+    - support
+    - product
+    merge_into: team_workflow_and_docs_lifecycle
+    default_action: merge_existing
+    skills:
+    - slug: documentation-strategy
+      summary: Documentation systems, what to document, maintenance cadence
+      integration_action: merge_existing
+    - slug: skill-creation-walkthrough
+      summary: 'The meta-skill: how to write your own custom skills'
+      integration_action: merge_existing
+    - slug: stakeholder-communication
+      summary: Status updates, exec readouts, project communications
+      integration_action: merge_existing
+    - slug: team-onboarding-playbook
+      summary: 30-60-90 onboarding plans for new hires and contractors
+      integration_action: merge_existing
+    - slug: vendor-evaluation
+      summary: Tool and vendor selection using a structured rubric
+      integration_action: merge_existing
+  product:
+    divisions:
+    - product
+    merge_into: product_context_and_planning
+    default_action: merge_existing
+    skills:
+    - slug: beta-program-management
+      summary: Running betas that produce real signal. Participant selection, structured feedback, beta-to-GA
+        decisions. Distinguishes soft-launch (no structure) from kitchen-sink (everyone in) from structured-beta
+        (calibrated cohort with intentional feedback loops)
+      integration_action: add_catalog_lens
+    - slug: data-warehouse-experimentation
+      summary: 'Run experiments out of the warehouse: SQL assignment, exposure logs, dbt metric definitions,
+        statistical analysis, variance reduction with CUPED, sequential testing, and the operational tradeoffs
+        vs platforms'
+      integration_action: add_catalog_lens
+    - slug: experiment-design
+      summary: 'Hypothesis to decision: sample size, duration, segment analysis, interpretation, and the
+        failure modes that produce wrong shipping calls'
+      integration_action: add_catalog_lens
+    - slug: experimentation-analytics
+      summary: 'Read result panels without fooling yourself: confidence intervals, p-values, multiple
+        testing, sequential testing, CUPED, ratio metrics, network effects, dashboard reconciliation'
+      integration_action: add_catalog_lens
+    - slug: experimentation-platform-orchestrator
+      summary: 'Pick the right experimentation platform, migrate when wrong, coordinate when multi-platform:
+        a decision framework for Statsig, PostHog, GrowthBook, Optimizely, Amplitude, Eppo, Kameleoon'
+      integration_action: add_catalog_lens
+    - slug: feature-flagging
+      summary: 'Flags as production infrastructure: types, naming, lifecycle, targeting, rollout, stale
+        flag cleanup, governance'
+      integration_action: add_catalog_lens
+    - slug: feature-launch-playbook
+      summary: 'The operational discipline of launching a feature well: positioning, internal alignment,
+        customer comms, sales enablement, support readiness, rollout strategy, monitoring, and post-launch
+        measurement'
+      integration_action: merge_existing
+    - slug: integration-orchestrator
+      summary: Sequence creative-direction work across phases, gates, handoffs, and QA verification
+      integration_action: add_catalog_lens
+    - slug: jtbd-framing
+      summary: Jobs-to-be-Done framework. Job statements, struggling moments, hire/fire criteria, the
+        difference between feature-thinking and job-thinking. Honest about where JTBD earns its keep and
+        where it becomes performative
+      integration_action: add_catalog_lens
+    - slug: okr-design
+      summary: OKR design discipline. Outcome statements, key results, scoring, mid-quarter recalibration.
+        Distinguishes sandbagged OKRs (always hit, useless) from aspirational fantasy (impossible, demoralizing)
+        from stretch OKRs (genuine ambition with quarterly accountability)
+      integration_action: add_catalog_lens
+    - slug: pm-spec-writing
+      summary: PRDs, user stories, acceptance criteria, dev briefs
+      integration_action: merge_existing
+    - slug: product-analytics-setup
+      summary: 'Instrument product analytics correctly: event taxonomy, properties, naming conventions,
+        schema versioning, funnels, retention cohorts, North Star selection, and the instrumentation debt
+        that compounds without discipline'
+      integration_action: add_catalog_lens
+    - slug: roadmap-planning
+      summary: Quarterly planning, prioritization, dependency mapping
+      integration_action: merge_existing
+  qa:
+    divisions:
+    - testing
+    merge_into: test_and_quality_lifecycle
+    default_action: merge_existing
+    skills:
+    - slug: qa-testing
+      summary: Pre-launch QA, regression testing, cross-browser checks
+      integration_action: merge_existing
+  research:
+    divisions:
+    - product
+    - design
+    merge_into: research_and_discovery_lens
+    default_action: add_catalog_lens
+    skills:
+    - slug: competitor-experience-audit
+      summary: Cross-site experience patterns and gaps across a vertical
+      integration_action: add_catalog_lens
+    - slug: discovery-research-synthesis
+      summary: Synthesizing customer interviews, research notes, and support tickets into actionable PM
+        decisions. Distinguishes data-dump (no synthesis) from insight-theater (overpolished narrative)
+        from actionable synthesis (decision-grade clarity)
+      integration_action: add_catalog_lens
+    - slug: journey-mapping
+      summary: Customer journey maps, service blueprints, friction analysis
+      integration_action: add_catalog_lens
+    - slug: usability-testing
+      summary: Test design, moderation, findings reports
+      integration_action: add_catalog_lens
+    - slug: user-feedback-aggregation
+      summary: Collecting and synthesizing user feedback across channels into continuous decision signal.
+        Triage discipline that distinguishes loudest-voice (whoever complains most) from averaged-noise
+        (every signal weighted equally) from triaged-synthesis (weighted by source quality and decision
+        relevance)
+      integration_action: add_catalog_lens
+    - slug: ux-research
+      summary: Research planning, user interviews, qualitative synthesis
+      integration_action: add_catalog_lens
+  seo-audit-suite:
+    divisions:
+    - marketing
+    merge_into: tool_dependent_seo_audit_lens
+    default_action: tool_dependent_lens
+    skills:
+    - slug: seo-audit-orchestration
+      summary: 'Master orchestrator: sequences the suite, produces a rollup report'
+      integration_action: tool_dependent_lens
+    - slug: seo-backlink-audit
+      summary: Profile health, anchor mix, toxic links, reclamation, gap analysis
+      integration_action: tool_dependent_lens
+    - slug: seo-content-gap-audit
+      summary: Missing topics, thin coverage, outdated content, decay diagnosis
+      integration_action: tool_dependent_lens
+    - slug: seo-keyword-gap-audit
+      summary: Competitor keyword gaps with opportunity scoring and clustering
+      integration_action: tool_dependent_lens
+    - slug: seo-rank-tracking
+      summary: Setup, baseline, segmentation, alerting, dashboarding
+      integration_action: tool_dependent_lens
+    - slug: seo-site-health-audit
+      summary: Triage Ahrefs Site Audit findings by SEO impact, not severity
+      integration_action: tool_dependent_lens
+    - slug: seo-traffic-diagnosis
+      summary: Diagnose drops, stalls, or wins via 5-layer root cause analysis
+      integration_action: tool_dependent_lens
+  seo-foundation:
+    divisions:
+    - marketing
+    merge_into: marketing_seo_lens
+    default_action: add_catalog_lens
+    skills:
+    - slug: seo-aeo-geo
+      summary: AI search optimization, llms.txt, extraction-friendly content
+      integration_action: add_catalog_lens
+    - slug: seo-competitor
+      summary: SERP overlap, content gaps, backlink gaps, technical comparison
+      integration_action: add_catalog_lens
+    - slug: seo-content-audit
+      summary: Keep/update/merge/redirect/delete decisions across a site
+      integration_action: add_catalog_lens
+    - slug: seo-keyword
+      summary: Discovery, intent classification, clustering, prioritization
+      integration_action: add_catalog_lens
+    - slug: seo-offpage
+      summary: Link building, digital PR, citations, linkable assets
+      integration_action: add_catalog_lens
+    - slug: seo-onpage
+      summary: Single-page audits and optimization across 8 dimensions
+      integration_action: add_catalog_lens
+    - slug: seo-technical
+      summary: Crawlability, indexability, rendering, schema, page experience
+      integration_action: add_catalog_lens
+  strategy-and-discovery:
+    divisions:
+    - product
+    - design
+    - marketing
+    merge_into: product_context_and_planning
+    default_action: merge_existing
+    skills:
+    - slug: brand-discovery
+      summary: Audience research, competitive scan, positioning territory exploration
+      integration_action: merge_existing
+    - slug: content-strategy
+      summary: Editorial strategy, content calendar, topical authority planning
+      integration_action: add_catalog_lens
+    - slug: creative-brief
+      summary: Project briefs that align stakeholders before work starts
+      integration_action: merge_existing
+    - slug: creative-direction
+      summary: Four-axis aesthetic brief (tone, aesthetic, audience, sensory ambition) for cross-skill
+        coherence
+      integration_action: add_catalog_lens
+    - slug: information-architecture
+      summary: Sitemap, navigation, URL structure, content types, taxonomy
+      integration_action: add_catalog_lens

@@ -163,9 +163,34 @@ local_unique_capabilities:
       justifies the extra token spend.
     artifacts:
       - contracts/domain_agent_routing.yaml
+      - contracts/marketing_skill_integration.yaml
+      - contracts/rampstack_skill_integration.yaml
       - tools/select_agent_route.py
       - .codex/agents/sdlc_orchestrator.toml
       - docs/agent_plumbing.md
+      - tests/test_team_framework.py
+  rampstack_skill_catalog:
+    description: >
+      Metadata-only mapping of RampStack's 103-skill catalog into existing AI
+      Brain lifecycle lanes or optional source-catalog lenses, with tool
+      boundaries and token-thrifty selected/deferred routing.
+    artifacts:
+      - contracts/rampstack_skill_integration.yaml
+      - contracts/domain_agent_routing.yaml
+      - tools/select_agent_route.py
+      - docs/agent_skills_integration.md
+      - tests/test_team_framework.py
+  marketing_skill_catalog:
+    description: >
+      Metadata-only mapping of Corey Haines' 44 Marketing Skills into existing
+      AI Brain/RampStack lanes or optional marketing source-catalog lenses, with
+      duplicate-slug dedupe, tool boundaries, trigger terms, and token-thrifty
+      selected/deferred routing.
+    artifacts:
+      - contracts/marketing_skill_integration.yaml
+      - contracts/domain_agent_routing.yaml
+      - tools/select_agent_route.py
+      - docs/agent_skills_integration.md
       - tests/test_team_framework.py
 
 lifecycle:
@@ -191,6 +216,8 @@ lifecycle:
       - memory/PROJECT_MEMORY.template.md
       - contracts/expected_behavior.md
       - contracts/domain_agent_routing.yaml
+      - contracts/marketing_skill_integration.yaml
+      - contracts/rampstack_skill_integration.yaml
       - tools/init_repo_profile.py
       - specs/prompt_spec_template.md
       - docs/spec_driven_workflow.md
@@ -201,9 +228,9 @@ lifecycle:
       intent, success criteria, non-goals, and constraints, classify the prompt
       against the division routing contract, capture acceptance criteria,
       selected framework agents, selected specialists, deferred specialists, and
-      gates in a durable prompt spec, and identify which team roles apply before
-      changing a project. Provider /goal feeds the SDLC loop; it does not
-      replace it.
+      selected/deferred source-catalog skills in a durable prompt spec, and
+      identify which team roles apply before changing a project. Provider /goal
+      feeds the SDLC loop; it does not replace it.
   plan:
     upstream_commands: [/plan]
     upstream_skills:
@@ -461,7 +488,7 @@ skill_coverage:
     local_status: adopted
     local_agents: [sdlc_orchestrator]
     local_artifacts: [contracts/agentic_framework_map.yaml, contracts/domain_agent_routing.yaml, docs/agent_skills_integration.md]
-    gap_closed_by: This map and the routing contract explain when each general skill concept, division, and adjacent specialist lens applies locally.
+    gap_closed_by: This map, the routing contract, and source catalogs such as RampStack and Marketing Skills explain when each general skill concept, division, adjacent specialist lens, and source-catalog lens applies locally.
 
 local_agents:
   - sdlc_orchestrator

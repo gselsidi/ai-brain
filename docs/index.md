@@ -57,6 +57,8 @@ hand.
 - `contracts/team_framework.yaml`
 - `contracts/agentic_framework_map.yaml`
 - `contracts/domain_agent_routing.yaml`
+- `contracts/marketing_skill_integration.yaml`
+- `contracts/rampstack_skill_integration.yaml`
 - `contracts/expected_behavior.md`
 - `memory/PROJECT_MEMORY.template.md`
 - `memory/PROJECT_MEMORY.md`

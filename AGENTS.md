@@ -23,11 +23,16 @@ maintenance, or project work, Codex must:
    `contracts/domain_agent_routing.yaml` or `tools/select_agent_route.py` when
    domain or division terms appear. Record primary division, adjacent divisions,
    selected framework agents, selected specialists, deferred specialists,
-   routing assumptions, and verification gates in the prompt spec. Use a
-   token-thrifty default: choose the smallest useful agent set, treat whole
+   selected source skills, deferred source skills, routing assumptions, and
+   verification gates in the prompt spec. When
+   source-catalog contracts such as `contracts/marketing_skill_integration.yaml`
+   or `contracts/rampstack_skill_integration.yaml` are present, use them as
+   metadata-only catalogs: merge matching concepts into existing lifecycle lanes
+   when possible, expose unmatched concepts as optional lenses, and keep
+   selection token-thrifty. Choose the smallest useful agent set, treat whole
    folders such as engineering/programming or marketing as divisions first, and
-   add adjacent specialists only when the prompt, source, or failed evidence
-   justifies them.
+   add adjacent specialists or source skills only when the prompt, source, or
+   failed evidence justifies them.
 7. For broad, ambiguous, risky, or outcome-oriented prompts, run `/goal` first.
    If the active provider/runtime exposes a native `/goal` or planning feature,
    use it to clarify the work, then continue through AI Brain's spec, memory,
@@ -200,6 +205,9 @@ checks, durable memory, improvement loops, and auditable release evidence.
   before assigning work. Use `contracts/domain_agent_routing.yaml` for
   division-first routing across engineering/programming, marketing, sales,
   design, product, security, testing, and support without unnecessary fan-out.
+  Use source-catalog layers such as `contracts/marketing_skill_integration.yaml`
+  and `contracts/rampstack_skill_integration.yaml` without vendoring upstream
+  skill bodies.
 - In either `/goal` mode, clarify outcome, success criteria, non-goals,
   constraints, assumptions, and evidence before writing a prompt spec.
 - Convert a prompt into a durable spec with explicit requirements and a

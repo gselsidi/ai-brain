@@ -60,6 +60,12 @@ KB_PORT=8012 ./scripts/build_and_launch.sh
 - `contracts/domain_agent_routing.yaml`: prompt-to-agent routing contract for
   selecting a primary division, SDLC roles, specialists, deferred specialists,
   and evidence gates without unnecessary fan-out.
+- `contracts/rampstack_skill_integration.yaml`: metadata-only integration of
+  RampStack's 103-skill catalog into existing AI Brain lanes or optional
+  source-catalog lenses without vendoring upstream skill bodies.
+- `contracts/marketing_skill_integration.yaml`: metadata-only integration of
+  Corey Haines' 44 Marketing Skills into marketing, sales, product, growth, and
+  measurement lenses.
 - `contracts/expected_behavior.md`: human-readable AI Brain framework behavior
   contract.
 - `memory/PROJECT_MEMORY.template.md`: safe template for local durable memory.
@@ -108,6 +114,13 @@ engineering/programming, marketing, sales, design, product, security, testing,
 or support, and selects only the specialists justified by the prompt or
 evidence. Adjacent specialists are kept as deferred options in the spec so AI
 Brain can escalate later without burning tokens up front.
+
+The router can also consult metadata-only source catalogs. RampStack Claude
+Skills and Corey Haines' Marketing Skills are mapped by slug and category so
+matching concepts are merged into existing AI Brain lanes when possible, or
+exposed as optional lenses when AI Brain does not already have the skill. The
+selector still caps active source skills, dedupes overlapping slugs, and records
+plausible extras as deferred source skills.
 
 When AI Brain is operating on a target repo, actual work evidence belongs in
 repo work specs under `specs/work/`. Those specs are the repo's spec-driven

@@ -44,6 +44,12 @@ The framework should help a team run repeatable autonomous delivery:
 - `contracts/domain_agent_routing.yaml`: division-first prompt-to-agent routing
   contract for mapping prompt signals to framework agents, specialist lenses,
   deferred specialists, and verification gates.
+- `contracts/rampstack_skill_integration.yaml`: metadata-only mapping from
+  RampStack's 103-skill catalog into existing AI Brain lifecycle lanes or
+  optional source-catalog lenses.
+- `contracts/marketing_skill_integration.yaml`: metadata-only mapping from
+  Corey Haines' 44 Marketing Skills into existing AI Brain/RampStack lanes or
+  optional marketing source-catalog lenses.
 - `contracts/team_framework.yaml`: machine-readable framework contract.
 - `memory/PROJECT_MEMORY.template.md`: tracked safe template for local durable
   context.
@@ -68,7 +74,8 @@ The framework should help a team run repeatable autonomous delivery:
 - `specs/YYYY-MM-DD_short_slug.md`: durable prompt spec for a requested slice.
 - `tools/select_agent_route.py`: deterministic selector that reads a prompt and
   emits the primary division, adjacent divisions, selected framework agents,
-  selected specialists, deferred specialists, and verification gates.
+  selected specialists, deferred specialists, selected source skills, deferred
+  source skills, and verification gates.
 - `tools/*.py`: deterministic validators and report builders.
 - `state/reports/*.json`: machine-readable evidence.
 - `state/reports/improvement-queue_report.json`: Desloppify-inspired scan,
@@ -127,12 +134,18 @@ The expected specialist roles are:
   verification commands.
 - Prompt specs record division-first prompt-to-agent routing for project-work
   prompts: primary division, adjacent divisions, selected framework agents,
-  selected specialists, deferred specialists, routing assumptions, and
-  verification gates.
+  selected specialists, deferred specialists, selected source skills, deferred
+  source skills, routing assumptions, and verification gates.
 - Routing is token-thrifty by default. Engineering/programming, marketing,
   sales, design, product, security, testing, and support are treated as
   divisions; adjacent specialists are added only when the prompt, source
   artifacts, or failed evidence justify the extra lens.
+- Source skill catalogs are also token-thrifty. RampStack- and
+  MarketingSkills-derived catalog entries are selected only when the prompt
+  matches their lens and are deferred when plausible but not immediately needed.
+  Duplicate slugs across catalogs should not activate twice. Tool-dependent
+  lenses require an adopting team's credentials, MCPs, URLs, analytics/ad data,
+  CRM data, market data, or web research before execution.
 - Target repo changes keep an auditable repo work spec under `specs/work/`.
 - Target repo commands and target drift checks run when a target repo profile
   exists.

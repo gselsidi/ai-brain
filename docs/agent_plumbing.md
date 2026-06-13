@@ -83,7 +83,8 @@ python tools/select_agent_route.py --prompt "Fix the checkout API bug and add te
 
 The route is recorded in the prompt spec as primary division, adjacent
 divisions, selected framework agents, selected specialists, deferred
-specialists, routing assumptions, and verification gates.
+specialists, selected source skills, deferred source skills, routing
+assumptions, and verification gates.
 
 Routing is division-first and token-thrifty. The orchestrator chooses one
 primary division by default, such as engineering/programming, marketing, sales,
@@ -98,6 +99,18 @@ marketing work, the marketing division can branch into SEO, content/copywriting,
 conversion, analytics, paid media, social, brand, or funnel and lead-gen
 strategy. SEO is only an example of the general routing behavior, not a special
 case that always fans out.
+
+Source skill catalogs extend this routing vocabulary without loading every
+skill body. `contracts/rampstack_skill_integration.yaml` maps RampStack's
+103-skill catalog into broad web-lifecycle lanes, and
+`contracts/marketing_skill_integration.yaml` maps Corey Haines' 44 Marketing
+Skills into focused marketing, CRO, copy, SEO, analytics, growth, GTM, and
+RevOps lenses. Skills that match existing lifecycle coverage are marked
+`merge_existing`; skills that add a useful domain lens are marked
+`add_catalog_lens`; skills that need external data, MCPs, credentials, URLs,
+analytics/ad data, CRM data, market data, or web research are marked
+`tool_dependent_lens`. The selector returns only the highest-signal matches as
+selected source skills, dedupes overlapping slugs, and keeps the rest deferred.
 
 ## Prompt Specs
 

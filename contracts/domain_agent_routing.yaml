@@ -20,6 +20,11 @@ routing_defaults:
   max_primary_specialists: 3
   max_adjacent_specialists: 2
   max_adjacent_divisions: 1
+  max_source_skills: 4
+  max_deferred_source_skills: 8
+  source_skill_catalogs:
+    - marketing_skill_integration
+    - rampstack_skill_integration
   baseline_framework_agents:
     - sdlc_orchestrator
     - product_context_analyst
@@ -31,6 +36,8 @@ routing_defaults:
     - selected_framework_agents
     - selected_specialists
     - deferred_specialists
+    - selected_source_skills
+    - deferred_source_skills
     - routing_assumptions
     - verification_gates
   escalation_rule: >
@@ -368,6 +375,8 @@ orchestrator_rules:
   - Prefer explicit specialist mentions over inferred expansion sets.
   - Record selected and deferred specialists in the prompt spec so the team can
     escalate without rediscovering the context.
+  - Record selected and deferred source-catalog skills when catalogs such as
+    Marketing Skills or RampStack contribute matching lenses.
   - Do not spawn or claim specialists that are unsupported by the runtime,
     prompt scope, or token budget.
   - Keep routing product-agnostic; the target repo supplies product surfaces,

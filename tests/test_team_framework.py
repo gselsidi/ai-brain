@@ -3,7 +3,7 @@ from pathlib import Path
 import yaml
 
 from tools.check_implementation_drift import validate
-from tools.select_agent_route import route_prompt
+from tools.select_agent_route import load_source_catalogs, route_prompt
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -53,6 +53,8 @@ def test_prompt_spec_template_and_current_spec_are_actionable() -> None:
     assert "specs/prompt_spec_template.md" in planner
     assert "/goal Clarification" in template
     assert "tools/select_agent_route.py" in template
+    assert "Selected source skills" in template
+    assert "Deferred source skills" in template
     assert "small work chunks" in planner
     assert "current prompt spec" in orchestrator
     assert "not begin substantial implementation" in orchestrator
@@ -122,16 +124,23 @@ def test_prompt_to_agent_routing_is_division_first_and_token_thrifty() -> None:
     assert "division-first" in orchestrator
     assert "engineering/programming" in orchestrator
     assert "deferred specialists" in orchestrator
+    assert "selected source skills" in orchestrator
     assert "Prompt-To-Agent Routing" in agent_plumbing
     assert "SEO is only an example" in agent_plumbing
+    assert "source skills" in agent_plumbing
     assert "Prompt specs record division-first prompt-to-agent routing" in expected
+    assert "selected source skills" in expected
     assert "prompt_agent_routing" in framework_map["local_unique_capabilities"]
+    assert "rampstack_skill_catalog" in framework_map["local_unique_capabilities"]
+    assert "marketing_skill_catalog" in framework_map["local_unique_capabilities"]
 
     assert seo_route["primary_division"] == "marketing"
     assert seo_route["adjacent_divisions"] == []
     assert "seo_specialist" in seo_selected
     assert "content_copywriter" in seo_selected
     assert "funnel_lead_gen_strategist" in seo_deferred
+    assert "selected_source_skills" in seo_route
+    assert "deferred_source_skills" in seo_route
     assert len(seo_route["selected_specialists"]) <= (
         routing_contract["routing_defaults"]["max_primary_specialists"]
         + routing_contract["routing_defaults"]["max_adjacent_specialists"]
@@ -144,6 +153,145 @@ def test_prompt_to_agent_routing_is_division_first_and_token_thrifty() -> None:
     assert "test_engineer" in programming_selected
     assert "content_copywriter" not in programming_selected
     assert "content_copywriter" not in programming_deferred
+    assert programming_route["selected_source_skills"] == []
+
+
+def test_rampstack_skill_catalog_maps_all_source_skills_and_router_defers_extra_lenses() -> None:
+    routing_contract = yaml.safe_load((ROOT / "contracts/domain_agent_routing.yaml").read_text())
+    source_catalog = yaml.safe_load((ROOT / "contracts/rampstack_skill_integration.yaml").read_text())
+
+    category_mappings = source_catalog["category_mappings"]
+    mapped_skills = [
+        skill
+        for mapping in category_mappings.values()
+        for skill in mapping["skills"]
+    ]
+    skill_by_slug = {skill["slug"]: skill for skill in mapped_skills}
+    integration_actions = {skill["integration_action"] for skill in mapped_skills}
+
+    assert source_catalog["source"]["inspected_skill_count"] == 103
+    assert len(mapped_skills) == 103
+    assert len(skill_by_slug) == 103
+    assert integration_actions == {
+        "add_catalog_lens",
+        "merge_existing",
+        "tool_dependent_lens",
+    }
+    assert skill_by_slug["code-review-web"]["integration_action"] == "merge_existing"
+    assert skill_by_slug["landing-page-copy"]["integration_action"] == "add_catalog_lens"
+    assert skill_by_slug["seo-audit-orchestration"]["integration_action"] == (
+        "tool_dependent_lens"
+    )
+
+    frontend_route = route_prompt(
+        "Build a frontend component and audit accessibility.",
+        contract=routing_contract,
+        source_catalog=source_catalog,
+    )
+    frontend_source_slugs = {
+        skill["slug"] for skill in frontend_route["selected_source_skills"]
+    }
+
+    assert "frontend-component-build" in frontend_source_slugs
+    assert "accessibility-audit" in frontend_source_slugs
+    assert len(frontend_route["selected_source_skills"]) <= (
+        routing_contract["routing_defaults"]["max_source_skills"]
+    )
+
+    seo_route = route_prompt(
+        "Run a full SEO audit and backlink gap review.",
+        contract=routing_contract,
+        source_catalog=source_catalog,
+    )
+    selected_seo_slugs = {skill["slug"] for skill in seo_route["selected_source_skills"]}
+    deferred_seo_slugs = {skill["slug"] for skill in seo_route["deferred_source_skills"]}
+
+    assert "seo-audit-orchestration" in selected_seo_slugs
+    assert "seo-backlink-audit" in selected_seo_slugs
+    assert "seo-keyword" in deferred_seo_slugs
+    assert any(
+        skill["integration_action"] == "tool_dependent_lens"
+        for skill in seo_route["selected_source_skills"]
+    )
+    assert any("Tool-dependent source skills" in note for note in seo_route["routing_notes"])
+    assert len(seo_route["selected_source_skills"]) <= (
+        routing_contract["routing_defaults"]["max_source_skills"]
+    )
+    assert len(seo_route["deferred_source_skills"]) <= (
+        routing_contract["routing_defaults"]["max_deferred_source_skills"]
+    )
+
+
+def test_marketing_skill_catalog_maps_all_source_skills_and_routes_trigger_terms() -> None:
+    routing_contract = yaml.safe_load((ROOT / "contracts/domain_agent_routing.yaml").read_text())
+    marketing_catalog = yaml.safe_load(
+        (ROOT / "contracts/marketing_skill_integration.yaml").read_text()
+    )
+    rampstack_catalog = yaml.safe_load(
+        (ROOT / "contracts/rampstack_skill_integration.yaml").read_text()
+    )
+
+    configured_catalogs = load_source_catalogs(routing_contract)
+    configured_catalog_names = {catalog["name"] for catalog in configured_catalogs}
+    mapped_skills = [
+        skill
+        for mapping in marketing_catalog["category_mappings"].values()
+        for skill in mapping["skills"]
+    ]
+    skill_by_slug = {skill["slug"]: skill for skill in mapped_skills}
+    integration_actions = {skill["integration_action"] for skill in mapped_skills}
+
+    assert configured_catalog_names == {
+        "marketing-skill-integration",
+        "rampstack-skill-integration",
+    }
+    assert marketing_catalog["source"]["inspected_skill_count"] == 44
+    assert len(mapped_skills) == 44
+    assert len(skill_by_slug) == 44
+    assert integration_actions == {
+        "add_catalog_lens",
+        "merge_existing",
+        "tool_dependent_lens",
+    }
+    assert skill_by_slug["product-marketing"]["integration_action"] == "merge_existing"
+    assert skill_by_slug["sms"]["integration_action"] == "add_catalog_lens"
+    assert skill_by_slug["revops"]["integration_action"] == "tool_dependent_lens"
+
+    measurement_route = route_prompt(
+        "Set up GA4 tracking for paid ads and write cold outreach emails.",
+        contract=routing_contract,
+        source_catalog=[marketing_catalog, rampstack_catalog],
+    )
+    selected_slugs = {skill["slug"] for skill in measurement_route["selected_source_skills"]}
+    selected_catalogs = {
+        skill["catalog"] for skill in measurement_route["selected_source_skills"]
+    }
+
+    assert "analytics" in selected_slugs
+    assert "ads" in selected_slugs
+    assert "cold-email" in selected_slugs
+    assert "marketing-skill-integration" in selected_catalogs
+    assert any(
+        skill["integration_action"] == "tool_dependent_lens"
+        for skill in measurement_route["selected_source_skills"]
+    )
+    assert len(measurement_route["selected_source_skills"]) <= (
+        routing_contract["routing_defaults"]["max_source_skills"]
+    )
+
+    duplicate_route = route_prompt(
+        "Plan programmatic SEO pages at scale with schema markup.",
+        contract=routing_contract,
+        source_catalog=[marketing_catalog, rampstack_catalog],
+    )
+    all_duplicate_slugs = [
+        skill["slug"]
+        for skill in duplicate_route["selected_source_skills"]
+        + duplicate_route["deferred_source_skills"]
+    ]
+
+    assert "programmatic-seo" in all_duplicate_slugs
+    assert all_duplicate_slugs.count("programmatic-seo") == 1
 
 
 def test_framework_drift_validator_passes_for_current_contract() -> None:

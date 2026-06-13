@@ -1,0 +1,249 @@
+version: 1
+name: marketing-skill-integration
+purpose: Map Corey Haines' Marketing Skills catalog into AI Brain marketing, sales, product,
+  and growth routing lenses without vendoring upstream skill bodies.
+source:
+  repository: https://github.com/coreyhaines31/marketingskills
+  inspected_commit: 4b377f289bd37be457a7154626e109ec3affad50
+  license: MIT
+  inspected_skill_count: 44
+  catalog_claim: 44 skills found under skills/*/SKILL.md at the inspected commit.
+  integration_mode: metadata_mapping_only_no_skill_body_copy
+routing_policy:
+  default: Merge into existing AI Brain or RampStack lanes when a close equivalent exists;
+    otherwise expose as a focused marketing source-catalog lens.
+  token_budget: Select only the highest-signal marketing skills per prompt and defer plausible extras.
+  duplicate_boundary: Duplicate slugs across source catalogs represent the same concept and should not
+    activate twice.
+  tool_boundary: tool_dependent_lens skills require adopting-team accounts, URLs, analytics/ad data,
+    CRM data, market data, or web research before execution.
+  foundation: product-marketing is a useful marketing context lens, but it should not be loaded
+    automatically unless the prompt needs positioning, ICP, audience, or product context.
+category_mappings:
+  marketing-foundation:
+    divisions:
+      - marketing
+      - product
+    merge_into: product_marketing_context_lens
+    default_action: add_catalog_lens
+    skills:
+      - slug: product-marketing
+        summary: Product, ICP, audience, positioning, and marketing context foundation.
+        integration_action: merge_existing
+        trigger_terms: [product marketing, marketing context, positioning, icp, target audience]
+      - slug: customer-research
+        summary: Customer interviews, surveys, transcript synthesis, ICP, and voice-of-customer research.
+        integration_action: merge_existing
+        trigger_terms: [customer research, customer interviews, survey analysis, voice of customer, icp research]
+      - slug: marketing-plan
+        summary: Comprehensive marketing, growth, go-to-market, AARRR, or multi-period plans.
+        integration_action: merge_existing
+        trigger_terms: [marketing plan, growth plan, gtm plan, go to market plan, 90 day marketing plan]
+      - slug: marketing-ideas
+        summary: SaaS and software marketing ideas, growth tactics, and promotion concepts.
+        integration_action: add_catalog_lens
+        trigger_terms: [marketing ideas, growth ideas, marketing tactics, promote, demand generation ideas]
+      - slug: marketing-psychology
+        summary: Behavioral science, persuasion, mental models, and buying psychology for marketing.
+        integration_action: add_catalog_lens
+        trigger_terms: [marketing psychology, persuasion, behavioral science, cognitive bias, why people buy]
+  conversion-optimization:
+    divisions:
+      - marketing
+      - product
+      - design
+    merge_into: conversion_optimization_lens
+    default_action: add_catalog_lens
+    skills:
+      - slug: cro
+        summary: Conversion optimization for marketing pages, forms, CTAs, offers, and friction.
+        integration_action: merge_existing
+        trigger_terms: [cro, conversion rate optimization, landing page optimization, increase conversions, improve conversions]
+      - slug: signup
+        summary: Signup, registration, account creation, trial activation, and signup dropoff optimization.
+        integration_action: add_catalog_lens
+        trigger_terms: [signup, registration, trial activation, signup conversion, account creation]
+      - slug: onboarding
+        summary: Post-signup onboarding, activation, first-run experience, and time-to-value optimization.
+        integration_action: add_catalog_lens
+        trigger_terms: [onboarding, activation rate, first run experience, time to value, user activation]
+      - slug: popups
+        summary: Popups, modals, overlays, banners, exit intent, and lead-capture conversion moments.
+        integration_action: add_catalog_lens
+        trigger_terms: [popup, modal, exit intent, lead capture popup, banner]
+      - slug: paywalls
+        summary: Upgrade screens, upsell modals, feature gates, and free-to-paid conversion moments.
+        integration_action: add_catalog_lens
+        trigger_terms: [paywall, upgrade screen, upsell, feature gate, freemium conversion]
+      - slug: ab-testing
+        summary: A/B tests, split tests, experiment design, hypotheses, and growth experimentation programs.
+        integration_action: merge_existing
+        trigger_terms: [ab test, a/b test, split test, experiment, hypothesis, experiment backlog]
+  content-and-copy:
+    divisions:
+      - marketing
+      - sales
+    merge_into: marketing_content_lens
+    default_action: add_catalog_lens
+    skills:
+      - slug: copywriting
+        summary: Marketing copy for homepages, landing pages, pricing pages, product pages, and offers.
+        integration_action: merge_existing
+        trigger_terms: [copywriting, landing page copy, homepage copy, rewrite copy, marketing copy]
+      - slug: copy-editing
+        summary: Edit, review, polish, refresh, tighten, or improve existing marketing copy.
+        integration_action: merge_existing
+        trigger_terms: [copy editing, edit copy, review copy, polish copy, improve existing copy]
+      - slug: cold-email
+        summary: B2B cold outreach emails, SDR sequences, prospecting emails, and follow-ups.
+        integration_action: add_catalog_lens
+        trigger_terms: [cold email, cold outreach, prospecting email, sdr email, follow up sequence]
+      - slug: emails
+        summary: Email sequences, drip campaigns, onboarding emails, lifecycle flows, and nurture programs.
+        integration_action: merge_existing
+        trigger_terms: [email sequence, drip campaign, lifecycle email, welcome sequence, nurture sequence]
+      - slug: social
+        summary: Social content, scheduling, listening, and platform-specific posts for marketing channels.
+        integration_action: merge_existing
+        trigger_terms: [social media, linkedin post, twitter post, tiktok, social content]
+      - slug: image
+        summary: Marketing images, blog heroes, social graphics, product mockups, and listing visuals.
+        integration_action: add_catalog_lens
+        trigger_terms: [marketing image, blog hero, social graphic, product mockup, listing visual]
+      - slug: video
+        summary: AI video, product videos, programmatic video content, and marketing video production.
+        integration_action: add_catalog_lens
+        trigger_terms: [video production, ai video, product video, marketing video, short form video]
+      - slug: sms
+        summary: SMS and MMS marketing flows, abandoned cart texts, win-back messages, and promotions.
+        integration_action: add_catalog_lens
+        trigger_terms: [sms marketing, text message campaign, mms, win back text, abandoned cart text]
+  seo-and-discovery:
+    divisions:
+      - marketing
+      - engineering
+    merge_into: marketing_seo_lens
+    default_action: add_catalog_lens
+    skills:
+      - slug: seo-audit
+        summary: Technical, on-page, metadata, ranking, and traffic-loss SEO diagnosis.
+        integration_action: merge_existing
+        trigger_terms: [seo audit, technical seo, on page seo, seo health check, traffic dropped]
+      - slug: ai-seo
+        summary: AI search, AEO, GEO, LLMO, AI Overviews, citations, and answer engine optimization.
+        integration_action: merge_existing
+        trigger_terms: [ai seo, aeo, geo, llmo, answer engine optimization, ai overviews]
+      - slug: programmatic-seo
+        summary: SEO-driven pages at scale using templates, data, directory pages, and location pages.
+        integration_action: merge_existing
+        trigger_terms: [programmatic seo, template pages, pages at scale, directory pages, location pages]
+      - slug: site-architecture
+        summary: Website hierarchy, sitemap, URL structure, navigation, internal linking, and IA for SEO.
+        integration_action: merge_existing
+        trigger_terms: [site architecture, sitemap, site structure, url structure, internal linking]
+      - slug: schema
+        summary: Schema markup, structured data, JSON-LD, rich snippets, and schema.org implementation.
+        integration_action: merge_existing
+        trigger_terms: [schema markup, structured data, json ld, rich snippets, schema.org]
+      - slug: content-strategy
+        summary: Content strategy, topic clusters, blog planning, editorial calendars, and content ideas.
+        integration_action: merge_existing
+        trigger_terms: [content strategy, topic clusters, blog strategy, content plan, editorial calendar]
+      - slug: competitors
+        summary: Competitor comparison pages, alternative pages, versus pages, and sales/SEO comparisons.
+        integration_action: add_catalog_lens
+        trigger_terms: [competitor comparison, alternative page, vs page, comparison page, competitors]
+      - slug: competitor-profiling
+        summary: Research and profile competitors from URLs for competitive intelligence.
+        integration_action: tool_dependent_lens
+        trigger_terms: [competitor profile, competitor research, competitive intelligence, analyze competitor]
+      - slug: aso
+        summary: App Store and Google Play listing audits, rankings, keywords, screenshots, and conversion.
+        integration_action: add_catalog_lens
+        trigger_terms: [aso, app store optimization, app listing, google play listing, app store ranking]
+      - slug: directory-submissions
+        summary: Startup, SaaS, AI, MCP, review, and no-code directory submissions for discovery and backlinks.
+        integration_action: tool_dependent_lens
+        trigger_terms: [directory submissions, submit to directories, backlinks, product directories, startup directories]
+  paid-and-measurement:
+    divisions:
+      - marketing
+    merge_into: paid_media_and_measurement_lens
+    default_action: add_catalog_lens
+    skills:
+      - slug: ads
+        summary: Paid media campaign strategy, targeting, bidding, budget, and optimization.
+        integration_action: tool_dependent_lens
+        trigger_terms: [paid ads, ppc, google ads, facebook ads, roas, ad budget]
+      - slug: ad-creative
+        summary: Ad headlines, descriptions, primary text, creative variations, and creative testing.
+        integration_action: merge_existing
+        trigger_terms: [ad creative, ad copy, ad variations, rsa headlines, facebook ad copy]
+      - slug: analytics
+        summary: Analytics tracking, GA4, GTM, events, UTMs, attribution, and conversion measurement.
+        integration_action: tool_dependent_lens
+        trigger_terms: [analytics, ga4, ga4 tracking, google analytics, gtm, event tracking, conversion tracking]
+  growth-and-retention:
+    divisions:
+      - marketing
+      - product
+      - sales
+    merge_into: growth_retention_lens
+    default_action: add_catalog_lens
+    skills:
+      - slug: churn-prevention
+        summary: Churn reduction, cancellation flows, save offers, dunning, and retention strategies.
+        integration_action: add_catalog_lens
+        trigger_terms: [churn, cancel flow, save offer, dunning, retention strategy]
+      - slug: co-marketing
+        summary: Partner marketing, joint campaigns, cross-promotions, and partnership opportunities.
+        integration_action: add_catalog_lens
+        trigger_terms: [co marketing, partner marketing, joint campaign, cross promotion, partnership]
+      - slug: community-marketing
+        summary: Community strategy, brand advocates, forums, Discord, Slack, and word-of-mouth growth.
+        integration_action: add_catalog_lens
+        trigger_terms: [community marketing, discord community, slack community, brand advocates, forum]
+      - slug: free-tools
+        summary: Engineering-as-marketing tools, calculators, generators, and interactive lead-gen assets.
+        integration_action: add_catalog_lens
+        trigger_terms: [free tool, engineering as marketing, calculator, generator, interactive tool]
+      - slug: referrals
+        summary: Referral, affiliate, ambassador, partner, viral loop, and word-of-mouth programs.
+        integration_action: add_catalog_lens
+        trigger_terms: [referral program, affiliate program, ambassador, viral loop, refer a friend]
+      - slug: lead-magnets
+        summary: Lead magnets, gated content, content upgrades, ebooks, templates, and downloadable offers.
+        integration_action: merge_existing
+        trigger_terms: [lead magnet, gated content, content upgrade, ebook, checklist, template download]
+  gtm-sales-revops:
+    divisions:
+      - marketing
+      - sales
+      - product
+    merge_into: gtm_sales_revops_lens
+    default_action: add_catalog_lens
+    skills:
+      - slug: launch
+        summary: Product launches, feature announcements, release strategy, Product Hunt, and waitlists.
+        integration_action: merge_existing
+        trigger_terms: [launch, product launch, feature announcement, product hunt, waitlist, go to market]
+      - slug: pricing
+        summary: Pricing, packaging, monetization, tiers, trials, freemium, and willingness-to-pay research.
+        integration_action: add_catalog_lens
+        trigger_terms: [pricing, packaging, monetization, pricing tiers, freemium, free trial]
+      - slug: revops
+        summary: Revenue operations, lead lifecycle, scoring, routing, MQL, SQL, and pipeline stages.
+        integration_action: tool_dependent_lens
+        trigger_terms: [revops, revenue operations, lead scoring, lead routing, mql, sql, pipeline stages]
+      - slug: sales-enablement
+        summary: Sales collateral, pitch decks, one-pagers, objection handling, demo scripts, and leave-behinds.
+        integration_action: merge_existing
+        trigger_terms: [sales enablement, sales deck, pitch deck, one pager, objection handling, demo script]
+      - slug: prospecting
+        summary: Prospect lists, lead qualification, lead generation lists, and target account research.
+        integration_action: tool_dependent_lens
+        trigger_terms: [prospecting, prospect list, find leads, target accounts, lead generation list]
+      - slug: public-relations
+        summary: PR, earned media, press coverage, journalist outreach, media strategy, and press releases.
+        integration_action: add_catalog_lens
+        trigger_terms: [public relations, press release, press coverage, journalist outreach, media outreach]

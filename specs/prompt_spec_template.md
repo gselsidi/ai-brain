@@ -39,6 +39,8 @@ project-work prompts before assigning implementation chunks.
 - Selected framework agents:
 - Selected specialists:
 - Deferred specialists:
+- Selected source skills:
+- Deferred source skills:
 - Routing assumptions:
 - Verification gates:
 
