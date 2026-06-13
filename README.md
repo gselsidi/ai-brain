@@ -47,8 +47,15 @@ git commit -m "Add AI Brain framework"
 After AI Brain is added under `ai-brain/`, initialize it against the target repo:
 
 ```bash
+make -C ai-brain setup
 make -C ai-brain init-repo TARGET_ROOT=..
 ```
+
+AI Brain requires Python 3.11+. On macOS, `/usr/bin/python3` may still be
+Python 3.9. The Makefile automatically prefers `ai-brain/.venv/bin/python` when
+it exists, then looks for `python3.12`, `python3.13`, or `python3.11`. If only an
+old system Python is available, install a newer Python and rerun `make -C
+ai-brain setup`.
 
 AI Brain is a reusable agent orchestration harness. Drop it into a codebase,
 point your coding agent at `AGENTS.md`, and it gives the agent a disciplined

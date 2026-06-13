@@ -77,6 +77,16 @@ local_unique_capabilities:
       - memory/PROJECT_MEMORY.template.md
       - docs/memory.md
       - README.md
+  python_bootstrap:
+    description: >
+      Makefile and launcher bootstrap behavior that prefers an existing AI
+      Brain virtualenv, auto-detects Python 3.12/3.13/3.11, and fails clearly
+      when only an unsupported system Python is available.
+    artifacts:
+      - tools/check_python.py
+      - Makefile
+      - scripts/build_and_launch.sh
+      - README.md
   dropin_vendoring:
     description: >
       Generic adoption guidance and exporter for adding AI Brain to any target

@@ -4,11 +4,31 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
-PYTHON_BIN="${PYTHON_BIN:-python3}"
 VENV_DIR="${VENV_DIR:-.venv}"
 HOST="${HOST:-127.0.0.1}"
 KB_PORT="${KB_PORT:-8001}"
 KB_URL="${KB_URL:-http://localhost:${KB_PORT}}"
+
+detect_python() {
+  if [[ -n "${PYTHON_BIN:-}" ]]; then
+    printf '%s\n' "${PYTHON_BIN}"
+    return
+  fi
+  if [[ -x "${VENV_DIR}/bin/python" ]]; then
+    printf '%s\n' "${VENV_DIR}/bin/python"
+    return
+  fi
+  for candidate in python3.12 python3.13 python3.11 python3 python; do
+    if command -v "${candidate}" >/dev/null 2>&1; then
+      command -v "${candidate}"
+      return
+    fi
+  done
+  printf '%s\n' python3
+}
+
+PYTHON_BIN="$(detect_python)"
+"${PYTHON_BIN}" tools/check_python.py
 
 if [[ ! -x "${VENV_DIR}/bin/python" ]]; then
   echo "Creating virtual environment at ${VENV_DIR}..."

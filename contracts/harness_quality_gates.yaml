@@ -30,6 +30,8 @@ required_test_node_fragments:
   - tests/test_repo_init.py::test_public_docs_point_to_init_instead_of_manual_template_copying
   - tests/test_dropin_export.py::test_dropin_export_excludes_git_and_local_artifacts
   - tests/test_dropin_export.py::test_manual_copy_clean_removes_nested_git_only_inside_parent_repo
+  - tests/test_python_bootstrap.py::test_makefile_prefers_existing_venv_and_checks_python_before_init
+  - tests/test_python_bootstrap.py::test_readme_top_guidance_mentions_python_bootstrap_before_overview
   - tests/test_target_repo_workflow.py::test_target_commands_run_detected_repo_commands
   - tests/test_target_repo_workflow.py::test_target_commands_fail_when_profile_has_no_runnable_commands
   - tests/test_target_repo_workflow.py::test_repo_work_spec_updates_state_and_target_drift
@@ -58,6 +60,7 @@ required_artifacts:
   - state/sdlc_state.template.json
   - docs/how_this_was_built.md
   - state/reports/improvement-queue_report.json
+  - tools/check_python.py
   - tools/run_tests_with_report.py
   - tools/check_implementation_drift.py
   - tools/validate_harness_quality.py
@@ -80,6 +83,7 @@ required_artifacts:
   - tests/test_improvement_queue.py
   - tests/test_conversation_feedback.py
   - tests/test_dropin_export.py
+  - tests/test_python_bootstrap.py
   - tests/test_target_repo_workflow.py
   - tests/test_team_framework.py
   - tests/test_team_reliability.py
@@ -229,6 +233,9 @@ required_artifact_markers:
       - dropin-bundle
       - manual-copy-clean
       - TARGET_ROOT
+      - check-python
+      - python3.12
+      - .venv
       - framework-drift
       - target-check
       - target-drift
@@ -242,6 +249,12 @@ required_artifact_markers:
       - ai-brain-repo-init
       - PROJECT_MEMORY.md
       - detected_commands
+  - path: tools/check_python.py
+    markers:
+      - AI Brain requires Python
+      - make -C ai-brain setup
+      - ai-brain/.venv/bin
+      - is_supported
   - path: tools/export_dropin_bundle.py
     markers:
       - export_bundle
@@ -383,6 +396,8 @@ required_artifact_markers:
       - Completion Audit
   - path: scripts/build_and_launch.sh
     markers:
+      - detect_python
+      - tools/check_python.py
       - make init-repo
       - make maintenance-daily
       - mkdocs serve
@@ -397,3 +412,9 @@ required_artifact_markers:
       - improvement queue
       - init-repo
       - target repo
+  - path: README.md
+    markers:
+      - Start Here
+      - make -C ai-brain setup
+      - Python 3.11+
+      - ai-brain/.venv/bin/python

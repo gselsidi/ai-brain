@@ -40,6 +40,7 @@ required_artifacts:
   - specs/prompt_spec_template.md
   - memory/PROJECT_MEMORY.template.md
   - state/sdlc_state.template.json
+  - tools/check_python.py
   - tools/run_tests_with_report.py
   - tools/check_implementation_drift.py
   - tools/validate_harness_quality.py
@@ -94,6 +95,7 @@ required_document_markers:
       - git subtree
       - dropin-bundle
       - manual-copy-clean
+      - Python 3.11+
       - Marketing Skills
       - RampStack
   - path: START_HERE_WITH_CODEX.md

@@ -13,6 +13,9 @@ The framework should help a team run repeatable autonomous delivery:
 
 - recover context from durable memory
 - initialize local repo context with `make init-repo`
+- prefer an existing AI Brain virtualenv for Makefile commands and fail with a
+  clear Python-version message when only an unsupported system Python is
+  available
 - support safe vendoring through Git subtree, a guarded manual-copy cleanup, or
   a clean exported bundle instead of plain nested `.git` checkouts
 - prefer provider-native `/goal` or planning input when the active runtime
@@ -65,6 +68,8 @@ The framework should help a team run repeatable autonomous delivery:
   without Git internals or local generated artifacts.
 - `tools/clean_manual_copy.py`: guarded cleanup for manually copied AI Brain
   folders that still contain nested Git metadata.
+- `tools/check_python.py`: compatibility guard for setup, initialization, and
+  evidence commands.
 - `specs/work/YYYY-MM-DD_short_slug.md`: repo-level work spec for target repo
   changes and evidence.
 - `state/reports/target-command_report.json`: target repo command evidence.
@@ -189,6 +194,12 @@ detected.
 When AI Brain lives under an `ai-brain/` prefix in the target repo, initialize
 local context with `make -C ai-brain init-repo TARGET_ROOT=..` so repo profiling
 uses the target checkout rather than the framework subfolder.
+
+AI Brain commands require Python 3.11 or newer. The Makefile should prefer
+`ai-brain/.venv/bin/python` when it exists, then compatible Python executables
+such as `python3.12`, `python3.13`, or `python3.11`. If a machine only exposes
+an old macOS system Python, the version check should tell the user to install a
+newer Python or run with the existing AI Brain virtualenv.
 
 The tracked files under `contracts/` describe AI Brain itself: roles, gates,
 memory rules, prompt specs, checks, and release behavior. They are not populated
