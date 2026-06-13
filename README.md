@@ -1,5 +1,55 @@
 # AI Brain Orchestrator Harness
 
+## Start Here: Add AI Brain To Another Repo
+
+Most people should not copy a live cloned AI Brain folder into another repo.
+That can bring along `ai-brain/.git`, and the target repo will not commit the
+framework files the way you expect.
+
+First decide whether AI Brain should be committed to the target repo.
+
+If AI Brain is only a local helper for you or your agent, do not commit it. Add
+this to the target repo's `.gitignore`:
+
+```gitignore
+ai-brain/
+```
+
+Then keep using the local folder without staging it.
+
+If the target repo should include AI Brain for the whole team, use one of the
+commit-safe paths below.
+
+For ongoing updates from the AI Brain repo, use Git subtree from the target repo
+root:
+
+```bash
+git subtree add --prefix=ai-brain https://github.com/YOUR_ORG/ai-brain.git main --squash
+```
+
+For a manual copy, copy a clean artifact that already has no `.git`: GitHub's
+downloaded ZIP, a release archive, or `dist/ai-brain-dropin/` produced by
+`make dropin-bundle`. Then commit it normally:
+
+```bash
+git add ai-brain
+git commit -m "Add AI Brain framework"
+```
+
+If you already copied a live checkout by mistake, clean it before staging:
+
+```bash
+make -C ai-brain manual-copy-clean
+git add ai-brain
+git commit -m "Add AI Brain framework"
+```
+
+After AI Brain is added under `ai-brain/`, initialize it against the target repo:
+
+```bash
+make -C ai-brain init-repo TARGET_ROOT=..
+```
+
 AI Brain is a reusable agent orchestration harness. Drop it into a codebase,
 point your coding agent at `AGENTS.md`, and it gives the agent a disciplined
 way to read a prompt, classify the work, choose the right roles and source-skill
@@ -132,6 +182,19 @@ Subtree keeps `ai-brain/` as normal files in the target repo, so ordinary
 clones, deploys, and commits see the framework without submodule setup. Do not
 copy a live AI Brain checkout with its nested `.git` directory into another repo
 and commit it; the outer repo will not store those files in the way you expect.
+
+If you already manually copied the live folder into a target repo, clean it
+before staging:
+
+```bash
+make -C ai-brain manual-copy-clean
+git add ai-brain
+git commit -m "Add AI Brain framework"
+```
+
+The cleanup command removes nested AI Brain Git metadata and local generated
+artifacts only when `ai-brain/` is inside another Git repo. It refuses to run
+against the standalone AI Brain source checkout.
 
 For one-off vendoring without an upstream update path, export a clean bundle:
 

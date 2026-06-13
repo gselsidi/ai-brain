@@ -29,6 +29,7 @@ required_test_node_fragments:
   - tests/test_repo_init.py::test_repo_init_detects_product_commands_and_writes_local_files
   - tests/test_repo_init.py::test_public_docs_point_to_init_instead_of_manual_template_copying
   - tests/test_dropin_export.py::test_dropin_export_excludes_git_and_local_artifacts
+  - tests/test_dropin_export.py::test_manual_copy_clean_removes_nested_git_only_inside_parent_repo
   - tests/test_target_repo_workflow.py::test_target_commands_run_detected_repo_commands
   - tests/test_target_repo_workflow.py::test_target_commands_fail_when_profile_has_no_runnable_commands
   - tests/test_target_repo_workflow.py::test_repo_work_spec_updates_state_and_target_drift
@@ -63,6 +64,7 @@ required_artifacts:
   - tools/generate_combined_report_html.py
   - tools/run_improvement_queue.py
   - tools/analyze_conversation_feedback.py
+  - tools/clean_manual_copy.py
   - tools/export_dropin_bundle.py
   - tools/init_repo_profile.py
   - tools/manage_repo_work_spec.py
@@ -225,6 +227,7 @@ required_artifact_markers:
     markers:
       - init-repo
       - dropin-bundle
+      - manual-copy-clean
       - TARGET_ROOT
       - framework-drift
       - target-check
@@ -244,6 +247,13 @@ required_artifact_markers:
       - export_bundle
       - .git
       - ai-brain-dropin
+      - PROJECT_MEMORY.md
+      - prompt_spec_template.md
+  - path: tools/clean_manual_copy.py
+    markers:
+      - manual-copy-clean
+      - nearest_parent_git_root
+      - Refusing to remove .git
       - PROJECT_MEMORY.md
       - prompt_spec_template.md
   - path: tools/manage_repo_work_spec.py
@@ -340,6 +350,7 @@ required_artifact_markers:
       - Specialist Behavior
       - Git subtree
       - dropin-bundle
+      - manual-copy-clean
       - Prompt-To-Agent Routing
       - source skills
       - Prompt Specs
@@ -382,6 +393,7 @@ required_artifact_markers:
       - adoption
       - git subtree
       - dropin-bundle
+      - manual-copy-clean
       - improvement queue
       - init-repo
       - target repo

@@ -37,8 +37,11 @@ def test_dropin_adoption_avoids_nested_git_checkouts() -> None:
     assert "git subtree add --prefix=ai-brain" in readme
     assert "git subtree pull --prefix=ai-brain" in readme
     assert "make dropin-bundle" in readme
+    assert "make -C ai-brain manual-copy-clean" in readme
+    assert readme.index("target repo's `.gitignore`") < readme.index("## What It Does")
     assert "nested `.git`" in readme
     assert "make -C ai-brain init-repo TARGET_ROOT=.." in expected
+    assert "manual-copy-clean" in expected
     assert "plain nested `.git`\ndirectory is not a supported committed state" in expected
     assert "dropin_vendoring" in framework_map["local_unique_capabilities"]
 

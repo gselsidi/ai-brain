@@ -1,5 +1,7 @@
+import subprocess
 from pathlib import Path
 
+from tools.clean_manual_copy import clean_manual_copy
 from tools.export_dropin_bundle import export_bundle
 
 
@@ -73,3 +75,52 @@ def test_dropin_export_requires_clean_for_existing_output(tmp_path: Path) -> Non
     assert report["status"] == "PASS"
     assert (output / "README.md").exists()
     assert not (output / "old.txt").exists()
+
+
+def test_manual_copy_clean_removes_nested_git_only_inside_parent_repo(tmp_path: Path) -> None:
+    target = tmp_path / "target-repo"
+    copied = target / "ai-brain"
+    target.mkdir()
+    subprocess.check_call(["git", "init"], cwd=target, stdout=subprocess.DEVNULL)
+
+    write(copied / ".git" / "config", "private git metadata")
+    write(copied / ".venv" / "pyvenv.cfg", "local venv")
+    write(copied / "README.md", "# AI Brain")
+    write(copied / "AGENTS.md", "# Agents")
+    write(copied / "specs" / "prompt_spec_template.md", "# Template")
+    write(copied / "specs" / "2026-06-13_local_work.md", "# Local Spec")
+    write(copied / "memory" / "PROJECT_MEMORY.md", "# Local Memory")
+    write(copied / "state" / "sdlc_state.json", "{}")
+    write(copied / "state" / "reports" / "test_report.json", "{}")
+
+    report = clean_manual_copy(copied)
+    status = subprocess.check_output(["git", "status", "--short"], cwd=target, text=True)
+
+    assert report["status"] == "PASS"
+    assert report["parent_repo"] == target.as_posix()
+    assert ".git" in report["removed"]
+    assert not (copied / ".git").exists()
+    assert not (copied / ".venv").exists()
+    assert not (copied / "specs" / "2026-06-13_local_work.md").exists()
+    assert not (copied / "memory" / "PROJECT_MEMORY.md").exists()
+    assert not (copied / "state" / "sdlc_state.json").exists()
+    assert not (copied / "state" / "reports" / "test_report.json").exists()
+    assert (copied / "README.md").exists()
+    assert (copied / "AGENTS.md").exists()
+    assert (copied / "specs" / "prompt_spec_template.md").exists()
+    assert "?? ai-brain/" in status
+
+
+def test_manual_copy_clean_refuses_source_checkout_without_parent_repo(tmp_path: Path) -> None:
+    source = tmp_path / "ai-brain-source"
+    write(source / ".git" / "config", "source git metadata")
+    write(source / "README.md", "# AI Brain")
+
+    try:
+        clean_manual_copy(source)
+    except RuntimeError as error:
+        assert "no parent target repo was detected" in str(error)
+    else:
+        raise AssertionError("clean_manual_copy should refuse to clean a standalone checkout")
+
+    assert (source / ".git").exists()

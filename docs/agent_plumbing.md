@@ -32,6 +32,17 @@ prefix, initialize against the parent target repo:
 make -C ai-brain init-repo TARGET_ROOT=..
 ```
 
+If a user manually copied the live checkout and `ai-brain/.git` came along,
+run this before staging:
+
+```bash
+make -C ai-brain manual-copy-clean
+git add ai-brain
+```
+
+The cleanup is guarded so it refuses to remove `.git` from a standalone AI
+Brain source checkout without a parent target repo.
+
 ## Mental Model
 
 ```text
@@ -163,6 +174,7 @@ implementation, update the spec or document the boundary before continuing.
 | Gate | Command | Report |
 | --- | --- | --- |
 | Drop-in bundle | `make dropin-bundle` | `dist/ai-brain-dropin/` |
+| Manual-copy cleanup | `make manual-copy-clean` | removes nested `.git` and local generated artifacts |
 | Repo initialization | `make init-repo` | `state/ai_brain_repo_profile.local.json` |
 | Repo work spec | `make repo-work-spec` | `specs/work/YYYY-MM-DD_short_slug.md` |
 | Target commands | `make target-check` | `state/reports/target-command_report.json` |

@@ -19,6 +19,11 @@ subtree, an intentional submodule, or a clean exported bundle instead. For
 one-off vendoring, run `make dropin-bundle` from an AI Brain checkout and copy
 `dist/ai-brain-dropin/` into the target repo.
 
+If you already manually copied a live AI Brain folder into a target repo, run
+`make -C ai-brain manual-copy-clean` before `git add ai-brain`. It removes the
+nested `.git` and local generated artifacts only when the folder is inside a
+parent Git repo.
+
 Run `make init-repo` after adding AI Brain to a codebase. If AI Brain lives in
 an `ai-brain/` subfolder, run `make -C ai-brain init-repo TARGET_ROOT=..`. The
 initializer detects target repo metadata and writes ignored local memory, state,

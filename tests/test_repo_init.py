@@ -67,6 +67,9 @@ def test_public_docs_point_to_init_instead_of_manual_template_copying() -> None:
     assert "make init-repo" in ready_doc
     assert "git subtree" in readme
     assert "make dropin-bundle" in readme
+    assert "make -C ai-brain manual-copy-clean" in readme
+    assert "ai-brain/" in readme
+    assert "target repo's `.gitignore`" in readme
     assert "nested `.git`" in ready_doc
     assert "TARGET_ROOT=.." in readme
     assert "Copy `memory/PROJECT_MEMORY.template.md` to `memory/PROJECT_MEMORY.md`" not in readme

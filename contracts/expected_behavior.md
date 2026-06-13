@@ -13,8 +13,8 @@ The framework should help a team run repeatable autonomous delivery:
 
 - recover context from durable memory
 - initialize local repo context with `make init-repo`
-- support safe vendoring through Git subtree or a clean exported bundle instead
-  of plain nested `.git` checkouts
+- support safe vendoring through Git subtree, a guarded manual-copy cleanup, or
+  a clean exported bundle instead of plain nested `.git` checkouts
 - prefer provider-native `/goal` or planning input when the active runtime
   supports it, otherwise clarify inside AI Brain, then always continue through
   AI Brain's SDLC loop
@@ -63,6 +63,8 @@ The framework should help a team run repeatable autonomous delivery:
   the target checkout.
 - `tools/export_dropin_bundle.py`: clean bundle exporter for one-off vendoring
   without Git internals or local generated artifacts.
+- `tools/clean_manual_copy.py`: guarded cleanup for manually copied AI Brain
+  folders that still contain nested Git metadata.
 - `specs/work/YYYY-MM-DD_short_slug.md`: repo-level work spec for target repo
   changes and evidence.
 - `state/reports/target-command_report.json`: target repo command evidence.
@@ -177,6 +179,12 @@ virtualenvs, caches, local memory, local state, generated reports, or local
 dated specs. A Git submodule is an intentional alternative only when the target
 repo should store a pointer to a separate checkout. A plain nested `.git`
 directory is not a supported committed state.
+
+If a user manually copied the live AI Brain checkout into a target repo,
+`make -C ai-brain manual-copy-clean` removes the nested AI Brain `.git` and
+local generated artifacts before staging. The command must refuse to remove
+`.git` from a standalone AI Brain source checkout when no parent target repo is
+detected.
 
 When AI Brain lives under an `ai-brain/` prefix in the target repo, initialize
 local context with `make -C ai-brain init-repo TARGET_ROOT=..` so repo profiling

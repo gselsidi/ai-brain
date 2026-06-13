@@ -5,7 +5,7 @@ KB_PORT ?= 8001
 KB_URL ?= http://localhost:$(KB_PORT)
 TARGET_ROOT ?= .
 
-.PHONY: setup init-repo dropin-bundle repo-work-spec target-check target-drift target-release build-all docs test lint framework-check framework-drift implementation-drift improvement-queue conversation-feedback conversation-feedback-due harness-check team-reliability release-gate report-html maintenance-daily
+.PHONY: setup init-repo dropin-bundle manual-copy-clean repo-work-spec target-check target-drift target-release build-all docs test lint framework-check framework-drift implementation-drift improvement-queue conversation-feedback conversation-feedback-due harness-check team-reliability release-gate report-html maintenance-daily
 
 setup:
 	$(PYTHON) -m venv $(VENV)
@@ -18,6 +18,9 @@ init-repo:
 
 dropin-bundle:
 	$(PYTHON) tools/export_dropin_bundle.py --clean
+
+manual-copy-clean:
+	$(PYTHON) tools/clean_manual_copy.py
 
 repo-work-spec:
 	$(PYTHON) tools/manage_repo_work_spec.py --title "$(or $(SPEC_TITLE),repo work)"

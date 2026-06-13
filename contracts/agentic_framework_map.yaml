@@ -81,9 +81,11 @@ local_unique_capabilities:
     description: >
       Generic adoption guidance and exporter for adding AI Brain to any target
       repo without committing a plain nested .git checkout; recommends Git
-      subtree for ongoing updates and a clean bundle for one-off vendoring.
+      subtree for ongoing updates, a guarded cleanup for manual copies, and a
+      clean bundle for one-off vendoring.
     artifacts:
       - tools/export_dropin_bundle.py
+      - tools/clean_manual_copy.py
       - Makefile
       - README.md
       - docs/agent_plumbing.md

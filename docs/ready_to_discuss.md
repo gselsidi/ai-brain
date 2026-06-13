@@ -28,6 +28,10 @@ pointer to a separate AI Brain checkout. Avoid committing a plain nested `.git`
 directory; normal clones and deploys will not get the contents as ordinary
 files. For one-off vendoring, `make dropin-bundle` creates
 `dist/ai-brain-dropin/` without Git internals or local generated artifacts.
+If someone manually copied the live folder anyway, run
+`make -C ai-brain manual-copy-clean` before staging it. The command is guarded:
+it removes nested AI Brain Git metadata only when `ai-brain/` is inside another
+Git repo.
 
 After adding AI Brain to the target codebase, run:
 
