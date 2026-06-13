@@ -13,6 +13,8 @@ The framework should help a team run repeatable autonomous delivery:
 
 - recover context from durable memory
 - initialize local repo context with `make init-repo`
+- install a target repo root `AGENTS.md` bridge for subfolder installs so Codex
+  discovers `ai-brain/AGENTS.md` on future repo work
 - prefer an existing AI Brain virtualenv for Makefile commands and fail with a
   clear Python-version message when only an unsupported system Python is
   available
@@ -70,6 +72,8 @@ The framework should help a team run repeatable autonomous delivery:
   folders that still contain nested Git metadata.
 - `tools/check_python.py`: compatibility guard for setup, initialization, and
   evidence commands.
+- `tools/install_root_agents.py`: target repo root `AGENTS.md` bridge installer
+  that points Codex to nested AI Brain instructions.
 - `specs/work/YYYY-MM-DD_short_slug.md`: repo-level work spec for target repo
   changes and evidence.
 - `state/reports/target-command_report.json`: target repo command evidence.
@@ -200,6 +204,15 @@ AI Brain commands require Python 3.11 or newer. The Makefile should prefer
 such as `python3.12`, `python3.13`, or `python3.11`. If a machine only exposes
 an old macOS system Python, the version check should tell the user to install a
 newer Python or run with the existing AI Brain virtualenv.
+
+A nested `ai-brain/AGENTS.md` is not enough by itself to control future Codex
+work in the target repo. For subfolder installs, `make -C ai-brain init-repo
+TARGET_ROOT=..` should create or update root `AGENTS.md` with a marker-delimited
+AI Brain bridge that tells Codex to read `ai-brain/AGENTS.md`, local AI Brain
+memory, local AI Brain repo profile, and routing contracts before repo work.
+Existing root `AGENTS.md` content must be preserved outside the managed bridge
+block. Private local-only installs can disable the bridge with
+`INSTALL_ROOT_AGENTS=0`.
 
 The tracked files under `contracts/` describe AI Brain itself: roles, gates,
 memory rules, prompt specs, checks, and release behavior. They are not populated

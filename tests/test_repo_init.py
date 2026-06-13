@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+from tools.install_root_agents import BRIDGE_START, install_root_agents
 from tools.init_repo_profile import build_profile, write_local_files
 
 
@@ -70,9 +71,59 @@ def test_public_docs_point_to_init_instead_of_manual_template_copying() -> None:
     assert "make -C ai-brain manual-copy-clean" in readme
     assert "ai-brain/" in readme
     assert "target repo's `.gitignore`" in readme
+    assert "root `AGENTS.md`" in readme
+    assert "INSTALL_ROOT_AGENTS=0" in readme
     assert "nested `.git`" in ready_doc
+    assert "AI Brain bridge" in ready_doc
     assert "TARGET_ROOT=.." in readme
     assert "Copy `memory/PROJECT_MEMORY.template.md` to `memory/PROJECT_MEMORY.md`" not in readme
     assert "Contracts describe AI Brain itself" in readme
     assert "Replace `contracts/expected_behavior.md`" not in readme
     assert "Add your product's test, lint, build, and deploy commands" not in readme
+
+
+def test_root_agents_bridge_installs_and_preserves_existing_instructions(tmp_path: Path) -> None:
+    target = tmp_path / "target"
+    brain = target / "ai-brain"
+    target.mkdir()
+    brain.mkdir()
+    (brain / "AGENTS.md").write_text("# AI Brain instructions\n", encoding="utf-8")
+    root_agents = target / "AGENTS.md"
+    root_agents.write_text("# Existing Instructions\n\nKeep this repo-specific note.\n", encoding="utf-8")
+
+    report = install_root_agents(target_root=target, ai_brain_root=brain)
+    text = root_agents.read_text(encoding="utf-8")
+
+    assert report["status"] == "PASS"
+    assert "# Existing Instructions" in text
+    assert "Keep this repo-specific note." in text
+    assert BRIDGE_START in text
+    assert "This repository uses AI Brain as its agent orchestration layer." in text
+    assert "`ai-brain/AGENTS.md`" in text
+    assert "`ai-brain/memory/PROJECT_MEMORY.md`" in text
+    assert "Treat AI Brain as the primary workflow layer" in text
+
+
+def test_root_agents_bridge_replaces_only_managed_block(tmp_path: Path) -> None:
+    target = tmp_path / "target"
+    brain = target / "ai-brain"
+    target.mkdir()
+    brain.mkdir()
+    root_agents = target / "AGENTS.md"
+
+    install_root_agents(target_root=target, ai_brain_root=brain)
+    first_text = root_agents.read_text(encoding="utf-8")
+    root_agents.write_text(first_text + "\nOutside managed block.\n", encoding="utf-8")
+    install_root_agents(target_root=target, ai_brain_root=brain)
+    second_text = root_agents.read_text(encoding="utf-8")
+
+    assert second_text.count(BRIDGE_START) == 1
+    assert "Outside managed block." in second_text
+
+
+def test_makefile_installs_root_agents_bridge_by_default_with_opt_out() -> None:
+    makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
+
+    assert "INSTALL_ROOT_AGENTS ?= 1" in makefile
+    assert "ROOT_AGENTS_FLAG" in makefile
+    assert "--skip-root-agents" in makefile

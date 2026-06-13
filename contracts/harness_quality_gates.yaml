@@ -28,6 +28,8 @@ required_test_node_fragments:
   - tests/test_conversation_feedback.py::test_conversation_feedback_respects_cadence
   - tests/test_repo_init.py::test_repo_init_detects_product_commands_and_writes_local_files
   - tests/test_repo_init.py::test_public_docs_point_to_init_instead_of_manual_template_copying
+  - tests/test_repo_init.py::test_root_agents_bridge_installs_and_preserves_existing_instructions
+  - tests/test_repo_init.py::test_root_agents_bridge_replaces_only_managed_block
   - tests/test_dropin_export.py::test_dropin_export_excludes_git_and_local_artifacts
   - tests/test_dropin_export.py::test_manual_copy_clean_removes_nested_git_only_inside_parent_repo
   - tests/test_python_bootstrap.py::test_makefile_prefers_existing_venv_and_checks_python_before_init
@@ -61,6 +63,7 @@ required_artifacts:
   - docs/how_this_was_built.md
   - state/reports/improvement-queue_report.json
   - tools/check_python.py
+  - tools/install_root_agents.py
   - tools/run_tests_with_report.py
   - tools/check_implementation_drift.py
   - tools/validate_harness_quality.py
@@ -236,6 +239,7 @@ required_artifact_markers:
       - check-python
       - python3.12
       - .venv
+      - INSTALL_ROOT_AGENTS
       - framework-drift
       - target-check
       - target-drift
@@ -249,12 +253,20 @@ required_artifact_markers:
       - ai-brain-repo-init
       - PROJECT_MEMORY.md
       - detected_commands
+      - install_root_agents
   - path: tools/check_python.py
     markers:
       - AI Brain requires Python
       - make -C ai-brain setup
       - ai-brain/.venv/bin
       - is_supported
+  - path: tools/install_root_agents.py
+    markers:
+      - AI_BRAIN_ROOT_BRIDGE_START
+      - install_root_agents
+      - Treat AI Brain as the primary workflow layer
+      - INSTALL_ROOT_AGENTS
+      - AGENTS.md
   - path: tools/export_dropin_bundle.py
     markers:
       - export_bundle
@@ -364,6 +376,7 @@ required_artifact_markers:
       - Git subtree
       - dropin-bundle
       - manual-copy-clean
+      - root `AGENTS.md`
       - Prompt-To-Agent Routing
       - source skills
       - Prompt Specs
@@ -409,6 +422,7 @@ required_artifact_markers:
       - git subtree
       - dropin-bundle
       - manual-copy-clean
+      - AGENTS.md bridge
       - improvement queue
       - init-repo
       - target repo
@@ -418,3 +432,4 @@ required_artifact_markers:
       - make -C ai-brain setup
       - Python 3.11+
       - ai-brain/.venv/bin/python
+      - INSTALL_ROOT_AGENTS=0

@@ -87,6 +87,19 @@ local_unique_capabilities:
       - Makefile
       - scripts/build_and_launch.sh
       - README.md
+  root_agents_bridge:
+    description: >
+      Target-repo root AGENTS.md bridge that makes nested AI Brain discoverable
+      to Codex after init-repo, preserving existing root instructions and
+      allowing local-only installs to opt out.
+    artifacts:
+      - tools/install_root_agents.py
+      - tools/init_repo_profile.py
+      - Makefile
+      - README.md
+      - docs/agent_plumbing.md
+      - docs/index.md
+      - docs/ready_to_discuss.md
   dropin_vendoring:
     description: >
       Generic adoption guidance and exporter for adding AI Brain to any target

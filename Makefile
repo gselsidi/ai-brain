@@ -14,6 +14,8 @@ HOST ?= 127.0.0.1
 KB_PORT ?= 8001
 KB_URL ?= http://localhost:$(KB_PORT)
 TARGET_ROOT ?= .
+INSTALL_ROOT_AGENTS ?= 1
+ROOT_AGENTS_FLAG := $(if $(filter 0 false no off,$(INSTALL_ROOT_AGENTS)),--skip-root-agents,)
 
 .PHONY: setup check-python init-repo dropin-bundle manual-copy-clean repo-work-spec target-check target-drift target-release build-all docs test lint framework-check framework-drift implementation-drift improvement-queue conversation-feedback conversation-feedback-due harness-check team-reliability release-gate report-html maintenance-daily
 
@@ -27,7 +29,7 @@ setup: check-python
 	@echo "Ready. Run: source $(VENV)/bin/activate"
 
 init-repo: check-python
-	$(PYTHON) tools/init_repo_profile.py --root "$(TARGET_ROOT)"
+	$(PYTHON) tools/init_repo_profile.py --root "$(TARGET_ROOT)" $(ROOT_AGENTS_FLAG)
 
 dropin-bundle: check-python
 	$(PYTHON) tools/export_dropin_bundle.py --clean

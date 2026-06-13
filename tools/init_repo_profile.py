@@ -2,11 +2,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+
+from tools.install_root_agents import install_root_agents, should_install_from_env
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -292,10 +295,22 @@ def main() -> None:
     parser.add_argument("--profile", default=str(DEFAULT_PROFILE))
     parser.add_argument("--memory", default=str(DEFAULT_MEMORY))
     parser.add_argument("--state", default=str(DEFAULT_STATE))
+    parser.add_argument(
+        "--skip-root-agents",
+        action="store_true",
+        help="Do not install or update the target repo root AGENTS.md AI Brain bridge.",
+    )
     args = parser.parse_args()
 
     root = Path(args.root).expanduser().resolve()
     profile = build_profile(root)
+    bridge_report: dict[str, Any] | None = None
+    if not args.skip_root_agents and should_install_from_env(os.environ.get("INSTALL_ROOT_AGENTS")):
+        bridge_report = install_root_agents(target_root=root, ai_brain_root=ROOT)
+    profile["root_agents_bridge"] = bridge_report or {
+        "status": "SKIP",
+        "summary": "Root AGENTS bridge installation was disabled.",
+    }
     write_local_files(
         profile,
         profile_path=Path(args.profile),

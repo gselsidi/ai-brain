@@ -46,8 +46,12 @@ make -C ai-brain init-repo TARGET_ROOT=..
 ```
 
 That creates ignored local memory, lifecycle state, and a repo profile from the
-target checkout. Then keep the evidence loop: test report, framework drift,
-harness quality, reliability scoring, requirements audit, and release gate.
+target checkout. It also creates or updates root `AGENTS.md` with an AI Brain
+bridge so future Codex sessions read `ai-brain/AGENTS.md` automatically for repo
+work. Use `INSTALL_ROOT_AGENTS=0` for a private local-only helper that should
+not add an AI Brain bridge. Then keep the evidence loop: test report, framework
+drift, harness quality, reliability scoring, requirements audit, and release
+gate.
 
 Each project-work prompt should create a durable spec before implementation so
 planning, ownership, and verification are auditable.

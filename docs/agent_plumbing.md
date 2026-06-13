@@ -8,6 +8,14 @@ There is no built-in product runtime. Adopting teams bring their own codebase
 and product checks. AI Brain initializes local repo context from that checkout
 with `make init-repo`.
 
+When AI Brain lives under an `ai-brain/` subfolder, `make -C ai-brain
+init-repo TARGET_ROOT=..` creates or updates the target repo root `AGENTS.md`
+with an AI Brain bridge. That root bridge is the discoverable instruction layer
+that tells future Codex sessions to read `ai-brain/AGENTS.md`. Existing
+repo-specific root instructions are preserved outside the managed bridge block.
+Set `INSTALL_ROOT_AGENTS=0` for private local-only installs that should not add
+or update the root bridge.
+
 ## Vendoring Into A Target Repo
 
 Use Git subtree when a target repo should commit AI Brain as ordinary files and
@@ -48,6 +56,7 @@ Brain source checkout without a parent target repo.
 ```text
 user prompt
   -> AGENTS.md start-of-turn protocol
+  -> root AGENTS.md AI Brain bridge when installed in a target repo
   -> state/ai_brain_repo_profile.local.json repo context when present
   -> local memory/PROJECT_MEMORY.md context recovery when present
   -> /goal provider-native input or AI Brain clarification
@@ -175,6 +184,7 @@ implementation, update the spec or document the boundary before continuing.
 | --- | --- | --- |
 | Drop-in bundle | `make dropin-bundle` | `dist/ai-brain-dropin/` |
 | Manual-copy cleanup | `make manual-copy-clean` | removes nested `.git` and local generated artifacts |
+| Root AGENTS bridge | `make init-repo` | target repo `AGENTS.md` managed AI Brain bridge |
 | Repo initialization | `make init-repo` | `state/ai_brain_repo_profile.local.json` |
 | Repo work spec | `make repo-work-spec` | `specs/work/YYYY-MM-DD_short_slug.md` |
 | Target commands | `make target-check` | `state/reports/target-command_report.json` |

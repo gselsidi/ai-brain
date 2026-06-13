@@ -51,6 +51,16 @@ make -C ai-brain setup
 make -C ai-brain init-repo TARGET_ROOT=..
 ```
 
+That init command also creates or updates the target repo root `AGENTS.md` with
+an AI Brain bridge. This bridge is what tells future Codex sessions to read
+`ai-brain/AGENTS.md` before doing repo work. Existing root `AGENTS.md` content
+is preserved outside a managed block. For a private local-only AI Brain helper,
+disable the bridge:
+
+```bash
+make -C ai-brain init-repo TARGET_ROOT=.. INSTALL_ROOT_AGENTS=0
+```
+
 AI Brain requires Python 3.11+. On macOS, `/usr/bin/python3` may still be
 Python 3.9. The Makefile automatically prefers `ai-brain/.venv/bin/python` when
 it exists, then looks for `python3.12`, `python3.13`, or `python3.11`. If only an
