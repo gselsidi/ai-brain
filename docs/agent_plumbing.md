@@ -16,6 +16,7 @@ user prompt
   -> state/ai_brain_repo_profile.local.json repo context when present
   -> local memory/PROJECT_MEMORY.md context recovery when present
   -> /goal provider-native input or AI Brain clarification
+  -> division-first prompt-to-agent routing
   -> specs/YYYY-MM-DD_short_slug.md prompt spec
   -> specs/work/YYYY-MM-DD_short_slug.md repo work spec when changing the target repo
   -> sdlc_orchestrator checklist and plan
@@ -68,6 +69,35 @@ user prompt
 | `maintenance_heartbeat` | Runs scheduled checks and reliability scoring. |
 | `pr_reviewer` | Reviews the final change for bugs, missing tests, and release risk. |
 | `release_gate` | Makes the final PASS/FAIL decision from evidence. |
+
+## Prompt-To-Agent Routing
+
+Before assigning work, the `sdlc_orchestrator` treats the prompt as a routing
+signal. It extracts the lifecycle phase, changed artifacts, division signals,
+adjacent disciplines, and likely evidence gates. The machine-readable contract
+lives in `contracts/domain_agent_routing.yaml`, and the deterministic helper is:
+
+```bash
+python tools/select_agent_route.py --prompt "Fix the checkout API bug and add tests"
+```
+
+The route is recorded in the prompt spec as primary division, adjacent
+divisions, selected framework agents, selected specialists, deferred
+specialists, routing assumptions, and verification gates.
+
+Routing is division-first and token-thrifty. The orchestrator chooses one
+primary division by default, such as engineering/programming, marketing, sales,
+design, product, security, testing, or support. It then activates only the
+specialists justified by the prompt, source artifacts, or failed evidence. Other
+plausible specialists stay deferred in the spec so the team can escalate later
+without paying for unnecessary parallel analysis.
+
+For programming work, the engineering division can branch into architecture,
+implementation, tests, security, performance, docs, or release roles. For
+marketing work, the marketing division can branch into SEO, content/copywriting,
+conversion, analytics, paid media, social, brand, or funnel and lead-gen
+strategy. SEO is only an example of the general routing behavior, not a special
+case that always fans out.
 
 ## Prompt Specs
 

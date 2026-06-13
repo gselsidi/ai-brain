@@ -1,0 +1,374 @@
+version: 1
+name: division-first-prompt-routing
+purpose: >
+  Machine-readable routing contract for the main orchestrator. The orchestrator
+  reads the user's prompt, selects the best-fit division, chooses core SDLC
+  roles, and adds only the adjacent specialists justified by the prompt and
+  evidence needs.
+
+source_inspiration:
+  repository: https://github.com/msitarzewski/agency-agents
+  license: MIT
+  usage_boundary: >
+    Use the public agency roster as inspiration for division and specialist
+    breadth. Do not vendor, copy, or require external agent prompt bodies;
+    adopting teams may map these specialist lenses to their own runtime-specific
+    agents.
+
+routing_defaults:
+  strategy: division_first_token_thrifty
+  max_primary_specialists: 3
+  max_adjacent_specialists: 2
+  max_adjacent_divisions: 1
+  baseline_framework_agents:
+    - sdlc_orchestrator
+    - product_context_analyst
+    - delivery_planner
+    - requirements_auditor
+  required_prompt_spec_fields:
+    - primary_division
+    - adjacent_divisions
+    - selected_framework_agents
+    - selected_specialists
+    - deferred_specialists
+    - routing_assumptions
+    - verification_gates
+  escalation_rule: >
+    Start with the smallest useful set. Add adjacent specialists only when the
+    prompt names their concern, the source artifacts expose that concern, or a
+    failed gate proves the extra lens is needed.
+
+divisions:
+  engineering:
+    description: Programming, software delivery, architecture, code changes, and developer workflow.
+    trigger_terms:
+      - programming
+      - coding
+      - software
+      - implement
+      - bug
+      - fix
+      - refactor
+      - frontend
+      - backend
+      - api
+      - database
+      - test
+      - tests
+      - ci
+      - deploy
+    required_framework_agents:
+      - interface_contract_architect
+      - dev_builder
+      - dev_test_writer
+      - quality_explorer
+      - pr_reviewer
+      - release_gate
+    default_specialists:
+      - software_architect
+      - implementation_engineer
+      - test_engineer
+    specialists:
+      - name: software_architect
+        trigger_terms: [architecture, design, system, api, data model, integration]
+      - name: frontend_developer
+        trigger_terms: [frontend, react, vue, angular, ui, css, component]
+      - name: backend_engineer
+        trigger_terms: [backend, api, backend service, database, migration, queue]
+      - name: devops_automation_engineer
+        trigger_terms: [ci, cd, deploy, docker, kubernetes, workflow, pipeline]
+      - name: test_engineer
+        trigger_terms: [test, regression, unit, integration, e2e, coverage]
+      - name: performance_optimizer
+        trigger_terms: [performance, slow, latency, memory, core web vitals]
+      - name: security_reviewer
+        trigger_terms: [security, auth, permission, secrets, vulnerability]
+      - name: technical_writer
+        trigger_terms: [docs, documentation, readme, guide]
+    verification_gates:
+      - prompt_spec
+      - framework_or_target_tests
+      - framework_or_target_lint
+      - pr_review
+      - release_gate
+
+  marketing:
+    description: Growth, content, SEO, positioning, channel strategy, and conversion paths.
+    trigger_terms:
+      - marketing
+      - seo
+      - organic search
+      - keyword
+      - content
+      - copywriting
+      - landing page
+      - conversion
+      - funnel
+      - lead gen
+      - campaign
+      - social
+      - email
+    required_framework_agents:
+      - product_context_analyst
+      - delivery_planner
+      - interface_contract_architect
+      - quality_explorer
+      - docs_drift_guard
+      - requirements_auditor
+    default_specialists:
+      - marketing_strategist
+      - content_copywriter
+      - analytics_measurement_specialist
+    specialists:
+      - name: seo_specialist
+        trigger_terms: [seo, organic search, serp, keyword, metadata, schema, rankings]
+      - name: content_copywriter
+        trigger_terms: [copywriting, copy, content, blog, headline, messaging]
+      - name: conversion_rate_optimizer
+        trigger_terms: [conversion, cta, landing page, a/b, cro]
+      - name: analytics_measurement_specialist
+        trigger_terms: [analytics, tracking, attribution, ga4, search console, measurement]
+      - name: funnel_lead_gen_strategist
+        trigger_terms: [funnel, lead gen, lead magnet, offer, sales page]
+      - name: paid_media_strategist
+        trigger_terms: [ads, ppc, paid media, google ads, meta ads, cac, roas]
+      - name: social_media_strategist
+        trigger_terms: [social, linkedin, twitter, tiktok, instagram, reddit]
+      - name: brand_messaging_guardian
+        trigger_terms: [brand, positioning, voice, narrative]
+    expansion_sets:
+      - name: seo_growth
+        trigger_terms: [seo, organic search, serp, keyword, metadata, schema, rankings]
+        specialists:
+          - seo_specialist
+          - content_copywriter
+          - analytics_measurement_specialist
+          - conversion_rate_optimizer
+          - funnel_lead_gen_strategist
+        reason: >
+          SEO usually touches search intent, content quality, measurement, and
+          conversion path, but only the first few needed specialists should be
+          active by default.
+    verification_gates:
+      - prompt_spec
+      - content_or_metadata_regression_when_changed
+      - analytics_or_conversion_evidence_when_claimed
+      - requirements_audit
+
+  sales:
+    description: Pipeline, offers, outreach, discovery, proposals, and revenue handoff.
+    trigger_terms:
+      - sales
+      - funnel
+      - outbound
+      - discovery
+      - proposal
+      - pipeline
+      - lead generation
+      - lead gen
+      - offer
+      - crm
+    required_framework_agents:
+      - product_context_analyst
+      - delivery_planner
+      - interface_contract_architect
+      - quality_explorer
+      - requirements_auditor
+    default_specialists:
+      - sales_offer_strategist
+      - funnel_lead_gen_strategist
+      - sales_pipeline_analyst
+    specialists:
+      - name: sales_offer_strategist
+        trigger_terms: [offer, package, guarantee, pricing, lead magnet]
+      - name: outbound_strategist
+        trigger_terms: [outbound, cold email, sequence, prospecting]
+      - name: discovery_coach
+        trigger_terms: [discovery, qualification, call, questions]
+      - name: proposal_strategist
+        trigger_terms: [proposal, rfp, quote, pitch]
+      - name: sales_pipeline_analyst
+        trigger_terms: [pipeline, forecast, crm, velocity]
+    verification_gates:
+      - prompt_spec
+      - handoff_contract_when_pipeline_changes
+      - requirements_audit
+
+  design:
+    description: UX, UI, design systems, brand visuals, and product usability.
+    trigger_terms:
+      - design
+      - ui
+      - ux
+      - wireframe
+      - mockup
+      - brand
+      - visual
+      - accessibility
+    required_framework_agents:
+      - product_context_analyst
+      - interface_contract_architect
+      - dev_builder
+      - quality_explorer
+      - docs_drift_guard
+      - requirements_auditor
+    default_specialists:
+      - ui_designer
+      - ux_researcher
+      - accessibility_reviewer
+    specialists:
+      - name: ui_designer
+        trigger_terms: [ui, visual, layout, component, mockup]
+      - name: ux_researcher
+        trigger_terms: [ux, user flow, ux research, user research, usability]
+      - name: brand_guardian
+        trigger_terms: [brand, identity, voice, style]
+      - name: accessibility_reviewer
+        trigger_terms: [accessibility, wcag, contrast, keyboard, screen reader]
+    verification_gates:
+      - prompt_spec
+      - visual_or_accessibility_check_when_applicable
+      - requirements_audit
+
+  product:
+    description: Product strategy, requirements, roadmap, scope, adoption, and metrics.
+    trigger_terms:
+      - product
+      - roadmap
+      - requirements
+      - user story
+      - adoption
+      - metric
+      - experiment
+      - mvp
+    required_framework_agents:
+      - product_context_analyst
+      - delivery_planner
+      - interface_contract_architect
+      - requirements_auditor
+    default_specialists:
+      - product_strategist
+      - requirements_analyst
+      - analytics_measurement_specialist
+    specialists:
+      - name: product_strategist
+        trigger_terms: [strategy, roadmap, mvp, prioritization]
+      - name: requirements_analyst
+        trigger_terms: [requirements, user story, acceptance criteria, scope]
+      - name: analytics_measurement_specialist
+        trigger_terms: [metric, experiment, kpi, adoption analytics, product analytics]
+    verification_gates:
+      - prompt_spec
+      - interface_contract
+      - requirements_audit
+
+  security:
+    description: Security review, privacy, dependencies, permissions, auth, and abuse risk.
+    trigger_terms:
+      - security
+      - vulnerability
+      - auth
+      - permission
+      - privacy
+      - secret
+      - compliance
+      - threat
+    required_framework_agents:
+      - security_reviewer
+      - adversarial_reviewer
+      - dev_test_writer
+      - requirements_auditor
+      - release_gate
+    default_specialists:
+      - security_reviewer
+      - threat_modeler
+      - dependency_auditor
+    specialists:
+      - name: threat_modeler
+        trigger_terms: [threat, abuse, risk, attack]
+      - name: dependency_auditor
+        trigger_terms: [dependency, package, supply chain, vulnerability]
+      - name: privacy_reviewer
+        trigger_terms: [privacy, pii, personal data, data retention]
+    verification_gates:
+      - security_review
+      - adversarial_review
+      - regression
+      - release_gate
+
+  testing:
+    description: Test strategy, regression, QA exploration, fixtures, and release confidence.
+    trigger_terms:
+      - test
+      - tests
+      - qa
+      - regression
+      - fixture
+      - coverage
+      - flaky
+      - failing check
+    required_framework_agents:
+      - dev_test_writer
+      - quality_explorer
+      - self_healer
+      - evidence_judge
+      - release_gate
+    default_specialists:
+      - test_engineer
+      - quality_explorer
+      - evidence_judge
+    specialists:
+      - name: test_engineer
+        trigger_terms: [unit, integration, e2e, regression, fixture, test, tests]
+      - name: quality_explorer
+        trigger_terms: [qa, exploratory, behavior, edge case]
+      - name: ci_debugger
+        trigger_terms: [failing check, ci, flaky, pipeline]
+    verification_gates:
+      - test_execution
+      - evidence_judge
+      - release_gate
+
+  support:
+    description: Customer support, operations, runbooks, incident response, and knowledge base work.
+    trigger_terms:
+      - support
+      - incident
+      - runbook
+      - help center
+      - knowledge base
+      - escalation
+      - ticket
+    required_framework_agents:
+      - product_context_analyst
+      - docs_drift_guard
+      - quality_explorer
+      - requirements_auditor
+    default_specialists:
+      - support_ops_specialist
+      - technical_writer
+      - incident_response_lead
+    specialists:
+      - name: support_ops_specialist
+        trigger_terms: [support, ticket, escalation, help center]
+      - name: technical_writer
+        trigger_terms: [runbook, knowledge base, docs, guide]
+      - name: incident_response_lead
+        trigger_terms: [incident, outage, postmortem, on-call]
+    verification_gates:
+      - docs_drift_check
+      - quality_exploration
+      - requirements_audit
+
+orchestrator_rules:
+  - Read the prompt before assigning work and extract lifecycle phase, artifact
+    changes, division signals, adjacent disciplines, and evidence gates.
+  - Select one primary division by default. Add at most the configured adjacent
+    divisions unless the prompt explicitly requires more.
+  - Prefer explicit specialist mentions over inferred expansion sets.
+  - Record selected and deferred specialists in the prompt spec so the team can
+    escalate without rediscovering the context.
+  - Do not spawn or claim specialists that are unsupported by the runtime,
+    prompt scope, or token budget.
+  - Keep routing product-agnostic; the target repo supplies product surfaces,
+    credentials, analytics data, and domain-specific commands.

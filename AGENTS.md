@@ -19,6 +19,15 @@ maintenance, or project work, Codex must:
 4. Identify the active SDLC phase.
 5. Consult `contracts/agentic_framework_map.yaml` when the task is substantial.
 6. Identify which specialist agents, checks, or reports apply.
+   For project work, read the prompt as a routing signal and consult
+   `contracts/domain_agent_routing.yaml` or `tools/select_agent_route.py` when
+   domain or division terms appear. Record primary division, adjacent divisions,
+   selected framework agents, selected specialists, deferred specialists,
+   routing assumptions, and verification gates in the prompt spec. Use a
+   token-thrifty default: choose the smallest useful agent set, treat whole
+   folders such as engineering/programming or marketing as divisions first, and
+   add adjacent specialists only when the prompt, source, or failed evidence
+   justifies them.
 7. For broad, ambiguous, risky, or outcome-oriented prompts, run `/goal` first.
    If the active provider/runtime exposes a native `/goal` or planning feature,
    use it to clarify the work, then continue through AI Brain's spec, memory,
@@ -187,6 +196,10 @@ checks, durable memory, improvement loops, and auditable release evidence.
 - Use `/goal` to clarify broad work: prefer provider-native goal or planning
   input when available, otherwise clarify inside AI Brain, then always continue
   through AI Brain's SDLC loop.
+- Route each project-work prompt to proper SDLC roles and adjacent specialists
+  before assigning work. Use `contracts/domain_agent_routing.yaml` for
+  division-first routing across engineering/programming, marketing, sales,
+  design, product, security, testing, and support without unnecessary fan-out.
 - In either `/goal` mode, clarify outcome, success criteria, non-goals,
   constraints, assumptions, and evidence before writing a prompt spec.
 - Convert a prompt into a durable spec with explicit requirements and a

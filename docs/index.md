@@ -56,6 +56,7 @@ hand.
 - `specs/prompt_spec_template.md`
 - `contracts/team_framework.yaml`
 - `contracts/agentic_framework_map.yaml`
+- `contracts/domain_agent_routing.yaml`
 - `contracts/expected_behavior.md`
 - `memory/PROJECT_MEMORY.template.md`
 - `memory/PROJECT_MEMORY.md`

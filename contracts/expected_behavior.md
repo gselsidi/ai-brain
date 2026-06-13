@@ -17,6 +17,8 @@ The framework should help a team run repeatable autonomous delivery:
   supports it, otherwise clarify inside AI Brain, then always continue through
   AI Brain's SDLC loop
 - clarify broad or ambiguous work with `/goal` before the prompt spec
+- read each project-work prompt as a routing signal, select a primary division,
+  choose core SDLC roles, and add adjacent specialists only when justified
 - convert project-work prompts into durable prompt specs with auditable
   requirements
 - keep target repo work specs under `specs/work/` for actual repo changes
@@ -39,6 +41,9 @@ The framework should help a team run repeatable autonomous delivery:
 - `.codex/agents/*.toml`: specialist role prompts for the autonomous SDLC team.
 - `contracts/agentic_framework_map.yaml`: mapping from general lifecycle skills
   to local roles, artifacts, and gates.
+- `contracts/domain_agent_routing.yaml`: division-first prompt-to-agent routing
+  contract for mapping prompt signals to framework agents, specialist lenses,
+  deferred specialists, and verification gates.
 - `contracts/team_framework.yaml`: machine-readable framework contract.
 - `memory/PROJECT_MEMORY.template.md`: tracked safe template for local durable
   context.
@@ -61,6 +66,9 @@ The framework should help a team run repeatable autonomous delivery:
 - `specs/prompt_spec_template.md`: standard structure for each project-work
   prompt spec.
 - `specs/YYYY-MM-DD_short_slug.md`: durable prompt spec for a requested slice.
+- `tools/select_agent_route.py`: deterministic selector that reads a prompt and
+  emits the primary division, adjacent divisions, selected framework agents,
+  selected specialists, deferred specialists, and verification gates.
 - `tools/*.py`: deterministic validators and report builders.
 - `state/reports/*.json`: machine-readable evidence.
 - `state/reports/improvement-queue_report.json`: Desloppify-inspired scan,
@@ -117,6 +125,14 @@ The expected specialist roles are:
   `specs/` before implementation starts.
 - Prompt specs break work into small chunks with owners, affected artifacts, and
   verification commands.
+- Prompt specs record division-first prompt-to-agent routing for project-work
+  prompts: primary division, adjacent divisions, selected framework agents,
+  selected specialists, deferred specialists, routing assumptions, and
+  verification gates.
+- Routing is token-thrifty by default. Engineering/programming, marketing,
+  sales, design, product, security, testing, and support are treated as
+  divisions; adjacent specialists are added only when the prompt, source
+  artifacts, or failed evidence justify the extra lens.
 - Target repo changes keep an auditable repo work spec under `specs/work/`.
 - Target repo commands and target drift checks run when a target repo profile
   exists.

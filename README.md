@@ -57,6 +57,9 @@ KB_PORT=8012 ./scripts/build_and_launch.sh
   provider-neutral and can be ported to Claude or another agent runtime.
 - `contracts/team_framework.yaml`: machine-readable framework contract.
 - `contracts/agentic_framework_map.yaml`: lifecycle skill map.
+- `contracts/domain_agent_routing.yaml`: prompt-to-agent routing contract for
+  selecting a primary division, SDLC roles, specialists, deferred specialists,
+  and evidence gates without unnecessary fan-out.
 - `contracts/expected_behavior.md`: human-readable AI Brain framework behavior
   contract.
 - `memory/PROJECT_MEMORY.template.md`: safe template for local durable memory.
@@ -99,6 +102,13 @@ updates a local durable spec under `specs/` before implementation starts. The
 affected artifacts, and verification commands; the `sdlc_orchestrator`
 implements from that spec and audits completion against it.
 
+Before assignment, the `sdlc_orchestrator` also runs prompt-to-agent routing.
+It reads the prompt, chooses a primary division such as
+engineering/programming, marketing, sales, design, product, security, testing,
+or support, and selects only the specialists justified by the prompt or
+evidence. Adjacent specialists are kept as deferred options in the spec so AI
+Brain can escalate later without burning tokens up front.
+
 When AI Brain is operating on a target repo, actual work evidence belongs in
 repo work specs under `specs/work/`. Those specs are the repo's spec-driven
 development ledger: prompt, goal, affected files, tests, docs updates, commands,
@@ -121,6 +131,7 @@ make framework-drift
 make target-check
 make target-drift
 make target-release
+python tools/select_agent_route.py --prompt "Fix the checkout API bug and add tests"
 make improvement-queue
 make conversation-feedback
 make harness-check

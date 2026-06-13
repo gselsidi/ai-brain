@@ -154,6 +154,19 @@ local_unique_capabilities:
       - docs/maintenance.md
       - Makefile
       - state/reports/conversation-feedback_report.json
+  prompt_agent_routing:
+    description: >
+      Division-first prompt-to-agent routing contract and deterministic selector
+      that let the main orchestrator classify user prompts, choose a primary
+      division such as engineering/programming or marketing, select core SDLC
+      roles, and defer adjacent specialists unless the prompt or evidence
+      justifies the extra token spend.
+    artifacts:
+      - contracts/domain_agent_routing.yaml
+      - tools/select_agent_route.py
+      - .codex/agents/sdlc_orchestrator.toml
+      - docs/agent_plumbing.md
+      - tests/test_team_framework.py
 
 lifecycle:
   define:
@@ -177,6 +190,7 @@ lifecycle:
       - AGENTS.md
       - memory/PROJECT_MEMORY.template.md
       - contracts/expected_behavior.md
+      - contracts/domain_agent_routing.yaml
       - tools/init_repo_profile.py
       - specs/prompt_spec_template.md
       - docs/spec_driven_workflow.md
@@ -184,10 +198,12 @@ lifecycle:
       Initialize local repo context with make init-repo when needed, recover
       generated memory/state/profile facts, use provider-native /goal input when
       available or AI Brain's own clarification when unavailable, clarify
-      intent, success criteria, non-goals, and constraints, capture acceptance
-      criteria in a durable prompt spec, and identify which team roles and gates
-      apply before changing a project. Provider /goal feeds the SDLC loop; it
-      does not replace it.
+      intent, success criteria, non-goals, and constraints, classify the prompt
+      against the division routing contract, capture acceptance criteria,
+      selected framework agents, selected specialists, deferred specialists, and
+      gates in a durable prompt spec, and identify which team roles apply before
+      changing a project. Provider /goal feeds the SDLC loop; it does not
+      replace it.
   plan:
     upstream_commands: [/plan]
     upstream_skills:
@@ -349,8 +365,8 @@ skill_coverage:
   spec-driven-development:
     local_status: adopted
     local_agents: [sdlc_orchestrator, delivery_planner]
-    local_artifacts: [AGENTS.md, START_HERE_WITH_CODEX.md, specs/prompt_spec_template.md, docs/agentic_sdlc.md, docs/agent_plumbing.md]
-    gap_closed_by: Provider-native /goal input when available, AI Brain clarification when not, durable prompt specs, explicit requirements checklist, and chunked implementation plan.
+    local_artifacts: [AGENTS.md, START_HERE_WITH_CODEX.md, specs/prompt_spec_template.md, contracts/domain_agent_routing.yaml, docs/agentic_sdlc.md, docs/agent_plumbing.md]
+    gap_closed_by: Provider-native /goal input when available, AI Brain clarification when not, division-first prompt-to-agent routing, durable prompt specs, explicit requirements checklist, and chunked implementation plan.
   planning-and-task-breakdown:
     local_status: already_strong
     local_agents: [delivery_planner]
@@ -444,8 +460,8 @@ skill_coverage:
   using-agent-skills:
     local_status: adopted
     local_agents: [sdlc_orchestrator]
-    local_artifacts: [contracts/agentic_framework_map.yaml, docs/agent_skills_integration.md]
-    gap_closed_by: This map explains when each general skill concept applies locally.
+    local_artifacts: [contracts/agentic_framework_map.yaml, contracts/domain_agent_routing.yaml, docs/agent_skills_integration.md]
+    gap_closed_by: This map and the routing contract explain when each general skill concept, division, and adjacent specialist lens applies locally.
 
 local_agents:
   - sdlc_orchestrator

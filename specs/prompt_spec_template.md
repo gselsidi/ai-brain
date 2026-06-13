@@ -29,6 +29,19 @@ Use this section for broad, ambiguous, risky, or outcome-oriented work.
 - Assumptions:
 - Open questions that can be resolved from source:
 
+## Prompt-To-Agent Routing
+
+Use `contracts/domain_agent_routing.yaml` or `tools/select_agent_route.py` for
+project-work prompts before assigning implementation chunks.
+
+- Primary division:
+- Adjacent divisions:
+- Selected framework agents:
+- Selected specialists:
+- Deferred specialists:
+- Routing assumptions:
+- Verification gates:
+
 ## Requirements Checklist
 
 - [ ] Requirement copied from the user's ask.

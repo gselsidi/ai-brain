@@ -20,6 +20,7 @@ required_test_node_fragments:
   - tests/test_team_framework.py::test_prompt_spec_template_and_current_spec_are_actionable
   - tests/test_team_framework.py::test_goal_command_is_a_define_phase_before_local_specs
   - tests/test_team_framework.py::test_provider_native_goal_adapter_feeds_required_sdlc_loop
+  - tests/test_team_framework.py::test_prompt_to_agent_routing_is_division_first_and_token_thrifty
   - tests/test_improvement_queue.py::test_improvement_queue_detects_and_prioritizes_blockers
   - tests/test_conversation_feedback.py::test_conversation_feedback_filters_to_project_and_suggests_patches
   - tests/test_conversation_feedback.py::test_conversation_feedback_respects_cadence
@@ -45,6 +46,7 @@ required_artifacts:
   - contracts/expected_behavior.md
   - contracts/team_framework.yaml
   - contracts/agentic_framework_map.yaml
+  - contracts/domain_agent_routing.yaml
   - specs/prompt_spec_template.md
   - memory/PROJECT_MEMORY.template.md
   - state/sdlc_state.template.json
@@ -60,6 +62,7 @@ required_artifacts:
   - tools/manage_repo_work_spec.py
   - tools/run_target_commands.py
   - tools/check_target_drift.py
+  - tools/select_agent_route.py
   - tools/score_team_reliability.py
   - tools/run_release_gate.py
   - tests/test_agentic_framework_map.py
@@ -134,11 +137,15 @@ required_artifact_markers:
     markers:
       - autonomous full-stack SDLC team
       - bounded task
+      - prompt-to-agent routing
+      - division-first
       - /goal
       - provider-native
       - prompt spec
       - make init-repo
       - release evidence
+      - engineering/programming
+      - deferred specialists
   - path: .codex/agents/product_context_analyst.toml
     markers:
       - /goal
@@ -265,6 +272,21 @@ required_artifact_markers:
       - role_prompts
       - framework-drift
       - regression_evidence
+      - prompt-to-agent routing
+  - path: tools/select_agent_route.py
+    markers:
+      - domain_agent_routing.yaml
+      - division_candidates
+      - route_prompt
+      - primary_division
+      - deferred_specialists
+  - path: contracts/domain_agent_routing.yaml
+    markers:
+      - division-first-prompt-routing
+      - engineering
+      - marketing
+      - max_primary_specialists
+      - msitarzewski/agency-agents
   - path: docs/maintenance.md
     markers:
       - framework drift
@@ -276,6 +298,7 @@ required_artifact_markers:
   - path: docs/agent_plumbing.md
     markers:
       - Specialist Behavior
+      - Prompt-To-Agent Routing
       - Prompt Specs
       - Report Plumbing
       - Improvement Queue
@@ -299,6 +322,7 @@ required_artifact_markers:
   - path: specs/prompt_spec_template.md
     markers:
       - Prompt Spec Template
+      - Prompt-To-Agent Routing
       - Requirements Checklist
       - Implementation Chunks
       - Completion Audit

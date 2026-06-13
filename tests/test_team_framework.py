@@ -3,6 +3,7 @@ from pathlib import Path
 import yaml
 
 from tools.check_implementation_drift import validate
+from tools.select_agent_route import route_prompt
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -34,6 +35,7 @@ def test_prompt_spec_template_and_current_spec_are_actionable() -> None:
 
     for marker in {
         "Requirements Checklist",
+        "Prompt-To-Agent Routing",
         "Agent Ownership",
         "Implementation Chunks",
         "Expected Evidence",
@@ -41,13 +43,16 @@ def test_prompt_spec_template_and_current_spec_are_actionable() -> None:
     }:
         assert marker in template
 
-    assert sorted(path.name for path in (ROOT / "specs").glob("*.md")) == [
-        "prompt_spec_template.md"
-    ]
+    spec_names = sorted(path.name for path in (ROOT / "specs").glob("*.md"))
+    local_specs = [name for name in spec_names if name != "prompt_spec_template.md"]
+
+    assert "prompt_spec_template.md" in spec_names
+    assert all(name[:4].isdigit() and name.endswith(".md") for name in local_specs)
     assert "specs/*.md" in gitignore
     assert "!specs/prompt_spec_template.md" in gitignore
     assert "specs/prompt_spec_template.md" in planner
     assert "/goal Clarification" in template
+    assert "tools/select_agent_route.py" in template
     assert "small work chunks" in planner
     assert "current prompt spec" in orchestrator
     assert "not begin substantial implementation" in orchestrator
@@ -90,6 +95,55 @@ def test_provider_native_goal_adapter_feeds_required_sdlc_loop() -> None:
     assert "clarify the goal inside AI Brain" in orchestrator
     assert "the `/goal` mode: provider-native input or AI Brain clarification" in planner
     assert "provider_goal_adapter" in contract["local_unique_capabilities"]
+
+
+def test_prompt_to_agent_routing_is_division_first_and_token_thrifty() -> None:
+    orchestrator = (ROOT / ".codex/agents/sdlc_orchestrator.toml").read_text()
+    agent_plumbing = (ROOT / "docs/agent_plumbing.md").read_text()
+    expected = (ROOT / "contracts/expected_behavior.md").read_text()
+    routing_contract = yaml.safe_load((ROOT / "contracts/domain_agent_routing.yaml").read_text())
+    framework_map = yaml.safe_load((ROOT / "contracts/agentic_framework_map.yaml").read_text())
+
+    seo_route = route_prompt(
+        "Improve SEO for service pages with keyword research and metadata.",
+        contract=routing_contract,
+    )
+    programming_route = route_prompt(
+        "Fix the React checkout state bug and add regression tests.",
+        contract=routing_contract,
+    )
+
+    seo_selected = {item["name"] for item in seo_route["selected_specialists"]}
+    seo_deferred = {item["name"] for item in seo_route["deferred_specialists"]}
+    programming_selected = {item["name"] for item in programming_route["selected_specialists"]}
+    programming_deferred = {item["name"] for item in programming_route["deferred_specialists"]}
+
+    assert "prompt-to-agent routing" in orchestrator
+    assert "division-first" in orchestrator
+    assert "engineering/programming" in orchestrator
+    assert "deferred specialists" in orchestrator
+    assert "Prompt-To-Agent Routing" in agent_plumbing
+    assert "SEO is only an example" in agent_plumbing
+    assert "Prompt specs record division-first prompt-to-agent routing" in expected
+    assert "prompt_agent_routing" in framework_map["local_unique_capabilities"]
+
+    assert seo_route["primary_division"] == "marketing"
+    assert seo_route["adjacent_divisions"] == []
+    assert "seo_specialist" in seo_selected
+    assert "content_copywriter" in seo_selected
+    assert "funnel_lead_gen_strategist" in seo_deferred
+    assert len(seo_route["selected_specialists"]) <= (
+        routing_contract["routing_defaults"]["max_primary_specialists"]
+        + routing_contract["routing_defaults"]["max_adjacent_specialists"]
+    )
+
+    assert programming_route["primary_division"] == "engineering"
+    assert "dev_builder" in programming_route["selected_framework_agents"]
+    assert "dev_test_writer" in programming_route["selected_framework_agents"]
+    assert "frontend_developer" in programming_selected
+    assert "test_engineer" in programming_selected
+    assert "content_copywriter" not in programming_selected
+    assert "content_copywriter" not in programming_deferred
 
 
 def test_framework_drift_validator_passes_for_current_contract() -> None:

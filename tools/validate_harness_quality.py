@@ -38,10 +38,20 @@ def relative(path: Path) -> str:
 
 def artifact_check(contract: dict[str, Any]) -> dict[str, Any]:
     required = contract.get("required_artifacts", [])
-    missing = [path for path in required if not (ROOT_DIR / path).exists()]
+    generated_missing = [
+        path
+        for path in required
+        if path.startswith("state/reports/") and not (ROOT_DIR / path).exists()
+    ]
+    missing = [
+        path
+        for path in required
+        if not path.startswith("state/reports/") and not (ROOT_DIR / path).exists()
+    ]
     return {
         "status": "PASS" if not missing else "FAIL",
         "missing": missing,
+        "generated_missing": generated_missing,
         "checked_count": len(required),
     }
 

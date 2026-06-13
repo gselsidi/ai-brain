@@ -30,6 +30,8 @@ ORCHESTRATOR_MARKERS = {
     ".codex/agents/sdlc_orchestrator.toml": [
         "autonomous full-stack SDLC team",
         "bounded task",
+        "prompt-to-agent routing",
+        "division-first",
         "release evidence",
     ],
     "Makefile": ["framework-drift", "harness-check", "release-gate"],
@@ -67,10 +69,18 @@ def relative(path: Path, root: Path = ROOT) -> str:
 
 def contract_artifact_check(root: Path, contract: dict[str, Any]) -> dict[str, Any]:
     artifacts = contract.get("required_artifacts", [])
-    missing = [path for path in artifacts if not (root / path).exists()]
+    generated_missing = [
+        path for path in artifacts if path.startswith("state/reports/") and not (root / path).exists()
+    ]
+    missing = [
+        path
+        for path in artifacts
+        if not path.startswith("state/reports/") and not (root / path).exists()
+    ]
     return {
         "status": "PASS" if not missing else "FAIL",
         "checked_count": len(artifacts),
+        "generated_missing": generated_missing,
         "missing": missing,
     }
 

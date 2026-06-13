@@ -34,6 +34,7 @@ required_artifacts:
   - contracts/expected_behavior.md
   - contracts/team_framework.yaml
   - contracts/agentic_framework_map.yaml
+  - contracts/domain_agent_routing.yaml
   - specs/prompt_spec_template.md
   - memory/PROJECT_MEMORY.template.md
   - state/sdlc_state.template.json
@@ -47,6 +48,7 @@ required_artifacts:
   - tools/manage_repo_work_spec.py
   - tools/run_target_commands.py
   - tools/check_target_drift.py
+  - tools/select_agent_route.py
   - tools/score_team_reliability.py
   - tools/run_release_gate.py
   - docs/agent_plumbing.md
@@ -72,6 +74,7 @@ required_document_markers:
       - prompt spec
       - release gate
       - make init-repo
+      - domain_agent_routing.yaml
   - path: README.md
     markers:
       - autonomous full-stack SDLC team
@@ -81,12 +84,14 @@ required_document_markers:
       - provider-native
       - Prompt Specs
       - init-repo
+      - prompt-to-agent routing
   - path: START_HERE_WITH_CODEX.md
     markers:
       - autonomous full-stack SDLC team
       - memory/PROJECT_MEMORY.md
       - ai_brain_repo_profile.local.json
       - specs/prompt_spec_template.md
+      - domain_agent_routing.yaml
       - make maintenance-daily
       - conversation-feedback
       - target-check
@@ -97,6 +102,7 @@ required_document_markers:
       - Improvement Queue
       - Memory And State
       - Prompt Specs
+      - Prompt-To-Agent Routing
       - no built-in product runtime
       - target-drift
       - init-repo
@@ -130,6 +136,7 @@ required_document_markers:
   - path: specs/prompt_spec_template.md
     markers:
       - Prompt Spec Template
+      - Prompt-To-Agent Routing
       - Requirements Checklist
       - Implementation Chunks
       - Completion Audit
