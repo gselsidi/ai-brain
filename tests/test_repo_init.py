@@ -62,10 +62,10 @@ def test_repo_init_detects_product_commands_and_writes_local_files(tmp_path: Pat
     assert "AI Brain Repo Profile" in memory
     assert "npm run test" in memory
     assert state["status"] == "initialized"
-    assert state["repo_profile"]["profile_path"] == ".ai-brain/state/ai_brain_repo_profile.local.json"
+    assert state["repo_profile"]["profile_path"] == "state/ai_brain_repo_profile.local.json"
     assert "behavior_contract" not in state["repo_profile"]
-    assert profile["local_files"]["memory"] == ".ai-brain/memory/PROJECT_MEMORY.md"
-    assert profile["local_files"]["work_specs"] == ".ai-brain/specs/work"
+    assert profile["local_files"]["memory"] == "memory/PROJECT_MEMORY.md"
+    assert profile["local_files"]["work_specs"] == "specs/work"
 
 
 def test_public_docs_point_to_init_instead_of_manual_template_copying() -> None:
@@ -111,8 +111,8 @@ def test_root_agents_bridge_installs_and_preserves_existing_instructions(tmp_pat
     assert "This repository uses AI Brain as its agent orchestration layer." in text
     assert "Mandatory start-of-turn rule for every new user prompt" in text
     assert "`ai-brain/AGENTS.md`" in text
-    assert "`.ai-brain/memory/PROJECT_MEMORY.md`" in text
-    assert "`.ai-brain/state/ai_brain_repo_profile.local.json`" in text
+    assert "`memory/PROJECT_MEMORY.md`" in text
+    assert "`state/ai_brain_repo_profile.local.json`" in text
     assert "Treat the user's prompt as an AI Brain routing signal" in text
     assert "selected specialists, deferred specialists, selected source" in text
     assert "spec before implementation" in text
@@ -150,19 +150,21 @@ def test_target_gitignore_ignores_sticky_ai_brain_data(tmp_path: Path) -> None:
     gitignore = target / ".gitignore"
     gitignore.write_text("node_modules/\n", encoding="utf-8")
 
-    report = install_target_gitignore(target, target / ".ai-brain")
+    report = install_target_gitignore(target, target)
     text = gitignore.read_text(encoding="utf-8")
 
     assert report["status"] == "PASS"
     assert "node_modules/" in text
     assert "# AI_BRAIN_LOCAL_DATA_START" in text
-    assert ".ai-brain/" in text
+    assert "memory/PROJECT_MEMORY.md" in text
+    assert "state/ai_brain_repo_profile.local.json" in text
+    assert "specs/work/*.md" in text
 
 
 def test_init_migrates_nested_local_data_to_target_home(tmp_path: Path, monkeypatch) -> None:
     target = tmp_path / "target"
     brain = target / "ai-brain"
-    data_root = target / ".ai-brain"
+    data_root = target
     target.mkdir()
     (brain / "memory").mkdir(parents=True)
     (brain / "state" / "reports").mkdir(parents=True)
@@ -194,3 +196,30 @@ def test_init_migrates_nested_local_data_to_target_home(tmp_path: Path, monkeypa
     assert not (brain / "state" / "reports" / "target-command_report.json").exists()
     assert (brain / "state" / "reports" / ".gitkeep").exists()
     assert (brain / "specs" / "prompt_spec_template.md").exists()
+
+
+def test_init_migrates_legacy_dot_ai_brain_data_to_target_root(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    target = tmp_path / "target"
+    brain = target / "ai-brain"
+    legacy = target / ".ai-brain"
+    target.mkdir()
+    brain.mkdir()
+    (legacy / "memory").mkdir(parents=True)
+    (legacy / "state" / "reports").mkdir(parents=True)
+    (legacy / "specs" / "work").mkdir(parents=True)
+    (legacy / "memory" / "PROJECT_MEMORY.md").write_text("legacy notes\n", encoding="utf-8")
+    (legacy / "state" / "reports" / "target-drift_report.json").write_text("{}", encoding="utf-8")
+    (legacy / "specs" / "work" / "2026-06-14_legacy.md").write_text("# Legacy\n", encoding="utf-8")
+
+    monkeypatch.setattr(init_repo_profile, "ROOT", brain)
+
+    report = migrate_nested_local_data(target, target)
+
+    assert report["status"] == "PASS"
+    assert report["moved_count"] == 3
+    assert (target / "memory" / "PROJECT_MEMORY.md").read_text(encoding="utf-8") == "legacy notes\n"
+    assert (target / "state" / "reports" / "target-drift_report.json").exists()
+    assert (target / "specs" / "work" / "2026-06-14_legacy.md").exists()

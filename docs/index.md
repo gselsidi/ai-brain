@@ -22,13 +22,15 @@ one-off vendoring, run `make dropin-bundle` from an AI Brain checkout and copy
 If you already manually copied a live AI Brain folder into a target repo, run
 `make -C ai-brain manual-copy-clean` before `git add ai-brain`. It removes the
 nested `.git` and local generated artifacts only when the folder is inside a
-parent Git repo.
+parent Git repo, and it first moves non-conflicting local AI Brain memory,
+state, reports, and dated specs to the target repo root.
 
 Run `make init-repo` after adding AI Brain to a codebase. If AI Brain lives in
 an `ai-brain/` subfolder, run `make -C ai-brain init-repo TARGET_ROOT=..`. The
 initializer detects target repo metadata and writes ignored target-local memory,
-state, repo-profile, work-spec, and report files under `.ai-brain/`. It also
-updates target `.gitignore` for `.ai-brain/` and creates or updates the target
+state, repo-profile, work-spec, and report files at the target repo root,
+outside the replaceable `ai-brain/` framework folder. It also updates target
+`.gitignore` for those generated local files and creates or updates the target
 repo root `AGENTS.md` with an AI Brain AGENTS.md bridge so future Codex sessions
 know to read `ai-brain/AGENTS.md` before repo work. Use
 `INSTALL_ROOT_AGENTS=0` for private local-only installs that should not add a

@@ -44,6 +44,10 @@ git add ai-brain
 git commit -m "Add AI Brain framework"
 ```
 
+The cleanup removes nested Git metadata and generated framework junk, and it
+first moves any non-conflicting local AI Brain memory, state, reports, or dated
+specs from the copied `ai-brain/` folder into the target repo root.
+
 After AI Brain is added under `ai-brain/`, initialize it against the target repo:
 
 ```bash
@@ -51,30 +55,35 @@ make -C ai-brain setup
 make -C ai-brain init-repo TARGET_ROOT=..
 ```
 
-That init command creates sticky target-local AI Brain data under `.ai-brain/`
-at the target repo root:
+That init command creates sticky target-local AI Brain data at the target repo
+root, outside the replaceable `ai-brain/` framework folder:
 
-- `.ai-brain/memory/PROJECT_MEMORY.md`
-- `.ai-brain/state/sdlc_state.json`
-- `.ai-brain/state/ai_brain_repo_profile.local.json`
-- `.ai-brain/specs/work/`
-- `.ai-brain/state/reports/`
+- `memory/PROJECT_MEMORY.md`
+- `state/sdlc_state.json`
+- `state/ai_brain_repo_profile.local.json`
+- `specs/work/`
+- `state/reports/`
 
-It also creates or updates the target repo `.gitignore` so `.ai-brain/` stays
-local by default. This makes `ai-brain/` replaceable framework code: you can
-copy/paste or subtree-pull a new version of AI Brain over `ai-brain/` without
-deleting the target repo's memory, specs, state, or evidence.
+It also creates or updates the target repo `.gitignore` so those generated
+local files stay private by default. This makes `ai-brain/` replaceable
+framework code: you can copy/paste or subtree-pull a new version of AI Brain
+over `ai-brain/` without deleting the target repo's memory, specs, state, or
+evidence.
 
 If an older AI Brain install already has local data inside `ai-brain/memory/`,
 `ai-brain/state/`, or `ai-brain/specs/`, rerun init. It safely migrates
 non-conflicting memory, state, repo profiles, reports, dated prompt specs, and
-repo work specs into target-root `.ai-brain/` before refreshing the profile.
+repo work specs into the target repo root before refreshing the profile. It
+also migrates the older target-root `.ai-brain/` data home into root-level
+`memory/`, `state/`, and `specs/` folders when those destinations do not
+already exist.
 
 The init command also creates or updates the target repo root `AGENTS.md` with
 an AI Brain bridge. This bridge is what tells future Codex sessions to read
 `ai-brain/AGENTS.md` before doing repo work and to read sticky local context
-from `.ai-brain/`. Existing root `AGENTS.md` content is preserved outside a
-managed block. For a private local-only AI Brain helper, disable the bridge:
+from root `memory/` and `state/`. Existing root `AGENTS.md` content is
+preserved outside a managed block. For a private local-only AI Brain helper,
+disable the bridge:
 
 ```bash
 make -C ai-brain init-repo TARGET_ROOT=.. INSTALL_ROOT_AGENTS=0
@@ -85,8 +94,8 @@ target repo root or explicitly ask Codex to reread root `AGENTS.md`; a session
 that started before the bridge existed may not reload it automatically.
 
 For manual AI Brain updates, replace or overlay only `ai-brain/`. Do not delete
-`.ai-brain/` unless you intentionally want to erase the target repo's local
-memory, work specs, state, and reports.
+root `memory/`, `state/`, or `specs/` unless you intentionally want to erase
+the target repo's local AI Brain memory, work specs, state, and reports.
 
 AI Brain requires Python 3.11+. On macOS, `/usr/bin/python3` may still be
 Python 3.9. The Makefile automatically prefers `ai-brain/.venv/bin/python` when
@@ -137,9 +146,9 @@ loading a whole folder of prompts up front.
   useful lenses without loading every skill body.
 - **Durable Prompt Specs:** every project-work prompt that changes artifacts
   gets a local spec under `specs/` before implementation starts. Target repo
-  work specs live under `.ai-brain/specs/work/` for subfolder installs.
+  work specs live under target-root `specs/work/` for subfolder installs.
 - **Target repo adapter:** `make init-repo` detects the product checkout,
-  writes ignored local memory/state/profile files under target `.ai-brain/`,
+  writes ignored local memory/state/profile files under the target repo root,
   and lets AI Brain run target repo checks without turning AI Brain into the
   product.
 - **Evidence-first execution:** tests, lint, target commands, drift checks,
@@ -267,11 +276,11 @@ make -C ai-brain init-repo TARGET_ROOT=..
 
 That inspects the checkout and creates ignored local files:
 
-- `.ai-brain/memory/PROJECT_MEMORY.md`
-- `.ai-brain/state/sdlc_state.json`
-- `.ai-brain/state/ai_brain_repo_profile.local.json`
-- `.ai-brain/specs/work/`
-- `.ai-brain/state/reports/`
+- `memory/PROJECT_MEMORY.md`
+- `state/sdlc_state.json`
+- `state/ai_brain_repo_profile.local.json`
+- `specs/work/`
+- `state/reports/`
 
 Tell your coding agent to read `AGENTS.md` before doing project work. Then run
 the local checks and knowledge base:
@@ -353,14 +362,14 @@ and avoid unnecessary fan-out.
 - `specs/prompt_spec_template.md`: durable spec template for project-work
   prompts.
 - `memory/PROJECT_MEMORY.template.md`: safe template for local durable memory.
-- `.ai-brain/memory/PROJECT_MEMORY.md`: ignored target-local memory generated
+- `memory/PROJECT_MEMORY.md`: ignored target-local memory generated
   and updated by `make -C ai-brain init-repo TARGET_ROOT=..` and the
   orchestration loop.
 - `state/sdlc_state.template.json`: safe template for local lifecycle state.
-- `.ai-brain/state/ai_brain_repo_profile.local.json`: ignored target-local repo
+- `state/ai_brain_repo_profile.local.json`: ignored target-local repo
   profile generated from package metadata, source markers, git metadata, and
   common commands.
-- `.ai-brain/specs/work/*.md`: repo-level work specs for target-repo changes.
+- `specs/work/*.md`: repo-level work specs for target-repo changes.
 - `tools/`: deterministic validation, routing, reliability, release, and report
   tooling.
 - `tests/`: framework regression tests with source-backed reporting.
@@ -400,12 +409,15 @@ make release-gate
 Generated outputs stay local:
 
 - `site/`
-- `.ai-brain/` in target repo installs
-- `state/reports/` when AI Brain itself is the repo root
-- `state/ai_brain_repo_profile.local.json` when AI Brain itself is the repo root
-- `specs/work/*.md` when AI Brain itself is the repo root
-- `memory/PROJECT_MEMORY.md` when AI Brain itself is the repo root
-- `state/sdlc_state.json` when AI Brain itself is the repo root
+- `memory/PROJECT_MEMORY.md`
+- `memory/*.local.md`
+- `state/sdlc_state.json`
+- `state/ai_brain_repo_profile.local.json`
+- `state/*.local.json`
+- `state/reports/`
+- `specs/work/*.md`
+- dated local prompt specs under `specs/*.md`
+- legacy `.ai-brain/` data homes from older target repo installs
 
 Those paths are ignored by git so private memory, run status, and evidence logs
 do not get published by accident.

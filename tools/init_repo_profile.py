@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PROFILE = ROOT / "state" / "ai_brain_repo_profile.local.json"
 DEFAULT_MEMORY = ROOT / "memory" / "PROJECT_MEMORY.md"
 DEFAULT_STATE = ROOT / "state" / "sdlc_state.json"
-TARGET_DATA_DIR = ".ai-brain"
+LEGACY_TARGET_DATA_DIR = ".ai-brain"
 GENERATED_START = "<!-- AI_BRAIN_REPO_PROFILE_START -->"
 GENERATED_END = "<!-- AI_BRAIN_REPO_PROFILE_END -->"
 GITIGNORE_START = "# AI_BRAIN_LOCAL_DATA_START"
@@ -63,9 +63,7 @@ def target_data_root_for(target_root: Path, *, data_root: Path | None = None) ->
     target_root = target_root.resolve()
     if data_root is not None:
         return data_root.expanduser().resolve()
-    if target_root == ROOT:
-        return ROOT
-    return target_root / TARGET_DATA_DIR
+    return target_root
 
 
 def local_artifact_paths(
@@ -336,6 +334,28 @@ def write_state(path: Path, profile: dict[str, Any]) -> None:
     write_json(path, state)
 
 
+def target_gitignore_entries(target_root: Path, data_root: Path) -> list[str]:
+    target_root = target_root.resolve()
+    data_root = data_root.resolve()
+    if data_root == target_root:
+        return [
+            "memory/PROJECT_MEMORY.md",
+            "memory/*.local.md",
+            "state/sdlc_state.json",
+            "state/ai_brain_repo_profile.local.json",
+            "state/*.local.json",
+            "state/reports/*.json",
+            "state/reports/*.jsonl",
+            "state/reports/*.html",
+            "state/reports/*.log",
+            "state/reports/*.md",
+            "specs/*.md",
+            "specs/work/*.md",
+            "!specs/prompt_spec_template.md",
+        ]
+    return [f"{display_path(data_root, target_root)}/"]
+
+
 def install_target_gitignore(target_root: Path, data_root: Path) -> dict[str, Any]:
     target_root = target_root.resolve()
     data_root = data_root.resolve()
@@ -346,12 +366,12 @@ def install_target_gitignore(target_root: Path, data_root: Path) -> dict[str, An
             "summary": "AI Brain is the repo root; existing framework ignores apply.",
         }
 
-    entry = display_path(data_root, target_root)
+    entries = target_gitignore_entries(target_root, data_root)
     block = "\n".join(
         [
             GITIGNORE_START,
             "# AI Brain target-local memory, specs, state, and reports.",
-            f"{entry}/",
+            *entries,
             GITIGNORE_END,
             "",
         ]
@@ -363,7 +383,7 @@ def install_target_gitignore(target_root: Path, data_root: Path) -> dict[str, An
         "status": "PASS",
         "mode": "target-local-data-gitignore",
         "path": path.as_posix(),
-        "entry": f"{entry}/",
+        "entries": entries,
         "summary": "Installed or updated target repo .gitignore for AI Brain local data.",
     }
 
@@ -379,7 +399,13 @@ def prune_empty_dirs(start: Path, stop: Path) -> None:
         current = current.parent
 
 
-def move_file_if_safe(source: Path, destination: Path, *, root: Path) -> dict[str, str]:
+def move_file_if_safe(
+    source: Path,
+    destination: Path,
+    *,
+    root: Path,
+    stop_root: Path,
+) -> dict[str, str]:
     if not source.exists():
         return {
             "status": "SKIP",
@@ -396,7 +422,7 @@ def move_file_if_safe(source: Path, destination: Path, *, root: Path) -> dict[st
         }
     destination.parent.mkdir(parents=True, exist_ok=True)
     shutil.move(source.as_posix(), destination.as_posix())
-    prune_empty_dirs(source.parent, ROOT)
+    prune_empty_dirs(source.parent, stop_root)
     return {
         "status": "MOVED",
         "source": display_path(source, root),
@@ -405,7 +431,13 @@ def move_file_if_safe(source: Path, destination: Path, *, root: Path) -> dict[st
     }
 
 
-def migrate_dir_files(source_dir: Path, destination_dir: Path, *, root: Path) -> list[dict[str, str]]:
+def migrate_dir_files(
+    source_dir: Path,
+    destination_dir: Path,
+    *,
+    root: Path,
+    stop_root: Path,
+) -> list[dict[str, str]]:
     if not source_dir.exists():
         return [
             {
@@ -421,8 +453,8 @@ def migrate_dir_files(source_dir: Path, destination_dir: Path, *, root: Path) ->
         if source.name == ".gitkeep":
             continue
         destination = destination_dir / source.relative_to(source_dir)
-        results.append(move_file_if_safe(source, destination, root=root))
-    prune_empty_dirs(source_dir, ROOT)
+        results.append(move_file_if_safe(source, destination, root=root, stop_root=stop_root))
+    prune_empty_dirs(source_dir, stop_root)
     return results or [
         {
             "status": "SKIP",
@@ -433,8 +465,13 @@ def migrate_dir_files(source_dir: Path, destination_dir: Path, *, root: Path) ->
     ]
 
 
-def migrate_prompt_specs(destination_spec_dir: Path, *, root: Path) -> list[dict[str, str]]:
-    source_dir = ROOT / "specs"
+def migrate_prompt_specs(
+    source_dir: Path,
+    destination_spec_dir: Path,
+    *,
+    root: Path,
+    stop_root: Path,
+) -> list[dict[str, str]]:
     if not source_dir.exists():
         return [
             {
@@ -449,7 +486,14 @@ def migrate_prompt_specs(destination_spec_dir: Path, *, root: Path) -> list[dict
     for source in sorted(source_dir.glob("*.md")):
         if source.name == PROMPT_SPEC_TEMPLATE:
             continue
-        results.append(move_file_if_safe(source, destination_spec_dir / source.name, root=root))
+        results.append(
+            move_file_if_safe(
+                source,
+                destination_spec_dir / source.name,
+                root=root,
+                stop_root=stop_root,
+            )
+        )
     return results or [
         {
             "status": "SKIP",
@@ -457,6 +501,72 @@ def migrate_prompt_specs(destination_spec_dir: Path, *, root: Path) -> list[dict
             "destination": display_path(destination_spec_dir, root),
             "summary": "No dated local prompt specs found.",
         }
+    ]
+
+
+def migration_groups_for_source(
+    *,
+    source_root: Path,
+    data_root: Path,
+    target_root: Path,
+    name_prefix: str,
+) -> list[dict[str, Any]]:
+    return [
+        {
+            "name": f"{name_prefix}_memory",
+            "items": [
+                move_file_if_safe(
+                    source_root / "memory" / "PROJECT_MEMORY.md",
+                    data_root / "memory" / "PROJECT_MEMORY.md",
+                    root=target_root,
+                    stop_root=source_root,
+                )
+            ],
+        },
+        {
+            "name": f"{name_prefix}_state",
+            "items": [
+                move_file_if_safe(
+                    source_root / "state" / "sdlc_state.json",
+                    data_root / "state" / "sdlc_state.json",
+                    root=target_root,
+                    stop_root=source_root,
+                ),
+                move_file_if_safe(
+                    source_root / "state" / "ai_brain_repo_profile.local.json",
+                    data_root / "state" / "ai_brain_repo_profile.local.json",
+                    root=target_root,
+                    stop_root=source_root,
+                ),
+            ],
+        },
+        {
+            "name": f"{name_prefix}_prompt_specs",
+            "items": migrate_prompt_specs(
+                source_root / "specs",
+                data_root / "specs",
+                root=target_root,
+                stop_root=source_root,
+            ),
+        },
+        {
+            "name": f"{name_prefix}_work_specs",
+            "items": migrate_dir_files(
+                source_root / "specs" / "work",
+                data_root / "specs" / "work",
+                root=target_root,
+                stop_root=source_root,
+            ),
+        },
+        {
+            "name": f"{name_prefix}_reports",
+            "items": migrate_dir_files(
+                source_root / "state" / "reports",
+                data_root / "state" / "reports",
+                root=target_root,
+                stop_root=source_root,
+            ),
+        },
     ]
 
 
@@ -478,53 +588,22 @@ def migrate_nested_local_data(target_root: Path, data_root: Path) -> dict[str, A
             "items": [],
         }
 
-    item_groups: list[dict[str, Any]] = [
-        {
-            "name": "memory",
-            "items": [
-                move_file_if_safe(
-                    ROOT / "memory" / "PROJECT_MEMORY.md",
-                    data_root / "memory" / "PROJECT_MEMORY.md",
-                    root=target_root,
-                )
-            ],
-        },
-        {
-            "name": "state",
-            "items": [
-                move_file_if_safe(
-                    ROOT / "state" / "sdlc_state.json",
-                    data_root / "state" / "sdlc_state.json",
-                    root=target_root,
-                ),
-                move_file_if_safe(
-                    ROOT / "state" / "ai_brain_repo_profile.local.json",
-                    data_root / "state" / "ai_brain_repo_profile.local.json",
-                    root=target_root,
-                ),
-            ],
-        },
-        {
-            "name": "prompt_specs",
-            "items": migrate_prompt_specs(data_root / "specs", root=target_root),
-        },
-        {
-            "name": "work_specs",
-            "items": migrate_dir_files(
-                ROOT / "specs" / "work",
-                data_root / "specs" / "work",
-                root=target_root,
-            ),
-        },
-        {
-            "name": "reports",
-            "items": migrate_dir_files(
-                ROOT / "state" / "reports",
-                data_root / "state" / "reports",
-                root=target_root,
-            ),
-        },
-    ]
+    item_groups = migration_groups_for_source(
+        source_root=ROOT,
+        data_root=data_root,
+        target_root=target_root,
+        name_prefix="nested_ai_brain",
+    )
+    legacy_data_root = target_root / LEGACY_TARGET_DATA_DIR
+    if legacy_data_root.exists() and legacy_data_root.resolve() != data_root:
+        item_groups.extend(
+            migration_groups_for_source(
+                source_root=legacy_data_root,
+                data_root=data_root,
+                target_root=target_root,
+                name_prefix="legacy_dot_ai_brain",
+            )
+        )
     item_statuses = [
         item["status"]
         for group in item_groups

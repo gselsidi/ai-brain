@@ -7,6 +7,8 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
+from tools.init_repo_profile import migration_groups_for_source
+
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -100,6 +102,62 @@ def remove_path(path: Path) -> None:
         path.unlink(missing_ok=True)
 
 
+def migration_report_for_manual_copy(root: Path, parent_repo: Path | None, *, dry_run: bool) -> dict[str, Any]:
+    if parent_repo is None:
+        return {
+            "status": "SKIP",
+            "mode": "manual-copy-local-data-migration",
+            "summary": "No parent target repo was detected.",
+            "items": [],
+        }
+    if dry_run:
+        return {
+            "status": "SKIP",
+            "mode": "manual-copy-local-data-migration",
+            "summary": "Dry run did not move local AI Brain data.",
+            "items": [],
+        }
+
+    item_groups = migration_groups_for_source(
+        source_root=root,
+        data_root=parent_repo,
+        target_root=parent_repo,
+        name_prefix="manual_copy",
+    )
+    item_statuses = [
+        item["status"]
+        for group in item_groups
+        for item in group["items"]
+    ]
+    conflict_count = item_statuses.count("CONFLICT")
+    moved_count = item_statuses.count("MOVED")
+    return {
+        "status": "CONFLICT" if conflict_count else "PASS",
+        "mode": "manual-copy-local-data-migration",
+        "moved_count": moved_count,
+        "conflict_count": conflict_count,
+        "source_root": root.as_posix(),
+        "target_data_root": parent_repo.as_posix(),
+        "summary": (
+            f"Moved {moved_count} local AI Brain artifact(s) to the target repo root."
+            if moved_count
+            else "No local AI Brain artifacts needed migration."
+        ),
+        "items": item_groups,
+    }
+
+
+def conflict_sources(migration_report: dict[str, Any], parent_repo: Path | None) -> set[Path]:
+    if parent_repo is None:
+        return set()
+    sources = set()
+    for group in migration_report.get("items", []):
+        for item in group.get("items", []):
+            if item.get("status") == "CONFLICT" and isinstance(item.get("source"), str):
+                sources.add((parent_repo / item["source"]).resolve())
+    return sources
+
+
 def clean_manual_copy(root: Path = ROOT, *, dry_run: bool = False) -> dict[str, Any]:
     root = root.resolve()
     nested_git = root / ".git"
@@ -111,7 +169,13 @@ def clean_manual_copy(root: Path = ROOT, *, dry_run: bool = False) -> dict[str, 
             "Run this only from an AI Brain folder copied inside another Git repo."
         )
 
-    cleanup_paths = iter_cleanup_paths(root)
+    migration_report = migration_report_for_manual_copy(root, parent_repo, dry_run=dry_run)
+    preserved_conflicts = conflict_sources(migration_report, parent_repo)
+    cleanup_paths = [
+        path
+        for path in iter_cleanup_paths(root)
+        if path.resolve() not in preserved_conflicts
+    ]
     removed: list[str] = []
     for path in cleanup_paths:
         relative = path.relative_to(root).as_posix()
@@ -125,11 +189,17 @@ def clean_manual_copy(root: Path = ROOT, *, dry_run: bool = False) -> dict[str, 
         "root": root.as_posix(),
         "parent_repo": parent_repo.as_posix() if parent_repo else None,
         "dry_run": dry_run,
+        "local_data_migration": migration_report,
+        "preserved_conflicts": [
+            path.relative_to(root).as_posix()
+            for path in sorted(preserved_conflicts)
+            if path.is_relative_to(root)
+        ],
         "removed": removed,
         "next_steps": [
             "Run git add ai-brain from the target repo root.",
             "Commit AI Brain as normal files in the target repo.",
-            "Run make -C ai-brain init-repo TARGET_ROOT=.. when you want AI Brain to profile the target repo.",
+            "Run make -C ai-brain init-repo TARGET_ROOT=.. to refresh the target repo profile and root AGENTS bridge.",
         ],
     }
 

@@ -5,9 +5,7 @@ full-stack SDLC team framework.
 
 ```text
 Use AGENTS.md, local memory/PROJECT_MEMORY.md when it exists,
-target-local .ai-brain/memory/PROJECT_MEMORY.md for subfolder installs,
-state/ai_brain_repo_profile.local.json or
-.ai-brain/state/ai_brain_repo_profile.local.json when they exist,
+state/ai_brain_repo_profile.local.json when it exists,
 contracts/agentic_framework_map.yaml, contracts/team_framework.yaml,
 contracts/domain_agent_routing.yaml, source-catalog contracts such as
 contracts/marketing_skill_integration.yaml and
@@ -29,9 +27,9 @@ Workflow:
 1. Run `make init-repo` when local repo profile, memory, or state files are
    missing. If AI Brain lives under an `ai-brain/` prefix inside a target repo,
    run `make -C ai-brain init-repo TARGET_ROOT=..` from the target repo root.
-2. Recover context from AGENTS.md, local memory/PROJECT_MEMORY.md or
-   .ai-brain/memory/PROJECT_MEMORY.md, and state/ai_brain_repo_profile.local.json
-   or .ai-brain/state/ai_brain_repo_profile.local.json when they exist.
+2. Recover context from AGENTS.md, local memory/PROJECT_MEMORY.md, and
+   state/ai_brain_repo_profile.local.json when they exist. For subfolder
+   installs, these files live at the target repo root, not under ai-brain/.
 3. For broad, ambiguous, risky, or outcome-oriented prompts, run `/goal` first.
    If the active provider has a native `/goal` or planning feature, use it to
    clarify the work, then continue through AI Brain's spec, memory, evidence,
@@ -41,8 +39,7 @@ Workflow:
    spec under specs/ using specs/prompt_spec_template.md. Dated local specs are
    ignored by git by default.
 5. For target repo changes, create or update a repo work spec under
-   .ai-brain/specs/work/ for subfolder installs, or specs/work/ when AI Brain
-   is the repo root, and tie affected files, docs updates, target-check,
+   target-root specs/work/ and tie affected files, docs updates, target-check,
    target-drift, and release evidence to it.
 6. Convert the prompt spec into an auditable checklist.
 7. Use a planning checkpoint for substantial work.
@@ -65,9 +62,9 @@ Workflow:
 
 11. If a gate fails, preserve evidence, route to the owning role, repair the
    smallest safe slice, add regression evidence, and rerun release evidence.
-12. Update local memory/PROJECT_MEMORY.md and state/sdlc_state.json, or the
-   target-local .ai-brain equivalents, when durable workspace state changes.
-   These files are ignored by git; the repo tracks templates instead.
+12. Update local memory/PROJECT_MEMORY.md and state/sdlc_state.json when
+   durable workspace state changes. These files are ignored by git; the repo
+   tracks templates instead.
 13. Do not mark complete unless release evidence passes or a real blocker is
    documented.
 ```

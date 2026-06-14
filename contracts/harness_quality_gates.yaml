@@ -254,7 +254,7 @@ required_artifact_markers:
   - path: tools/init_repo_profile.py
     markers:
       - ai-brain-repo-init
-      - TARGET_DATA_DIR
+      - LEGACY_TARGET_DATA_DIR
       - migrate_nested_local_data
       - install_target_gitignore
       - PROJECT_MEMORY.md
@@ -438,14 +438,14 @@ required_artifact_markers:
       - AGENTS.md bridge
       - improvement queue
       - init-repo
-      - .ai-brain/
+      - memory/PROJECT_MEMORY.md
       - target repo
   - path: README.md
     markers:
       - Start Here
       - make -C ai-brain setup
-      - .ai-brain/
-      - replaceable framework code
+      - memory/PROJECT_MEMORY.md
+      - replaceable
       - Python 3.11+
       - ai-brain/.venv/bin/python
       - start a new Codex session

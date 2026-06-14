@@ -24,9 +24,7 @@ def target_data_root_for(target_root: Path, ai_brain_root: Path, data_root: Path
     ai_brain_root = ai_brain_root.resolve()
     if data_root is not None:
         return data_root.expanduser().resolve()
-    if target_root == ai_brain_root:
-        return ai_brain_root
-    return target_root / ".ai-brain"
+    return target_root
 
 
 def render_bridge(*, target_root: Path, ai_brain_root: Path, data_root: Path | None = None) -> str:
@@ -36,8 +34,9 @@ def render_bridge(*, target_root: Path, ai_brain_root: Path, data_root: Path | N
         target_root.resolve(),
     )
     agents_path = f"{ai_brain_path}/AGENTS.md"
-    memory_path = f"{data_root_path}/memory/PROJECT_MEMORY.md"
-    state_path = f"{data_root_path}/state/ai_brain_repo_profile.local.json"
+    data_prefix = "" if data_root_path == "." else f"{data_root_path}/"
+    memory_path = f"{data_prefix}memory/PROJECT_MEMORY.md"
+    state_path = f"{data_prefix}state/ai_brain_repo_profile.local.json"
     route_tool = f"{ai_brain_path}/tools/select_agent_route.py"
 
     return "\n".join(

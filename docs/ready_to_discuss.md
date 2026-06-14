@@ -31,7 +31,8 @@ files. For one-off vendoring, `make dropin-bundle` creates
 If someone manually copied the live folder anyway, run
 `make -C ai-brain manual-copy-clean` before staging it. The command is guarded:
 it removes nested AI Brain Git metadata only when `ai-brain/` is inside another
-Git repo.
+Git repo, and it moves non-conflicting local AI Brain memory, state, reports,
+and dated specs to the target repo root before cleanup.
 
 After adding AI Brain to the target codebase, run:
 
@@ -46,8 +47,8 @@ make -C ai-brain init-repo TARGET_ROOT=..
 ```
 
 That creates ignored target-local memory, lifecycle state, repo profile, work
-specs, and reports under `.ai-brain/` for subfolder installs, and updates target
-`.gitignore` so those files stay local. It also creates or updates root
+specs, and reports at the target repo root for subfolder installs, and updates
+target `.gitignore` so those files stay local. It also creates or updates root
 `AGENTS.md` with an AI Brain bridge so future Codex sessions read
 `ai-brain/AGENTS.md` automatically for repo work. Use `INSTALL_ROOT_AGENTS=0`
 for a private local-only helper that should not add an AI Brain bridge. Then

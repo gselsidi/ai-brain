@@ -98,6 +98,8 @@ def test_manual_copy_clean_removes_nested_git_only_inside_parent_repo(tmp_path: 
 
     assert report["status"] == "PASS"
     assert report["parent_repo"] == target.as_posix()
+    assert report["local_data_migration"]["status"] == "PASS"
+    assert report["local_data_migration"]["moved_count"] == 4
     assert ".git" in report["removed"]
     assert not (copied / ".git").exists()
     assert not (copied / ".venv").exists()
@@ -105,10 +107,35 @@ def test_manual_copy_clean_removes_nested_git_only_inside_parent_repo(tmp_path: 
     assert not (copied / "memory" / "PROJECT_MEMORY.md").exists()
     assert not (copied / "state" / "sdlc_state.json").exists()
     assert not (copied / "state" / "reports" / "test_report.json").exists()
+    assert (target / "specs" / "2026-06-13_local_work.md").exists()
+    assert (target / "memory" / "PROJECT_MEMORY.md").exists()
+    assert (target / "state" / "sdlc_state.json").exists()
+    assert (target / "state" / "reports" / "test_report.json").exists()
     assert (copied / "README.md").exists()
     assert (copied / "AGENTS.md").exists()
     assert (copied / "specs" / "prompt_spec_template.md").exists()
     assert "?? ai-brain/" in status
+
+
+def test_manual_copy_clean_preserves_conflicting_local_data(tmp_path: Path) -> None:
+    target = tmp_path / "target-repo"
+    copied = target / "ai-brain"
+    target.mkdir()
+    subprocess.check_call(["git", "init"], cwd=target, stdout=subprocess.DEVNULL)
+
+    write(copied / ".git" / "config", "private git metadata")
+    write(copied / "memory" / "PROJECT_MEMORY.md", "# Copied Memory")
+    write(target / "memory" / "PROJECT_MEMORY.md", "# Existing Memory")
+
+    report = clean_manual_copy(copied)
+
+    assert report["status"] == "PASS"
+    assert report["local_data_migration"]["status"] == "CONFLICT"
+    assert report["local_data_migration"]["conflict_count"] == 1
+    assert report["preserved_conflicts"] == ["memory/PROJECT_MEMORY.md"]
+    assert (copied / "memory" / "PROJECT_MEMORY.md").read_text(encoding="utf-8") == "# Copied Memory"
+    assert (target / "memory" / "PROJECT_MEMORY.md").read_text(encoding="utf-8") == "# Existing Memory"
+    assert not (copied / ".git").exists()
 
 
 def test_manual_copy_clean_refuses_source_checkout_without_parent_repo(tmp_path: Path) -> None:

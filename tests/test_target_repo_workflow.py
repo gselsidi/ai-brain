@@ -21,11 +21,11 @@ def write_profile(path: Path, project: Path, commands: list[dict[str, str]]) -> 
         "detected_commands": commands,
         "source_markers": ["package.json", "tests"],
         "local_files": {
-            "profile": ".ai-brain/state/ai_brain_repo_profile.local.json",
-            "memory": ".ai-brain/memory/PROJECT_MEMORY.md",
-            "state": ".ai-brain/state/sdlc_state.json",
-            "reports": ".ai-brain/state/reports",
-            "work_specs": ".ai-brain/specs/work",
+            "profile": "state/ai_brain_repo_profile.local.json",
+            "memory": "memory/PROJECT_MEMORY.md",
+            "state": "state/sdlc_state.json",
+            "reports": "state/reports",
+            "work_specs": "specs/work",
         },
     }
     path.write_text(json.dumps(payload), encoding="utf-8")
@@ -183,7 +183,7 @@ def test_repo_work_spec_defaults_to_target_repo_specs_work(tmp_path: Path) -> No
     )
 
     spec_path = Path(result["spec_path"])
-    assert spec_path.parent == product / ".ai-brain" / "specs" / "work"
+    assert spec_path.parent == product / "specs" / "work"
     assert spec_path.exists()
 
 

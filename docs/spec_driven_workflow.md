@@ -64,21 +64,18 @@ When AI Brain is operating on a target repo, actual implementation evidence goes
 under:
 
 ```text
-.ai-brain/specs/work/YYYY-MM-DD_short_slug.md
+specs/work/YYYY-MM-DD_short_slug.md
 ```
 
-For framework-root development, the same ledger lives under `specs/work/`.
 Those repo work specs are the spec-driven development ledger for the target
 repo. They record the prompt, goal, requirements, affected artifacts, target
 tests and commands, documentation updates, reports, and completion audit.
 
 AI Brain contracts and docs remain framework-level. Repo-specific facts stay in
-target-local `.ai-brain/memory/PROJECT_MEMORY.md`,
-`.ai-brain/state/sdlc_state.json`,
-`.ai-brain/state/ai_brain_repo_profile.local.json`,
-`.ai-brain/state/reports/target-command_report.json`,
-`.ai-brain/state/reports/target-drift_report.json`, and the current repo work
-spec for subfolder installs.
+target-local `memory/PROJECT_MEMORY.md`, `state/sdlc_state.json`,
+`state/ai_brain_repo_profile.local.json`,
+`state/reports/target-command_report.json`,
+`state/reports/target-drift_report.json`, and the current repo work spec.
 
 ## Orchestration Rule
 
