@@ -223,8 +223,9 @@ local_unique_capabilities:
       - tests/test_team_framework.py
   marketing_skill_catalog:
     description: >
-      Metadata-only mapping of Corey Haines' 44 Marketing Skills into existing
-      AI Brain/RampStack lanes or optional marketing source-catalog lenses, with
+      Metadata-only mapping of Corey Haines' 44 Marketing Skills plus one
+      supplemental Direct Response Copy gist lens into existing AI
+      Brain/RampStack lanes or optional marketing source-catalog lenses, with
       duplicate-slug dedupe, tool boundaries, trigger terms, and token-thrifty
       selected/deferred routing.
     artifacts:

@@ -152,7 +152,7 @@ not vendor upstream skill bodies or reference files.
 | Catalog | Contract | Count | Purpose |
 | --- | --- | --- | --- |
 | RampStack Claude Skills | `contracts/rampstack_skill_integration.yaml` | 103 | Broad web-lifecycle lenses for brand, content, SEO, product, growth, design, research, operations, and delivery work. |
-| Corey Haines Marketing Skills | `contracts/marketing_skill_integration.yaml` | 44 | Focused marketing lenses for CRO, copywriting, SEO, analytics, growth engineering, GTM, sales, RevOps, retention, and monetization. |
+| Corey Haines Marketing Skills + Direct Response Copy gist | `contracts/marketing_skill_integration.yaml` | 45 | Focused marketing lenses for CRO, copywriting, direct-response copy, SEO, analytics, growth engineering, GTM, sales, RevOps, retention, and monetization. |
 
 Each source skill is classified as:
 
@@ -173,7 +173,7 @@ The Marketing Skills catalog adds sharper marketing routing. Current groups:
 | --- | --- |
 | Marketing foundation | `product-marketing`, `customer-research`, `marketing-plan`, `marketing-ideas`, `marketing-psychology` |
 | Conversion optimization | `cro`, `signup`, `onboarding`, `popups`, `paywalls`, `ab-testing` |
-| Content and copy | `copywriting`, `copy-editing`, `cold-email`, `emails`, `social`, `image`, `video`, `sms` |
+| Content and copy | `copywriting`, `direct-response-copy`, `copy-editing`, `cold-email`, `emails`, `social`, `image`, `video`, `sms` |
 | SEO and discovery | `seo-audit`, `ai-seo`, `programmatic-seo`, `site-architecture`, `schema`, `content-strategy`, `competitors`, `competitor-profiling`, `aso`, `directory-submissions` |
 | Paid and measurement | `ads`, `ad-creative`, `analytics` |
 | Growth and retention | `churn-prevention`, `co-marketing`, `community-marketing`, `free-tools`, `referrals`, `lead-magnets` |
@@ -338,7 +338,8 @@ and avoid unnecessary fan-out.
   primary divisions, adjacent divisions, specialists, source catalogs, deferred
   work, and evidence gates.
 - `contracts/marketing_skill_integration.yaml`: metadata-only mapping of Corey
-  Haines' 44 Marketing Skills.
+  Haines' 44 Marketing Skills plus one supplemental Direct Response Copy gist
+  lens.
 - `contracts/rampstack_skill_integration.yaml`: metadata-only mapping of
   RampStack's 103-skill catalog.
 - `contracts/team_framework.yaml`: machine-readable framework contract.

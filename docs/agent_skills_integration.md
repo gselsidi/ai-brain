@@ -24,8 +24,9 @@ The strongest combined model is:
 - use the upstream skill taxonomy as the engineering vocabulary
 - use RampStack catalog metadata as optional domain lenses for brand, content,
   SEO, product, growth, design, research, operations, and web delivery work
-- use Marketing Skills catalog metadata as optional marketing, CRO, copy, SEO,
-  analytics, growth, GTM, and RevOps lenses
+- use Marketing Skills catalog metadata, including the supplemental Direct
+  Response Copy gist lens, as optional marketing, CRO, copy, SEO, analytics,
+  growth, GTM, and RevOps lenses
 - use this repo's role prompts and reports as the execution layer
 - keep the framework product-agnostic so adopting teams supply their own code
   and domain checks

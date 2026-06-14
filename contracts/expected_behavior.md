@@ -60,8 +60,9 @@ The framework should help a team run repeatable autonomous delivery:
   RampStack's 103-skill catalog into existing AI Brain lifecycle lanes or
   optional source-catalog lenses.
 - `contracts/marketing_skill_integration.yaml`: metadata-only mapping from
-  Corey Haines' 44 Marketing Skills into existing AI Brain/RampStack lanes or
-  optional marketing source-catalog lenses.
+  Corey Haines' 44 Marketing Skills plus a supplemental Direct Response Copy
+  gist lens into existing AI Brain/RampStack lanes or optional marketing
+  source-catalog lenses.
 - `contracts/team_framework.yaml`: machine-readable framework contract.
 - `memory/PROJECT_MEMORY.template.md`: tracked safe template for local durable
   context.

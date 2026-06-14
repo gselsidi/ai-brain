@@ -362,6 +362,8 @@ required_artifact_markers:
     markers:
       - marketing-skill-integration
       - inspected_skill_count
+      - supplemental_sources
+      - direct-response-copy
       - metadata_mapping_only_no_skill_body_copy
       - duplicate_boundary
       - product-marketing

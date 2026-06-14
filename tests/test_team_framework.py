@@ -270,14 +270,18 @@ def test_marketing_skill_catalog_maps_all_source_skills_and_routes_trigger_terms
         "rampstack-skill-integration",
     }
     assert marketing_catalog["source"]["inspected_skill_count"] == 44
-    assert len(mapped_skills) == 44
-    assert len(skill_by_slug) == 44
+    assert marketing_catalog["supplemental_skill_count"] == 1
+    assert marketing_catalog["total_mapped_skill_count"] == 45
+    assert len(mapped_skills) == 45
+    assert len(skill_by_slug) == 45
     assert integration_actions == {
         "add_catalog_lens",
         "merge_existing",
         "tool_dependent_lens",
     }
     assert skill_by_slug["product-marketing"]["integration_action"] == "merge_existing"
+    assert skill_by_slug["direct-response-copy"]["integration_action"] == "add_catalog_lens"
+    assert skill_by_slug["direct-response-copy"]["source"] == "direct-response-copy"
     assert skill_by_slug["sms"]["integration_action"] == "add_catalog_lens"
     assert skill_by_slug["revops"]["integration_action"] == "tool_dependent_lens"
 
@@ -316,6 +320,18 @@ def test_marketing_skill_catalog_maps_all_source_skills_and_routes_trigger_terms
 
     assert "programmatic-seo" in all_duplicate_slugs
     assert all_duplicate_slugs.count("programmatic-seo") == 1
+
+    direct_response_route = route_prompt(
+        "Write direct response sales copy for a landing page with headline variations, CTA copy, and curiosity gaps.",
+        contract=routing_contract,
+        source_catalog=[marketing_catalog, rampstack_catalog],
+    )
+    direct_response_slugs = {
+        skill["slug"] for skill in direct_response_route["selected_source_skills"]
+    }
+
+    assert direct_response_route["primary_division"] == "marketing"
+    assert "direct-response-copy" in direct_response_slugs
 
 
 def test_framework_drift_validator_passes_for_current_contract() -> None:

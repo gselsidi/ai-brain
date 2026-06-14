@@ -165,8 +165,9 @@ Source skill catalogs extend this routing vocabulary without loading every
 skill body. `contracts/rampstack_skill_integration.yaml` maps RampStack's
 103-skill catalog into broad web-lifecycle lanes, and
 `contracts/marketing_skill_integration.yaml` maps Corey Haines' 44 Marketing
-Skills into focused marketing, CRO, copy, SEO, analytics, growth, GTM, and
-RevOps lenses. Skills that match existing lifecycle coverage are marked
+Skills plus one supplemental Direct Response Copy gist lens into focused
+marketing, CRO, copy, SEO, analytics, growth, GTM, and RevOps lenses. Skills
+that match existing lifecycle coverage are marked
 `merge_existing`; skills that add a useful domain lens are marked
 `add_catalog_lens`; skills that need external data, MCPs, credentials, URLs,
 analytics/ad data, CRM data, market data, or web research are marked

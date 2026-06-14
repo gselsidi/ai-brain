@@ -9,6 +9,21 @@ source:
   inspected_skill_count: 44
   catalog_claim: 44 skills found under skills/*/SKILL.md at the inspected commit.
   integration_mode: metadata_mapping_only_no_skill_body_copy
+supplemental_sources:
+  - name: direct-response-copy
+    source_type: gist
+    url: https://gist.github.com/boringmarketer/96192770df22ac2a9ff4aed72b4c20f4
+    author: boringmarketer
+    file: direct-response-copy-gist.md
+    inspected_at: "2026-06-14"
+    license: unspecified
+    integration_mode: metadata_mapping_only_no_skill_body_copy
+    usage_boundary: >
+      Use as an attributed routing lens for direct-response copy prompts. Do
+      not vendor or copy the gist body unless a compatible license or explicit
+      permission is available.
+supplemental_skill_count: 1
+total_mapped_skill_count: 45
 routing_policy:
   default: Merge into existing AI Brain or RampStack lanes when a close equivalent exists;
     otherwise expose as a focused marketing source-catalog lens.
@@ -90,6 +105,33 @@ category_mappings:
         summary: Marketing copy for homepages, landing pages, pricing pages, product pages, and offers.
         integration_action: merge_existing
         trigger_terms: [copywriting, landing page copy, homepage copy, rewrite copy, marketing copy]
+      - slug: direct-response-copy
+        summary: >
+          Direct-response conversion copy lens for landing pages, sales pages,
+          emails, headlines, CTAs, offer framing, curiosity gaps, pain
+          quantification, founder stories, testimonials, disqualification, and
+          internet-native persuasive voice.
+        integration_action: add_catalog_lens
+        source: direct-response-copy
+        trigger_terms:
+          - direct response copy
+          - direct-response copy
+          - sales copy
+          - sales page copy
+          - landing page copy
+          - write copy that converts
+          - copy that converts
+          - persuasive copy
+          - conversion copy
+          - headline variations
+          - cta copy
+          - curiosity gap
+          - pain quantification
+          - so what chain
+          - founder story
+          - testimonials
+          - disqualification
+          - risk reversal
       - slug: copy-editing
         summary: Edit, review, polish, refresh, tighten, or improve existing marketing copy.
         integration_action: merge_existing
