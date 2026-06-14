@@ -255,6 +255,7 @@ required_artifact_markers:
     markers:
       - ai-brain-repo-init
       - TARGET_DATA_DIR
+      - migrate_nested_local_data
       - install_target_gitignore
       - PROJECT_MEMORY.md
       - detected_commands

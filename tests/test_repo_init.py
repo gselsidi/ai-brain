@@ -1,8 +1,15 @@
 import json
 from pathlib import Path
 
+from tools import init_repo_profile
 from tools.install_root_agents import BRIDGE_START, install_root_agents
-from tools.init_repo_profile import build_profile, install_target_gitignore, local_artifact_paths, write_local_files
+from tools.init_repo_profile import (
+    build_profile,
+    install_target_gitignore,
+    local_artifact_paths,
+    migrate_nested_local_data,
+    write_local_files,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -150,3 +157,40 @@ def test_target_gitignore_ignores_sticky_ai_brain_data(tmp_path: Path) -> None:
     assert "node_modules/" in text
     assert "# AI_BRAIN_LOCAL_DATA_START" in text
     assert ".ai-brain/" in text
+
+
+def test_init_migrates_nested_local_data_to_target_home(tmp_path: Path, monkeypatch) -> None:
+    target = tmp_path / "target"
+    brain = target / "ai-brain"
+    data_root = target / ".ai-brain"
+    target.mkdir()
+    (brain / "memory").mkdir(parents=True)
+    (brain / "state" / "reports").mkdir(parents=True)
+    (brain / "specs" / "work").mkdir(parents=True)
+
+    (brain / "memory" / "PROJECT_MEMORY.md").write_text("private notes\n", encoding="utf-8")
+    (brain / "state" / "sdlc_state.json").write_text('{"current_phase":"build"}', encoding="utf-8")
+    (brain / "state" / "ai_brain_repo_profile.local.json").write_text("{}", encoding="utf-8")
+    (brain / "state" / "reports" / "target-command_report.json").write_text("{}", encoding="utf-8")
+    (brain / "state" / "reports" / ".gitkeep").write_text("", encoding="utf-8")
+    (brain / "specs" / "2026-06-14_old_prompt.md").write_text("# Old Prompt\n", encoding="utf-8")
+    (brain / "specs" / "prompt_spec_template.md").write_text("# Template\n", encoding="utf-8")
+    (brain / "specs" / "work" / "2026-06-14_old_work.md").write_text("# Old Work\n", encoding="utf-8")
+
+    monkeypatch.setattr(init_repo_profile, "ROOT", brain)
+
+    report = migrate_nested_local_data(target, data_root)
+
+    assert report["status"] == "PASS"
+    assert report["moved_count"] == 6
+    assert (data_root / "memory" / "PROJECT_MEMORY.md").read_text(encoding="utf-8") == "private notes\n"
+    assert (data_root / "state" / "sdlc_state.json").exists()
+    assert (data_root / "state" / "ai_brain_repo_profile.local.json").exists()
+    assert (data_root / "state" / "reports" / "target-command_report.json").exists()
+    assert (data_root / "specs" / "2026-06-14_old_prompt.md").exists()
+    assert (data_root / "specs" / "work" / "2026-06-14_old_work.md").exists()
+    assert not (brain / "memory" / "PROJECT_MEMORY.md").exists()
+    assert not (brain / "state" / "sdlc_state.json").exists()
+    assert not (brain / "state" / "reports" / "target-command_report.json").exists()
+    assert (brain / "state" / "reports" / ".gitkeep").exists()
+    assert (brain / "specs" / "prompt_spec_template.md").exists()

@@ -222,8 +222,12 @@ uses the target checkout rather than the framework subfolder.
 For subfolder installs, the initializer must write target-local memory, state,
 repo profile, repo work specs, and reports under `.ai-brain/` at the target repo
 root, and it must update the target repo `.gitignore` so `.ai-brain/` remains
-local by default. Updating or replacing `ai-brain/` should not delete
-target-local project memory, specs, state, or evidence.
+local by default. If old local data already exists inside nested
+`ai-brain/memory/`, `ai-brain/state/`, or `ai-brain/specs/`, init must migrate
+non-conflicting memory, state, repo profiles, reports, dated prompt specs, and
+repo work specs to target-root `.ai-brain/` before writing the refreshed
+profile. Updating or replacing `ai-brain/` should not delete target-local
+project memory, specs, state, or evidence.
 
 AI Brain commands require Python 3.11 or newer. The Makefile should prefer
 `ai-brain/.venv/bin/python` when it exists, then compatible Python executables

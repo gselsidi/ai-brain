@@ -72,7 +72,8 @@ local_unique_capabilities:
       Drop-in initializer that inspects the target checkout and writes ignored
       local memory, lifecycle state, repo profile, reports, and work-spec
       storage under target `.ai-brain/` for subfolder installs, preserving that
-      data across `ai-brain/` framework updates.
+      data across `ai-brain/` framework updates and migrating older nested local
+      data out of `ai-brain/` when safe.
     artifacts:
       - tools/init_repo_profile.py
       - contracts/expected_behavior.md

@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import re
+import shutil
 import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
@@ -21,6 +22,7 @@ GENERATED_START = "<!-- AI_BRAIN_REPO_PROFILE_START -->"
 GENERATED_END = "<!-- AI_BRAIN_REPO_PROFILE_END -->"
 GITIGNORE_START = "# AI_BRAIN_LOCAL_DATA_START"
 GITIGNORE_END = "# AI_BRAIN_LOCAL_DATA_END"
+PROMPT_SPEC_TEMPLATE = "prompt_spec_template.md"
 
 
 def utc_now() -> str:
@@ -366,6 +368,186 @@ def install_target_gitignore(target_root: Path, data_root: Path) -> dict[str, An
     }
 
 
+def prune_empty_dirs(start: Path, stop: Path) -> None:
+    current = start
+    stop = stop.resolve()
+    while current.exists() and current.resolve() != stop:
+        try:
+            current.rmdir()
+        except OSError:
+            return
+        current = current.parent
+
+
+def move_file_if_safe(source: Path, destination: Path, *, root: Path) -> dict[str, str]:
+    if not source.exists():
+        return {
+            "status": "SKIP",
+            "source": display_path(source, root),
+            "destination": display_path(destination, root),
+            "summary": "Source does not exist.",
+        }
+    if destination.exists():
+        return {
+            "status": "CONFLICT",
+            "source": display_path(source, root),
+            "destination": display_path(destination, root),
+            "summary": "Destination exists; source was left in place.",
+        }
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    shutil.move(source.as_posix(), destination.as_posix())
+    prune_empty_dirs(source.parent, ROOT)
+    return {
+        "status": "MOVED",
+        "source": display_path(source, root),
+        "destination": display_path(destination, root),
+        "summary": "Moved local AI Brain data to target data home.",
+    }
+
+
+def migrate_dir_files(source_dir: Path, destination_dir: Path, *, root: Path) -> list[dict[str, str]]:
+    if not source_dir.exists():
+        return [
+            {
+                "status": "SKIP",
+                "source": display_path(source_dir, root),
+                "destination": display_path(destination_dir, root),
+                "summary": "Source directory does not exist.",
+            }
+        ]
+
+    results = []
+    for source in sorted(path for path in source_dir.rglob("*") if path.is_file()):
+        if source.name == ".gitkeep":
+            continue
+        destination = destination_dir / source.relative_to(source_dir)
+        results.append(move_file_if_safe(source, destination, root=root))
+    prune_empty_dirs(source_dir, ROOT)
+    return results or [
+        {
+            "status": "SKIP",
+            "source": display_path(source_dir, root),
+            "destination": display_path(destination_dir, root),
+            "summary": "No movable files found.",
+        }
+    ]
+
+
+def migrate_prompt_specs(destination_spec_dir: Path, *, root: Path) -> list[dict[str, str]]:
+    source_dir = ROOT / "specs"
+    if not source_dir.exists():
+        return [
+            {
+                "status": "SKIP",
+                "source": display_path(source_dir, root),
+                "destination": display_path(destination_spec_dir, root),
+                "summary": "Source directory does not exist.",
+            }
+        ]
+
+    results = []
+    for source in sorted(source_dir.glob("*.md")):
+        if source.name == PROMPT_SPEC_TEMPLATE:
+            continue
+        results.append(move_file_if_safe(source, destination_spec_dir / source.name, root=root))
+    return results or [
+        {
+            "status": "SKIP",
+            "source": display_path(source_dir, root),
+            "destination": display_path(destination_spec_dir, root),
+            "summary": "No dated local prompt specs found.",
+        }
+    ]
+
+
+def migrate_nested_local_data(target_root: Path, data_root: Path) -> dict[str, Any]:
+    target_root = target_root.resolve()
+    data_root = data_root.resolve()
+    if target_root == ROOT or data_root == ROOT:
+        return {
+            "status": "SKIP",
+            "mode": "target-local-data-migration",
+            "summary": "AI Brain is the repo root; no nested local data migration needed.",
+            "items": [],
+        }
+    if ROOT.parent.resolve() != target_root:
+        return {
+            "status": "SKIP",
+            "mode": "target-local-data-migration",
+            "summary": "AI Brain is not directly inside the target root; no nested local data migration attempted.",
+            "items": [],
+        }
+
+    item_groups: list[dict[str, Any]] = [
+        {
+            "name": "memory",
+            "items": [
+                move_file_if_safe(
+                    ROOT / "memory" / "PROJECT_MEMORY.md",
+                    data_root / "memory" / "PROJECT_MEMORY.md",
+                    root=target_root,
+                )
+            ],
+        },
+        {
+            "name": "state",
+            "items": [
+                move_file_if_safe(
+                    ROOT / "state" / "sdlc_state.json",
+                    data_root / "state" / "sdlc_state.json",
+                    root=target_root,
+                ),
+                move_file_if_safe(
+                    ROOT / "state" / "ai_brain_repo_profile.local.json",
+                    data_root / "state" / "ai_brain_repo_profile.local.json",
+                    root=target_root,
+                ),
+            ],
+        },
+        {
+            "name": "prompt_specs",
+            "items": migrate_prompt_specs(data_root / "specs", root=target_root),
+        },
+        {
+            "name": "work_specs",
+            "items": migrate_dir_files(
+                ROOT / "specs" / "work",
+                data_root / "specs" / "work",
+                root=target_root,
+            ),
+        },
+        {
+            "name": "reports",
+            "items": migrate_dir_files(
+                ROOT / "state" / "reports",
+                data_root / "state" / "reports",
+                root=target_root,
+            ),
+        },
+    ]
+    item_statuses = [
+        item["status"]
+        for group in item_groups
+        for item in group["items"]
+    ]
+    moved_count = item_statuses.count("MOVED")
+    conflict_count = item_statuses.count("CONFLICT")
+    return {
+        "status": "CONFLICT" if conflict_count else "PASS",
+        "mode": "target-local-data-migration",
+        "moved_count": moved_count,
+        "conflict_count": conflict_count,
+        "source_root": ROOT.as_posix(),
+        "target_data_root": data_root.as_posix(),
+        "summary": (
+            f"Moved {moved_count} nested local AI Brain artifact(s) to target data home."
+            if moved_count
+            else "No nested local AI Brain artifacts needed migration."
+        ),
+        "items": item_groups,
+    }
+
+
 def write_local_files(
     profile: dict[str, Any],
     *,
@@ -397,7 +579,9 @@ def main() -> None:
     root = Path(args.root).expanduser().resolve()
     data_root = Path(args.data_root).expanduser().resolve() if args.data_root else None
     local_paths = local_artifact_paths(root, data_root=data_root)
+    migration_report = migrate_nested_local_data(root, local_paths["data_root"])
     profile = build_profile(root, data_root=local_paths["data_root"])
+    profile["target_data_migration"] = migration_report
     bridge_report: dict[str, Any] | None = None
     if not args.skip_root_agents and should_install_from_env(os.environ.get("INSTALL_ROOT_AGENTS")):
         bridge_report = install_root_agents(

@@ -65,6 +65,11 @@ local by default. This makes `ai-brain/` replaceable framework code: you can
 copy/paste or subtree-pull a new version of AI Brain over `ai-brain/` without
 deleting the target repo's memory, specs, state, or evidence.
 
+If an older AI Brain install already has local data inside `ai-brain/memory/`,
+`ai-brain/state/`, or `ai-brain/specs/`, rerun init. It safely migrates
+non-conflicting memory, state, repo profiles, reports, dated prompt specs, and
+repo work specs into target-root `.ai-brain/` before refreshing the profile.
+
 The init command also creates or updates the target repo root `AGENTS.md` with
 an AI Brain bridge. This bridge is what tells future Codex sessions to read
 `ai-brain/AGENTS.md` before doing repo work and to read sticky local context

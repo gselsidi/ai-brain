@@ -11,7 +11,9 @@ initializer inspects the checkout and creates or updates the ignored local
 memory file with a generated repo-profile section. For subfolder installs, run
 `make -C ai-brain init-repo TARGET_ROOT=..`; that writes target-local memory,
 state, specs, and reports under `.ai-brain/` so `ai-brain/` can be replaced
-without losing project context.
+without losing project context. The same init command also migrates old
+non-conflicting local data from nested `ai-brain/memory/`, `ai-brain/state/`,
+and `ai-brain/specs/` into target-root `.ai-brain/`.
 
 The real memory file is ignored by git so workspace-specific notes, run
 summaries, detected commands, and adoption details do not get published. The
