@@ -117,6 +117,9 @@ def test_root_agents_bridge_installs_and_preserves_existing_instructions(tmp_pat
     assert "selected specialists, deferred specialists, selected source" in text
     assert "spec before implementation" in text
     assert "Treat AI Brain as the primary workflow layer" in text
+    assert "The user has granted explicit standing authorization" in text
+    assert "AI Brain-selected subagent delegation" in text
+    assert "authorization basis, agent role, ownership scope" in text
 
 
 def test_root_agents_bridge_replaces_only_managed_block(tmp_path: Path) -> None:
@@ -159,6 +162,38 @@ def test_target_gitignore_ignores_sticky_ai_brain_data(tmp_path: Path) -> None:
     assert "memory/PROJECT_MEMORY.md" in text
     assert "state/ai_brain_repo_profile.local.json" in text
     assert "specs/work/*.md" in text
+
+
+def test_legacy_dot_ai_brain_data_root_normalizes_to_target_root(tmp_path: Path) -> None:
+    target = tmp_path / "target"
+    brain = target / "ai-brain"
+    target.mkdir()
+    brain.mkdir()
+
+    local_paths = local_artifact_paths(target, data_root=target / ".ai-brain")
+    profile = build_profile(
+        target,
+        generated_at="2026-06-01T00:00:00+00:00",
+        data_root=target / ".ai-brain",
+    )
+    bridge_report = install_root_agents(
+        target_root=target,
+        ai_brain_root=brain,
+        data_root=target / ".ai-brain",
+    )
+    gitignore_report = install_target_gitignore(target, target / ".ai-brain")
+    text = (target / "AGENTS.md").read_text(encoding="utf-8")
+    gitignore = (target / ".gitignore").read_text(encoding="utf-8")
+
+    assert local_paths["data_root"] == target
+    assert profile["local_files"]["data_root"] == "."
+    assert profile["local_files"]["memory"] == "memory/PROJECT_MEMORY.md"
+    assert bridge_report["data_root"] == target.as_posix()
+    assert "`memory/PROJECT_MEMORY.md`" in text
+    assert "`.ai-brain/memory/PROJECT_MEMORY.md`" not in text
+    assert gitignore_report["entries"][0] == "memory/PROJECT_MEMORY.md"
+    assert "memory/PROJECT_MEMORY.md" in gitignore
+    assert ".ai-brain/" not in gitignore
 
 
 def test_init_migrates_nested_local_data_to_target_home(tmp_path: Path, monkeypatch) -> None:
@@ -216,7 +251,7 @@ def test_init_migrates_legacy_dot_ai_brain_data_to_target_root(
 
     monkeypatch.setattr(init_repo_profile, "ROOT", brain)
 
-    report = migrate_nested_local_data(target, target)
+    report = migrate_nested_local_data(target, target / ".ai-brain")
 
     assert report["status"] == "PASS"
     assert report["moved_count"] == 3

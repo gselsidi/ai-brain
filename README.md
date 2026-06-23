@@ -73,10 +73,9 @@ evidence.
 If an older AI Brain install already has local data inside `ai-brain/memory/`,
 `ai-brain/state/`, or `ai-brain/specs/`, rerun init. It safely migrates
 non-conflicting memory, state, repo profiles, reports, dated prompt specs, and
-repo work specs into the target repo root before refreshing the profile. It
-also migrates the older target-root `.ai-brain/` data home into root-level
-`memory/`, `state/`, and `specs/` folders when those destinations do not
-already exist.
+repo work specs into the target repo root before refreshing the profile.
+Legacy hidden data homes or stale data-root overrides from older builds are
+normalized to the target repo root instead of being kept as active storage.
 
 The init command also creates or updates the target repo root `AGENTS.md` with
 an AI Brain bridge. This bridge is what tells future Codex sessions to read
@@ -417,7 +416,6 @@ Generated outputs stay local:
 - `state/reports/`
 - `specs/work/*.md`
 - dated local prompt specs under `specs/*.md`
-- legacy `.ai-brain/` data homes from older target repo installs
 
 Those paths are ignored by git so private memory, run status, and evidence logs
 do not get published by accident.

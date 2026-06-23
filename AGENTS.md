@@ -81,6 +81,18 @@ parallel or role-specific review. Delegation is optional for tiny direct edits,
 but substantial work should explicitly consider whether a specialist can advance
 the slice.
 
+The user has granted explicit standing authorization for AI Brain-selected
+subagent delegation: when AI Brain routing determines subagents would
+materially help and the current runtime exposes subagent tools, Codex should
+spawn the bounded subagents selected by AI Brain. Treat this paragraph as the
+user's explicit authorization for substantial project-work delegation unless
+the user explicitly says not to use subagents for the current task.
+
+This authorization does not override Codex system, developer, tool, sandbox, or
+approval policy. If the runtime does not expose subagent tools, or a higher
+priority rule blocks delegation, record the blocker in the work spec and
+continue with the best single-agent path.
+
 When using subagents:
 
 - Delegate bounded, self-contained work with a clear owner, inputs, expected

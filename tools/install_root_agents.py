@@ -10,6 +10,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 BRIDGE_START = "<!-- AI_BRAIN_ROOT_BRIDGE_START -->"
 BRIDGE_END = "<!-- AI_BRAIN_ROOT_BRIDGE_END -->"
+LEGACY_TARGET_DATA_DIR = ".ai-brain"
 
 
 def display_path(path: Path, base: Path) -> str:
@@ -23,7 +24,10 @@ def target_data_root_for(target_root: Path, ai_brain_root: Path, data_root: Path
     target_root = target_root.resolve()
     ai_brain_root = ai_brain_root.resolve()
     if data_root is not None:
-        return data_root.expanduser().resolve()
+        resolved = data_root.expanduser().resolve()
+        if resolved == target_root / LEGACY_TARGET_DATA_DIR:
+            return target_root
+        return resolved
     return target_root
 
 
@@ -65,6 +69,19 @@ def render_bridge(*, target_root: Path, ai_brain_root: Path, data_root: Path | N
             "   says not to use it.",
             "8. Treat AI Brain as the primary workflow layer unless the user",
             "   explicitly says not to use it.",
+            "",
+            "User standing authorization for AI Brain subagents:",
+            "",
+            "- The user has granted explicit standing authorization for",
+            "  AI Brain-selected subagent delegation. When AI Brain routing",
+            "  determines subagents would materially help and the current",
+            "  runtime exposes subagent tools, Codex should spawn the bounded",
+            "  subagents selected by AI Brain.",
+            "- Record the authorization basis, agent role, ownership scope,",
+            "  expected artifact, and verification gate in the work spec.",
+            "- This authorization does not override Codex system, developer,",
+            "  tool, sandbox, or approval policy. Do not use subagents when",
+            "  the user explicitly says not to.",
             "",
             "If AI Brain is present only as a private local helper, remove this",
             "bridge or run init with `INSTALL_ROOT_AGENTS=0`.",

@@ -13,8 +13,10 @@ memory file with a generated repo-profile section. For subfolder installs, run
 state, specs, and reports to target-root `memory/`, `state/`, `specs/`, and
 `state/reports/` so `ai-brain/` can be replaced without losing project
 context. The same init command also migrates old non-conflicting local data
-from nested `ai-brain/memory/`, `ai-brain/state/`, `ai-brain/specs/`, and
-legacy target-root `.ai-brain/` data homes into those target-root folders.
+from nested `ai-brain/memory/`, `ai-brain/state/`, and `ai-brain/specs/` into
+those target-root folders. Legacy hidden data homes or stale data-root
+overrides from older builds are treated as legacy and normalized to
+`TARGET_ROOT`.
 
 The real memory file is ignored by git so workspace-specific notes, run
 summaries, detected commands, and adoption details do not get published. The

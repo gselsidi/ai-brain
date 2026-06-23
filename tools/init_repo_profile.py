@@ -62,7 +62,10 @@ def display_path(path: Path, base: Path) -> str:
 def target_data_root_for(target_root: Path, *, data_root: Path | None = None) -> Path:
     target_root = target_root.resolve()
     if data_root is not None:
-        return data_root.expanduser().resolve()
+        resolved = data_root.expanduser().resolve()
+        if resolved == target_root / LEGACY_TARGET_DATA_DIR:
+            return target_root
+        return resolved
     return target_root
 
 
@@ -358,7 +361,7 @@ def target_gitignore_entries(target_root: Path, data_root: Path) -> list[str]:
 
 def install_target_gitignore(target_root: Path, data_root: Path) -> dict[str, Any]:
     target_root = target_root.resolve()
-    data_root = data_root.resolve()
+    data_root = target_data_root_for(target_root, data_root=data_root)
     if target_root == ROOT or data_root == ROOT:
         return {
             "status": "SKIP",
@@ -572,7 +575,7 @@ def migration_groups_for_source(
 
 def migrate_nested_local_data(target_root: Path, data_root: Path) -> dict[str, Any]:
     target_root = target_root.resolve()
-    data_root = data_root.resolve()
+    data_root = target_data_root_for(target_root, data_root=data_root)
     if target_root == ROOT or data_root == ROOT:
         return {
             "status": "SKIP",

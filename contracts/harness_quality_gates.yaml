@@ -110,7 +110,6 @@ required_reports:
 required_artifact_markers:
   - path: .gitignore
     markers:
-      - .ai-brain/
       - specs/*.md
       - specs/work/*.md
       - "!specs/prompt_spec_template.md"

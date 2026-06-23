@@ -73,7 +73,7 @@ local_unique_capabilities:
       local memory, lifecycle state, repo profile, reports, and work-spec
       storage at the target repo root for subfolder installs, preserving that
       data across `ai-brain/` framework updates and migrating older nested or
-      legacy `.ai-brain/` local data when safe.
+      legacy hidden local data when safe.
     artifacts:
       - tools/init_repo_profile.py
       - contracts/expected_behavior.md

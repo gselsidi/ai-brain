@@ -213,11 +213,13 @@ repo profile, repo work specs, and reports to target-root `memory/`, `state/`,
 `specs/`, and `state/reports/`, and it must update the target repo `.gitignore`
 so generated local data remains local by default. If old local data already
 exists inside nested `ai-brain/memory/`, `ai-brain/state/`,
-`ai-brain/specs/`, or a legacy target-root `.ai-brain/` data home, init must
+`ai-brain/specs/`, or a legacy hidden data home from older builds, init must
 migrate non-conflicting memory, state, repo profiles, reports, dated prompt
-specs, and repo work specs to the target repo root before writing the refreshed
-profile. Updating or replacing `ai-brain/` should not delete target-local
-project memory, specs, state, or evidence.
+specs, and repo work specs to the target repo root before writing the
+refreshed profile. Any stale command or environment value that points at the
+legacy hidden data home as active storage must be treated as legacy and
+normalized to `TARGET_ROOT`. Updating or replacing `ai-brain/` should not
+delete target-local project memory, specs, state, or evidence.
 
 AI Brain commands require Python 3.11 or newer. The Makefile should prefer
 `ai-brain/.venv/bin/python` when it exists, then compatible Python executables
