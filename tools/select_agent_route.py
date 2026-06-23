@@ -2,15 +2,26 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 from pathlib import Path
 from typing import Any
 
-import yaml
-
-
 ROOT = Path(__file__).resolve().parents[1]
+VENV_PYTHON = ROOT / ".venv" / "bin" / "python"
+
+try:
+    import yaml
+except ModuleNotFoundError as error:
+    if error.name == "yaml" and VENV_PYTHON.exists() and Path(sys.executable).resolve() != VENV_PYTHON.resolve():
+        os.execv(VENV_PYTHON.as_posix(), [VENV_PYTHON.as_posix(), *sys.argv])
+    raise SystemExit(
+        "Missing PyYAML for AI Brain routing. Run `make setup`, "
+        "or invoke the router with `.venv/bin/python tools/select_agent_route.py`."
+    ) from error
+
+
 CONTRACT_PATH = ROOT / "contracts" / "domain_agent_routing.yaml"
 SOURCE_CATALOG_PATHS = {
     "marketing_skill_integration": ROOT / "contracts" / "marketing_skill_integration.yaml",

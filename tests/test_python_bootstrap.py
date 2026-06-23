@@ -45,3 +45,13 @@ def test_readme_top_guidance_mentions_python_bootstrap_before_overview() -> None
     assert readme.index("AI Brain requires Python 3.11+") < overview_index
     assert readme.index("macOS") < overview_index
     assert readme.index("ai-brain/.venv/bin/python") < overview_index
+
+
+def test_router_reexecs_existing_venv_when_system_python_lacks_yaml() -> None:
+    router = (ROOT / "tools" / "select_agent_route.py").read_text(encoding="utf-8")
+
+    assert 'ROOT / ".venv" / "bin" / "python"' in router
+    assert "except ModuleNotFoundError as error" in router
+    assert 'error.name == "yaml"' in router
+    assert "os.execv" in router
+    assert "Missing PyYAML for AI Brain routing" in router
