@@ -109,7 +109,7 @@ def test_root_agents_bridge_installs_and_preserves_existing_instructions(tmp_pat
     assert "Keep this repo-specific note." in text
     assert BRIDGE_START in text
     assert "This repository uses AI Brain as its agent orchestration layer." in text
-    assert "Mandatory start-of-turn rule for every new user prompt" in text
+    assert "Mandatory start-of-turn rule for the primary/root orchestrator" in text
     assert "`ai-brain/AGENTS.md`" in text
     assert "`memory/PROJECT_MEMORY.md`" in text
     assert "`state/ai_brain_repo_profile.local.json`" in text
@@ -117,9 +117,19 @@ def test_root_agents_bridge_installs_and_preserves_existing_instructions(tmp_pat
     assert "selected specialists, deferred specialists, selected source" in text
     assert "spec before implementation" in text
     assert "Treat AI Brain as the primary workflow layer" in text
-    assert "The user has granted explicit standing authorization" in text
-    assert "AI Brain-selected subagent delegation" in text
-    assert "authorization basis, agent role, ownership scope" in text
+    assert "Execution discipline:" in text
+    assert "Terse architect-engineer mode" in text
+    assert "task-native compact handoffs" in text
+    assert "Release-window discipline:" in text
+    assert "Treat related follow-up corrections as one active release window" in text
+    assert "Do not repeat full discovery" in text
+    assert "Conservative AI Brain subagent policy" in text
+    assert "Use up to four children" in text
+    assert '`fork_turns="none"`' in text
+    assert "short task-specific summary" in text
+    assert "A delegated child does not repeat steps 1-8" in text
+    assert "Recursive subagent spawning is" in text
+    assert "explicit standing authorization" not in text
 
 
 def test_root_agents_bridge_replaces_only_managed_block(tmp_path: Path) -> None:

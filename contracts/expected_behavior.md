@@ -31,6 +31,11 @@ The framework should help a team run repeatable autonomous delivery:
 - clarify broad or ambiguous work with `/goal` before the prompt spec
 - read each project-work prompt as a routing signal, select a primary division,
   choose core SDLC roles, and add adjacent specialists only when justified
+- treat routed roles as review lenses while permitting up to four bounded
+  children for genuinely independent work
+- when one bounded child is justified, start it without inherited conversation
+  and give it a compact task packet instead of making it repeat AI Brain
+  bootstrap, memory, routing, specs, or lifecycle work
 - convert project-work prompts into durable prompt specs with auditable
   requirements
 - keep target repo work specs under target-root `specs/work/`
@@ -46,6 +51,8 @@ The framework should help a team run repeatable autonomous delivery:
 - audit requirements back to artifacts
 - self-heal failed gates
 - maintain reliability over time
+- use an architect-engineer execution loop: compact tool work and concise final
+  explainers, expanding only for user-requested, safety, audit, or release need
 
 ## Core Artifacts
 
@@ -141,6 +148,48 @@ The expected specialist roles are:
 - `maintenance_heartbeat`
 - `pr_reviewer`
 - `release_gate`
+
+## Conservative Subagent Execution
+
+- The primary/root orchestrator owns AI Brain startup, routing, memory, specs,
+  lifecycle evidence, and the completion decision.
+- The default subagent budget is four. Selected roles and specialists remain
+  lenses until the orchestrator documents why each bounded child adds material
+  value.
+- Children must have genuinely independent work and disjoint write scopes;
+  runtime concurrency may be lower than the four-child policy ceiling.
+- Every child starts with `fork_turns="none"` and a compact task packet with a
+  short task-specific summary. It does not inherit the parent conversation or
+  repeat AI Brain bootstrap by default.
+- Child agents do not run `/goal`, create specs, read project memory/profile or
+  routing catalogs, generate lifecycle reports, execute release gates, or spawn
+  more agents unless the task packet explicitly requires that exact work.
+- The parent integrates the child result and reruns deterministic verification.
+
+## Execution Discipline
+
+- Use the compact architect-engineer loop: assess, act, verify.
+- Working responses contain only decision, evidence, blocker, or next action.
+- Keep private reasoning private; do not narrate routine tool work.
+- Batch safe independent work and use the smallest tool payload that preserves
+  objective, scope, and verification.
+- Use the native format of the task or tool; child handoffs stay compact:
+  result, evidence, risk, next action.
+- Final handoffs remain concise but include outcome, verification, and material
+  risk. Expand for user-requested detail or necessary safety/audit/release work.
+
+## Release Window Discipline
+
+- Consecutive related follow-up corrections remain in one active release window.
+- The window performs bootstrap, `/goal` clarification when needed, routing, and
+  durable spec creation once; later corrections update the same spec.
+- Iteration uses the narrowest relevant checks. It does not repeat full
+  discovery, full suites, builds, reports, or deployment per correction.
+- Full evidence, release gates, commit/push, and deployment run once when the
+  user explicitly closes the window by asking to finish, commit, push, deploy,
+  release, or equivalent.
+- A material objective or product/security-boundary change, or a focused-check
+  blocker, reopens full planning. Narrow safety checks remain immediate.
 
 ## Evidence Rules
 

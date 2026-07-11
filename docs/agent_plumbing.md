@@ -102,6 +102,14 @@ user prompt
 - `site/`: generated MkDocs static-site output built from `docs/` and
   `mkdocs.yml`; it is safe to regenerate and is not a product runtime.
 
+## Execution Discipline
+
+AI Brain uses a compact architect-engineer loop: assess, act, verify. It does
+not expose private reasoning or narrate routine tool work; safe independent
+work is batched; and child handoffs use the native format of the task with only
+result, evidence, risk, and next action. The final handoff is a concise
+explainer with outcome, verification, and material risk.
+
 ## Specialist Behavior
 
 | Agent | What It Does |
@@ -139,6 +147,18 @@ The route is recorded in the prompt spec as primary division, adjacent
 divisions, selected framework agents, selected specialists, deferred
 specialists, selected source skills, deferred source skills, routing
 assumptions, and verification gates.
+
+Routing selects lenses, not processes. The subagent budget permits up to four
+children for genuinely independent paths with non-overlapping write scopes and
+a concrete parallelism or review benefit. Runtime concurrency may be lower.
+
+When a child is justified, spawn it with `fork_turns="none"` and pass a compact,
+self-contained task packet: objective, exact scope and paths, a short
+task-specific summary of established decisions, expected output, and
+verification criteria. The child skips AI Brain
+bootstrap, memory/profile and routing reads, `/goal`, specs, lifecycle reports,
+release gates, and further delegation unless the packet explicitly assigns that
+work. The parent integrates the result and remains responsible for final gates.
 
 Routing is division-first and token-thrifty. The orchestrator chooses one
 primary division by default, such as engineering/programming, marketing, sales,

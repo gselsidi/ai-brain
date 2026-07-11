@@ -124,6 +124,7 @@ def test_provider_native_goal_adapter_feeds_required_sdlc_loop() -> None:
 
 
 def test_prompt_to_agent_routing_is_division_first_and_token_thrifty() -> None:
+    agents = (ROOT / "AGENTS.md").read_text()
     orchestrator = (ROOT / ".codex/agents/sdlc_orchestrator.toml").read_text()
     agent_plumbing = (ROOT / "docs/agent_plumbing.md").read_text()
     expected = (ROOT / "contracts/expected_behavior.md").read_text()
@@ -157,6 +158,14 @@ def test_prompt_to_agent_routing_is_division_first_and_token_thrifty() -> None:
     assert "prompt_agent_routing" in framework_map["local_unique_capabilities"]
     assert "rampstack_skill_catalog" in framework_map["local_unique_capabilities"]
     assert "marketing_skill_catalog" in framework_map["local_unique_capabilities"]
+    assert "Use up to four bounded children" in agents
+    assert '`fork_turns="none"`' in agents
+    assert "A child must not spawn another child" in agents
+    assert "Use up to four bounded children" in orchestrator
+    assert '`fork_turns="none"`' in orchestrator
+    assert routing_contract["subagent_policy"]["default_budget"] == 4
+    assert routing_contract["subagent_policy"]["required_fork_turns"] == "none"
+    assert routing_contract["subagent_policy"]["recursive_fanout"] == "prohibited"
 
     assert seo_route["primary_division"] == "marketing"
     assert seo_route["adjacent_divisions"] == []
@@ -165,6 +174,20 @@ def test_prompt_to_agent_routing_is_division_first_and_token_thrifty() -> None:
     assert "funnel_lead_gen_strategist" in seo_deferred
     assert "selected_source_skills" in seo_route
     assert "deferred_source_skills" in seo_route
+    assert seo_route["subagent_budget"] == 4
+    assert seo_route["subagent_policy"] == {
+        "routed_roles_are": "review_lenses",
+        "max_without_explicit_user_request": 4,
+        "max_with_explicit_user_request": 4,
+        "required_fork_turns": "none",
+        "child_bootstrap_mode": "task_packet_only",
+        "recursive_fanout": "prohibited",
+        "automatic_spawn_from_routing": False,
+    }
+    assert any(
+        "review lenses, not automatic subagent spawns" in note
+        for note in seo_route["routing_notes"]
+    )
     assert len(seo_route["selected_specialists"]) <= (
         routing_contract["routing_defaults"]["max_primary_specialists"]
         + routing_contract["routing_defaults"]["max_adjacent_specialists"]
@@ -178,6 +201,38 @@ def test_prompt_to_agent_routing_is_division_first_and_token_thrifty() -> None:
     assert "content_copywriter" not in programming_selected
     assert "content_copywriter" not in programming_deferred
     assert programming_route["selected_source_skills"] == []
+
+
+def test_execution_discipline_is_compact_and_preserves_final_evidence() -> None:
+    agents = (ROOT / "AGENTS.md").read_text()
+    orchestrator = (ROOT / ".codex/agents/sdlc_orchestrator.toml").read_text()
+    expected = (ROOT / "contracts/expected_behavior.md").read_text()
+    plumbing = (ROOT / "docs/agent_plumbing.md").read_text()
+
+    assert "## Execution Discipline" in agents
+    assert "Assess → act → verify" in agents
+    assert "Work in terse architect-engineer mode" in agents
+    assert "native format of the task or tool" in agents
+    assert "child handoffs compact" in agents
+    assert "native format of the task or tool" in orchestrator
+    assert "Work in terse architect-engineer mode" in orchestrator
+    assert "## Execution Discipline" in expected
+    assert "native format of the task or tool" in expected
+    assert "## Execution Discipline" in plumbing
+
+
+def test_release_windows_defer_full_release_work_until_explicit_close() -> None:
+    agents = (ROOT / "AGENTS.md").read_text()
+    orchestrator = (ROOT / ".codex/agents/sdlc_orchestrator.toml").read_text()
+    expected = (ROOT / "contracts/expected_behavior.md").read_text()
+
+    assert "## Release Windows" in agents
+    assert "related follow-up corrections as one active release window" in agents
+    assert "asks to finish, commit, push, deploy, release" in agents
+    assert "Use release windows for related follow-up corrections" in orchestrator
+    assert "explicitly asks to finish, commit, push, deploy, release" in orchestrator
+    assert "## Release Window Discipline" in expected
+    assert "commit/push, and deployment run once" in expected
 
 
 def test_rampstack_skill_catalog_maps_all_source_skills_and_router_defers_extra_lenses() -> None:

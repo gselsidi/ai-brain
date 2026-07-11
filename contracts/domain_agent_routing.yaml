@@ -45,6 +45,29 @@ routing_defaults:
     prompt names their concern, the source artifacts expose that concern, or a
     failed gate proves the extra lens is needed.
 
+subagent_policy:
+  routed_roles_are: review_lenses
+  default_budget: 4
+  max_without_explicit_user_request: 4
+  max_with_explicit_user_request: 4
+  required_fork_turns: none
+  child_bootstrap_mode: task_packet_only
+  recursive_fanout: prohibited
+  automatic_spawn_from_routing: false
+  child_skips_by_default:
+    - ai_brain_start_of_turn_bootstrap
+    - project_memory
+    - repo_profile
+    - routing_and_framework_catalogs
+    - goal
+    - prompt_spec
+    - lifecycle_reports
+    - further_delegation
+  spawn_rule: >
+    Use up to four bounded children only for genuinely independent work with
+    disjoint write scopes and a concrete parallelism or review benefit. Give
+    each a compact task-specific summary and no inherited conversation.
+
 divisions:
   engineering:
     description: Programming, software delivery, architecture, code changes, and developer workflow.

@@ -139,7 +139,12 @@ loading a whole folder of prompts up front.
 - **Prompt-to-agent routing:** `tools/select_agent_route.py` reads the prompt
   and returns a primary division, adjacent divisions, selected framework agents,
   selected specialists, deferred specialists, selected source skills, deferred
-  source skills, and verification gates.
+  source skills, verification gates, and a four-child subagent budget. Routed
+  roles are review lenses, not automatic agent spawns.
+- **Bounded subagents:** up to four justified children can run on genuinely
+  independent work. Each starts with `fork_turns="none"`, receives only a short
+  task-specific summary, skips a second AI Brain bootstrap, and cannot delegate
+  further.
 - **Token-thrifty source skills:** source catalogs are metadata-only. The
   router uses slugs, categories, summaries, and trigger terms to pick a few
   useful lenses without loading every skill body.
@@ -153,6 +158,9 @@ loading a whole folder of prompts up front.
 - **Evidence-first execution:** tests, lint, target commands, drift checks,
   harness quality, improvement queue, reliability score, and release gate turn
   agent work into auditable evidence.
+- **Architect-engineer execution discipline:** agents batch safe tool work,
+  avoid routine narration, use task-native compact handoffs, and
+  retain a concise final outcome with verification and material risk.
 - **SDLC lifecycle mode:** for software delivery, the harness runs the full
   requirements -> `/goal` -> spec -> plan -> build -> verify -> review -> ship
   loop with specialist roles.

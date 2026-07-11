@@ -9,8 +9,13 @@ explicitly supplies or requests a target project.
 
 ## Mandatory Start-Of-Turn Protocol
 
+This protocol applies to the primary/root orchestrator. A delegated child agent
+uses the compact child protocol under `Subagent Delegation Protocol` and must
+not repeat the full AI Brain bootstrap unless its task packet explicitly says
+that framework context is part of its assignment.
+
 At the start of every new user prompt that requests code, docs, tests, review,
-maintenance, or project work, Codex must:
+maintenance, or project work, the primary/root orchestrator must:
 
 1. Re-read `AGENTS.md`.
 2. Read local `memory/PROJECT_MEMORY.md` if it exists. For target repos that
@@ -70,43 +75,81 @@ project-change request must use this protocol.
 - If durable project state, commands, decisions, limitations, or lifecycle
   status change, update local `memory/PROJECT_MEMORY.md`.
 - If a gate fails, run self-healing before declaring completion.
-- If specialist review is useful and available, delegate bounded work to the
-  appropriate role.
+- If specialist review is useful, apply the conservative subagent budget below;
+  keep the role as a main-agent review lens unless a child independently meets
+  the delegation threshold.
 
 ## Subagent Delegation Protocol
 
-The framework is designed for the main `sdlc_orchestrator` to fan out work to
-specialist subagents when the environment supports it and the task benefits from
-parallel or role-specific review. Delegation is optional for tiny direct edits,
-but substantial work should explicitly consider whether a specialist can advance
-the slice.
+AI Brain roles and routed specialists are review lenses, not automatic spawn
+instructions. The primary/root orchestrator owns the work and may use bounded
+specialist parallelism when it materially advances independent work.
 
-The user has granted explicit standing authorization for AI Brain-selected
-subagent delegation: when AI Brain routing determines subagents would
-materially help and the current runtime exposes subagent tools, Codex should
-spawn the bounded subagents selected by AI Brain. Treat this paragraph as the
-user's explicit authorization for substantial project-work delegation unless
-the user explicitly says not to use subagents for the current task.
+Subagent budget:
 
-This authorization does not override Codex system, developer, tool, sandbox, or
-approval policy. If the runtime does not expose subagent tools, or a higher
-priority rule blocks delegation, record the blocker in the work spec and
-continue with the best single-agent path.
+- Use up to four bounded children when their paths are genuinely independent,
+  have disjoint write scopes, and can proceed in parallel.
+- Do not spawn a child merely because a role was selected; each child still
+  needs a concrete objective and a meaningful parallelism or review benefit.
+- Runtime concurrency limits may reduce how many of the four run at once.
+- Recursive fan-out is prohibited. A child must not spawn another child.
+- Routine planning, memory lookup, file discovery, test running, docs drift,
+  requirements audit, and release-gate work stay with the main agent unless the
+  user explicitly assigns one of those tasks to a child.
 
-When using subagents:
+Every allowed child must be launched with `fork_turns="none"`; do not inherit
+the parent conversation. The parent supplies a compact, self-contained task
+packet containing only:
 
-- Delegate bounded, self-contained work with a clear owner, inputs, expected
-  artifacts, and verification command.
-- Prefer parallel subagents for independent work such as planning, contracts,
-  test writing, quality exploration, adversarial review, security review, docs
-  drift, requirements audit, and release review.
-- Keep write scopes disjoint when multiple implementation subagents work in
-  parallel.
-- Treat subagent output as evidence or recommendations, not final truth.
-- Do not let subagents mark the project complete. Only the orchestrator can
-  close the loop after deterministic gates and release evidence pass.
-- If a subagent finds a blocker, route the smallest repair to the owning role
-  and require regression evidence before release.
+- the bounded objective and why delegation is justified
+- exact read/write scope and relevant paths
+- a short task-specific summary of only the facts or decisions it needs
+- expected artifact or response
+- verification command or acceptance criteria
+
+Delegated child protocol:
+
+1. Treat the parent's task packet as the authoritative context.
+2. Do not run `/goal`, create prompt specs, read AI Brain project memory or repo
+   profile files, inspect routing/framework catalogs, generate lifecycle
+   reports, or repeat release gates unless the packet explicitly requires it.
+3. Read only the scoped product files and the nearest file-specific
+   instructions needed to complete the assignment.
+4. Do not delegate further.
+5. Return concise evidence to the parent. The parent integrates the result,
+   owns edits unless explicitly delegated, reruns deterministic checks, and is
+   the only agent that can declare completion.
+
+## Execution Discipline
+
+“Work in terse architect-engineer mode. During execution report only decision,
+evidence, blocker, or next action; final response: outcome, verification,
+material risk. Expand only on request or when safety/audit detail is required.”
+
+Assess → act → verify. Keep private reasoning private; skip routine narration;
+batch safe independent work. Use the native format of the task or tool; keep
+child handoffs compact: result, evidence, risk, next action.
+
+## Release Windows
+
+Treat related follow-up corrections as one active release window, not as new
+projects. Bootstrap, clarify, route, and create the durable spec once when the
+window starts; update that same spec as the user refines the same outcome.
+
+During an active release window:
+
+- Re-read only the files, contracts, and evidence affected by the correction.
+- Run the narrowest relevant regression check after each repair.
+- Do not repeat full bootstrap, `/goal`, broad routing catalogs, full test
+  suites, builds, release reports, commits, pushes, or deployments merely
+  because the user sends a related follow-up.
+- Defer the complete evidence loop and release gate until the user explicitly
+  asks to finish, commit, push, deploy, release, or otherwise close the window.
+
+Reopen full discovery only when the user changes the objective materially, the
+new work crosses a different product/security boundary, or focused evidence
+finds a blocker that makes the existing plan invalid. Safety-critical checks may
+still run immediately when their narrow scope is necessary to prevent harm.
 
 ## Planning Checkpoint
 

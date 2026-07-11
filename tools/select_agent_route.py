@@ -318,6 +318,7 @@ def route_prompt(
         source_catalogs = source_catalog
 
     defaults = contract.get("routing_defaults", {})
+    subagent_policy = contract.get("subagent_policy", {})
     primary_limit = int(defaults.get("max_primary_specialists", 3))
     adjacent_limit = int(defaults.get("max_adjacent_specialists", 2))
     adjacent_division_limit = int(defaults.get("max_adjacent_divisions", 1))
@@ -390,6 +391,13 @@ def route_prompt(
 
     routing_notes = [
         defaults.get("escalation_rule", "Start with the smallest useful set.").strip(),
+        "Selected roles and specialists are review lenses, not automatic subagent spawns.",
+        str(
+            subagent_policy.get(
+                "spawn_rule",
+                "Stay single-agent unless a bounded child is independently justified.",
+            )
+        ).strip(),
     ]
     if not primary:
         routing_notes.append(
@@ -433,6 +441,24 @@ def route_prompt(
         "deferred_specialists": deferred_specialists,
         "selected_source_skills": selected_source_skills,
         "deferred_source_skills": deferred_source_skills,
+        "subagent_budget": int(subagent_policy.get("default_budget", 0)),
+        "subagent_policy": {
+            "routed_roles_are": subagent_policy.get("routed_roles_are", "review_lenses"),
+            "max_without_explicit_user_request": int(
+                subagent_policy.get("max_without_explicit_user_request", 1)
+            ),
+            "max_with_explicit_user_request": int(
+                subagent_policy.get("max_with_explicit_user_request", 2)
+            ),
+            "required_fork_turns": subagent_policy.get("required_fork_turns", "none"),
+            "child_bootstrap_mode": subagent_policy.get(
+                "child_bootstrap_mode", "task_packet_only"
+            ),
+            "recursive_fanout": subagent_policy.get("recursive_fanout", "prohibited"),
+            "automatic_spawn_from_routing": bool(
+                subagent_policy.get("automatic_spawn_from_routing", False)
+            ),
+        },
         "verification_gates": dedupe(verification_gates),
         "routing_notes": routing_notes,
     }
