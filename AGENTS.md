@@ -75,27 +75,39 @@ project-change request must use this protocol.
 - If durable project state, commands, decisions, limitations, or lifecycle
   status change, update local `memory/PROJECT_MEMORY.md`.
 - If a gate fails, run self-healing before declaring completion.
-- If specialist review is useful, apply the conservative subagent budget below;
-  keep the role as a main-agent review lens unless a child independently meets
-  the delegation threshold.
+- Apply the bounded-delegation decision below. For substantial work, do not
+  default to zero children when a safe independent workstream meets the
+  delegation threshold.
 
 ## Subagent Delegation Protocol
 
 AI Brain roles and routed specialists are review lenses, not automatic spawn
-instructions. The primary/root orchestrator owns the work and may use bounded
-specialist parallelism when it materially advances independent work.
+instructions. The primary/root orchestrator owns the work. For substantial
+work, including controlled and release tiers, it must use bounded specialist
+parallelism when at least one safe independent workstream can materially
+advance the task.
 
 Subagent budget:
 
-- Use up to four bounded children when their paths are genuinely independent,
-  have disjoint write scopes, and can proceed in parallel.
+- Before substantive execution, record the delegation decision: qualifying
+  workstreams, child assignments, or the allowed reason for staying
+  single-agent.
+- Spawn at least one bounded child for substantial work when a safe independent
+  research, audit, disjoint implementation, test-matrix, adversarial-review, or
+  verification workstream exists. This is an explicit orchestration
+  instruction, not merely permission to delegate.
+- Use at most four bounded children. Runtime concurrency limits may reduce how
+  many run simultaneously.
 - Do not spawn a child merely because a role was selected; each child still
   needs a concrete objective and a meaningful parallelism or review benefit.
-- Runtime concurrency limits may reduce how many of the four run at once.
 - Recursive fan-out is prohibited. A child must not spawn another child.
-- Routine planning, memory lookup, file discovery, test running, docs drift,
-  requirements audit, and release-gate work stay with the main agent unless the
-  user explicitly assigns one of those tasks to a child.
+- Staying single-agent is allowed only when no safe independent workstream
+  exists, delegation tools are unavailable, the user disabled subagents, or
+  shared mutable state would make delegation unsafe. Record the applicable
+  reason in the spec or inline requirements audit.
+- Root-only work remains with the primary agent: final integration,
+  requirements reconciliation, external writes that cannot be safely isolated,
+  release actions, and the completion claim.
 
 Every allowed child must be launched with `fork_turns="none"`; do not inherit
 the parent conversation. The parent supplies a compact, self-contained task

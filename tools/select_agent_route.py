@@ -395,7 +395,8 @@ def route_prompt(
         str(
             subagent_policy.get(
                 "spawn_rule",
-                "Stay single-agent unless a bounded child is independently justified.",
+                "For substantial work, spawn at least one bounded child when a safe "
+                "independent workstream exists; otherwise record the allowed exception.",
             )
         ).strip(),
     ]
@@ -444,6 +445,27 @@ def route_prompt(
         "subagent_budget": int(subagent_policy.get("default_budget", 0)),
         "subagent_policy": {
             "routed_roles_are": subagent_policy.get("routed_roles_are", "review_lenses"),
+            "delegation_mode": subagent_policy.get(
+                "delegation_mode", "required_when_qualified"
+            ),
+            "delegation_decision_required": bool(
+                subagent_policy.get("delegation_decision_required", True)
+            ),
+            "assessment_required_for_execution_tiers": list(
+                subagent_policy.get(
+                    "assessment_required_for_execution_tiers",
+                    ["focused", "controlled", "release"],
+                )
+            ),
+            "required_for_substantial_work": bool(
+                subagent_policy.get("required_for_substantial_work", True)
+            ),
+            "required_for_execution_tiers": list(
+                subagent_policy.get("required_for_execution_tiers", ["controlled", "release"])
+            ),
+            "minimum_children_when_qualified": int(
+                subagent_policy.get("minimum_children_when_qualified", 1)
+            ),
             "max_without_explicit_user_request": int(
                 subagent_policy.get("max_without_explicit_user_request", 1)
             ),
@@ -457,6 +479,33 @@ def route_prompt(
             "recursive_fanout": subagent_policy.get("recursive_fanout", "prohibited"),
             "automatic_spawn_from_routing": bool(
                 subagent_policy.get("automatic_spawn_from_routing", False)
+            ),
+            "single_agent_exception_requires_reason": bool(
+                subagent_policy.get("single_agent_exception_requires_reason", True)
+            ),
+            "qualifying_workstreams": list(
+                subagent_policy.get(
+                    "qualifying_workstreams",
+                    [
+                        "independent_research",
+                        "independent_audit",
+                        "disjoint_implementation",
+                        "test_matrix_execution",
+                        "adversarial_review",
+                        "independent_verification",
+                    ],
+                )
+            ),
+            "allowed_single_agent_exceptions": list(
+                subagent_policy.get(
+                    "allowed_single_agent_exceptions",
+                    [
+                        "no_safe_independent_workstream",
+                        "runtime_delegation_unavailable",
+                        "user_disabled_subagents",
+                        "shared_state_conflict",
+                    ],
+                )
             ),
         },
         "verification_gates": dedupe(verification_gates),

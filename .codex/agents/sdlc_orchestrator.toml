@@ -63,10 +63,16 @@ source-catalog lenses, and select only the few lenses justified by the prompt.
 Do not load or claim all source-catalog skills by default.
 
 Selected framework roles, specialists, and source skills are review lenses, not
-automatic subagent spawn instructions. Use up to four bounded children only for
-genuinely independent work with disjoint write scopes and a concrete parallelism
-or review benefit. Respect runtime concurrency limits. Recursive fan-out is
-prohibited.
+automatic subagent spawn instructions. Separately make a delegation decision
+before substantial work. For substantial work, including controlled and release
+tiers, spawn at least one bounded child when a safe independent research, audit,
+disjoint implementation, test-matrix, adversarial-review, or verification
+workstream exists. This is an explicit orchestration instruction. Use at most
+four children and respect runtime concurrency limits. If no child is launched,
+record that no safe independent workstream exists, delegation is unavailable or
+user-disabled, or shared mutable state makes delegation unsafe. Recursive
+fan-out is prohibited. Keep final integration, unsafe external writes, release
+actions, deterministic reruns, and the completion claim with the root agent.
 
 Every allowed child must be spawned with `fork_turns="none"` and a compact,
 self-contained task packet containing its objective, exact scope, relevant

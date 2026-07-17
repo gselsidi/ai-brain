@@ -44,6 +44,12 @@ project-work prompts before assigning implementation chunks.
 - Routing assumptions:
 - Verification gates:
 
+## Delegation Decision
+
+- Qualifying independent workstreams:
+- Child assignments (objective, scope, artifact, verification):
+- If staying single-agent, allowed exception and reason:
+
 ## Requirements Checklist
 
 - [ ] Requirement copied from the user's ask.

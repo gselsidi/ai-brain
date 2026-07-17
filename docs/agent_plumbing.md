@@ -148,17 +148,22 @@ divisions, selected framework agents, selected specialists, deferred
 specialists, selected source skills, deferred source skills, routing
 assumptions, and verification gates.
 
-Routing selects lenses, not processes. The subagent budget permits up to four
-children for genuinely independent paths with non-overlapping write scopes and
-a concrete parallelism or review benefit. Runtime concurrency may be lower.
+Routing selects lenses, not processes. The orchestrator separately records a
+delegation decision for substantial work. When a safe independent research,
+audit, disjoint implementation, test-matrix, adversarial-review, or verification
+stream exists, spawn at least one and at most four children. If zero children
+are used, record the allowed safety, runtime, user-choice, or shared-state
+exception. Runtime concurrency may be lower.
 
-When a child is justified, spawn it with `fork_turns="none"` and pass a compact,
-self-contained task packet: objective, exact scope and paths, a short
+Spawn each child with `fork_turns="none"` and pass a compact, self-contained
+task packet: objective, exact scope and paths, a short
 task-specific summary of established decisions, expected output, and
 verification criteria. The child skips AI Brain
 bootstrap, memory/profile and routing reads, `/goal`, specs, lifecycle reports,
 release gates, and further delegation unless the packet explicitly assigns that
-work. The parent integrates the result and remains responsible for final gates.
+work. The parent integrates the result, reruns deterministic checks, owns unsafe
+external/release actions, and remains responsible for final gates and
+completion.
 
 Routing is division-first and token-thrifty. The orchestrator chooses one
 primary division by default, such as engineering/programming, marketing, sales,

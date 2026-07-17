@@ -31,9 +31,10 @@ The framework should help a team run repeatable autonomous delivery:
 - clarify broad or ambiguous work with `/goal` before the prompt spec
 - read each project-work prompt as a routing signal, select a primary division,
   choose core SDLC roles, and add adjacent specialists only when justified
-- treat routed roles as review lenses while permitting up to four bounded
-  children for genuinely independent work
-- when one bounded child is justified, start it without inherited conversation
+- treat routed roles as review lenses while requiring a separate delegation
+  decision for substantial work
+- when a safe independent workstream exists, start at least one and at most
+  four bounded children without inherited conversation
   and give it a compact task packet instead of making it repeat AI Brain
   bootstrap, memory, routing, specs, or lifecycle work
 - convert project-work prompts into durable prompt specs with auditable
@@ -149,22 +150,29 @@ The expected specialist roles are:
 - `pr_reviewer`
 - `release_gate`
 
-## Conservative Subagent Execution
+## Required Bounded Subagent Execution
 
 - The primary/root orchestrator owns AI Brain startup, routing, memory, specs,
   lifecycle evidence, and the completion decision.
 - The default subagent budget is four. Selected roles and specialists remain
-  lenses until the orchestrator documents why each bounded child adds material
-  value.
-- Children must have genuinely independent work and disjoint write scopes;
-  runtime concurrency may be lower than the four-child policy ceiling.
+  lenses; role selection alone does not trigger a spawn.
+- For substantial work, including controlled and release tiers, the
+  orchestrator must spawn at least one child when a safe independent research,
+  audit, disjoint implementation, test-matrix, adversarial-review, or
+  verification workstream exists.
+- If substantial work stays single-agent, the orchestrator records that no safe
+  independent stream exists, delegation is unavailable or user-disabled, or
+  shared mutable state makes delegation unsafe.
+- Child work must be genuinely independent; child write scopes must be
+  disjoint. Runtime concurrency may be lower than the four-child ceiling.
 - Every child starts with `fork_turns="none"` and a compact task packet with a
   short task-specific summary. It does not inherit the parent conversation or
   repeat AI Brain bootstrap by default.
 - Child agents do not run `/goal`, create specs, read project memory/profile or
   routing catalogs, generate lifecycle reports, execute release gates, or spawn
   more agents unless the task packet explicitly requires that exact work.
-- The parent integrates the child result and reruns deterministic verification.
+- The parent integrates child results, reruns deterministic verification, owns
+  unsafe external/release actions, and alone declares completion.
 
 ## Execution Discipline
 

@@ -60,6 +60,7 @@ def test_prompt_spec_template_and_current_spec_are_actionable() -> None:
     for marker in {
         "Requirements Checklist",
         "Prompt-To-Agent Routing",
+        "Delegation Decision",
         "Agent Ownership",
         "Implementation Chunks",
         "Expected Evidence",
@@ -79,6 +80,8 @@ def test_prompt_spec_template_and_current_spec_are_actionable() -> None:
     assert "tools/select_agent_route.py" in template
     assert "Selected source skills" in template
     assert "Deferred source skills" in template
+    assert "Qualifying independent workstreams" in template
+    assert "If staying single-agent, allowed exception and reason" in template
     assert "small work chunks" in planner
     assert "current prompt spec" in orchestrator
     assert "not begin substantial implementation" in orchestrator
@@ -158,12 +161,18 @@ def test_prompt_to_agent_routing_is_division_first_and_token_thrifty() -> None:
     assert "prompt_agent_routing" in framework_map["local_unique_capabilities"]
     assert "rampstack_skill_catalog" in framework_map["local_unique_capabilities"]
     assert "marketing_skill_catalog" in framework_map["local_unique_capabilities"]
-    assert "Use up to four bounded children" in agents
+    assert "Spawn at least one bounded child for substantial work" in agents
+    assert "Use at most four bounded children" in agents
+    assert "Record the applicable\n  reason" in agents
     assert '`fork_turns="none"`' in agents
     assert "A child must not spawn another child" in agents
-    assert "Use up to four bounded children" in orchestrator
+    assert "spawn at least one bounded child" in orchestrator
+    assert "Use at most\nfour children" in orchestrator
     assert '`fork_turns="none"`' in orchestrator
     assert routing_contract["subagent_policy"]["default_budget"] == 4
+    assert routing_contract["subagent_policy"]["delegation_mode"] == "required_when_qualified"
+    assert routing_contract["subagent_policy"]["minimum_children_when_qualified"] == 1
+    assert routing_contract["subagent_policy"]["single_agent_exception_requires_reason"] is True
     assert routing_contract["subagent_policy"]["required_fork_turns"] == "none"
     assert routing_contract["subagent_policy"]["recursive_fanout"] == "prohibited"
 
@@ -177,12 +186,33 @@ def test_prompt_to_agent_routing_is_division_first_and_token_thrifty() -> None:
     assert seo_route["subagent_budget"] == 4
     assert seo_route["subagent_policy"] == {
         "routed_roles_are": "review_lenses",
+        "delegation_mode": "required_when_qualified",
+        "delegation_decision_required": True,
+        "assessment_required_for_execution_tiers": ["focused", "controlled", "release"],
+        "required_for_substantial_work": True,
+        "required_for_execution_tiers": ["controlled", "release"],
+        "minimum_children_when_qualified": 1,
         "max_without_explicit_user_request": 4,
         "max_with_explicit_user_request": 4,
         "required_fork_turns": "none",
         "child_bootstrap_mode": "task_packet_only",
         "recursive_fanout": "prohibited",
         "automatic_spawn_from_routing": False,
+        "single_agent_exception_requires_reason": True,
+        "qualifying_workstreams": [
+            "independent_research",
+            "independent_audit",
+            "disjoint_implementation",
+            "test_matrix_execution",
+            "adversarial_review",
+            "independent_verification",
+        ],
+        "allowed_single_agent_exceptions": [
+            "no_safe_independent_workstream",
+            "runtime_delegation_unavailable",
+            "user_disabled_subagents",
+            "shared_state_conflict",
+        ],
     }
     assert any(
         "review lenses, not automatic subagent spawns" in note

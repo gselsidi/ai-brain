@@ -123,13 +123,17 @@ def test_root_agents_bridge_installs_and_preserves_existing_instructions(tmp_pat
     assert "Release-window discipline:" in text
     assert "Treat related follow-up corrections as one active release window" in text
     assert "Do not repeat full discovery" in text
-    assert "Conservative AI Brain subagent policy" in text
-    assert "Use up to four children" in text
+    assert "Required bounded AI Brain subagent policy" in text
+    assert "spawn at least\n  one child" in text
+    assert "Use at most four" in text
+    assert "If substantial work stays single-agent" in text
+    assert "shared mutable state makes delegation unsafe" in text
     assert '`fork_turns="none"`' in text
     assert "short task-specific summary" in text
     assert "A delegated child does not repeat steps 1-8" in text
     assert "Recursive subagent spawning is" in text
-    assert "explicit standing authorization" not in text
+    assert "automatic spawn instructions" in text
+    assert "alone can\n  declare completion" in text
 
 
 def test_root_agents_bridge_replaces_only_managed_block(tmp_path: Path) -> None:

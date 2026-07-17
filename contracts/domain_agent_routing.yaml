@@ -47,6 +47,17 @@ routing_defaults:
 
 subagent_policy:
   routed_roles_are: review_lenses
+  delegation_mode: required_when_qualified
+  delegation_decision_required: true
+  assessment_required_for_execution_tiers:
+    - focused
+    - controlled
+    - release
+  required_for_substantial_work: true
+  required_for_execution_tiers:
+    - controlled
+    - release
+  minimum_children_when_qualified: 1
   default_budget: 4
   max_without_explicit_user_request: 4
   max_with_explicit_user_request: 4
@@ -54,6 +65,19 @@ subagent_policy:
   child_bootstrap_mode: task_packet_only
   recursive_fanout: prohibited
   automatic_spawn_from_routing: false
+  single_agent_exception_requires_reason: true
+  qualifying_workstreams:
+    - independent_research
+    - independent_audit
+    - disjoint_implementation
+    - test_matrix_execution
+    - adversarial_review
+    - independent_verification
+  allowed_single_agent_exceptions:
+    - no_safe_independent_workstream
+    - runtime_delegation_unavailable
+    - user_disabled_subagents
+    - shared_state_conflict
   child_skips_by_default:
     - ai_brain_start_of_turn_bootstrap
     - project_memory
@@ -64,9 +88,12 @@ subagent_policy:
     - lifecycle_reports
     - further_delegation
   spawn_rule: >
-    Use up to four bounded children only for genuinely independent work with
-    disjoint write scopes and a concrete parallelism or review benefit. Give
-    each a compact task-specific summary and no inherited conversation.
+    For substantial work, including controlled and release tiers, spawn at
+    least one bounded child when a safe independent research, audit,
+    implementation, test, review, or verification workstream exists. Routed
+    roles alone do not trigger a spawn. If no child is launched, record the
+    allowed exception. Use at most four children, give each a compact
+    task-specific summary, and pass no inherited conversation.
 
 divisions:
   engineering:

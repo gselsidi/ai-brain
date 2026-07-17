@@ -139,12 +139,14 @@ loading a whole folder of prompts up front.
 - **Prompt-to-agent routing:** `tools/select_agent_route.py` reads the prompt
   and returns a primary division, adjacent divisions, selected framework agents,
   selected specialists, deferred specialists, selected source skills, deferred
-  source skills, verification gates, and a four-child subagent budget. Routed
+  source skills, verification gates, and the bounded-delegation policy. Routed
   roles are review lenses, not automatic agent spawns.
-- **Bounded subagents:** up to four justified children can run on genuinely
-  independent work. Each starts with `fork_turns="none"`, receives only a short
-  task-specific summary, skips a second AI Brain bootstrap, and cannot delegate
-  further.
+- **Required bounded subagents:** substantial work must use at least one child
+  when a safe independent research, audit, implementation, test, review, or
+  verification stream exists, with a four-child ceiling. Zero-child exceptions
+  must be explained. Each child starts with `fork_turns="none"`, receives only
+  a short task-specific summary, skips a second AI Brain bootstrap, and cannot
+  delegate further.
 - **Token-thrifty source skills:** source catalogs are metadata-only. The
   router uses slugs, categories, summaries, and trigger terms to pick a few
   useful lenses without loading every skill body.
